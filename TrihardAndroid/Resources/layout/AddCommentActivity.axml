@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ff000000">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ActionBar">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:id="@+id/linearLayout1"
+            android:gravity="center">
+            <TextView
+                android:text="ADD A COMMENT"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView1"
+                android:textStyle="bold"
+                android:textColor="#ffffffff"
+                android:textSize="15dp"
+                android:layout_weight="1"
+                android:gravity="center" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/linearLayout8"
+            android:layout_weight="1">
+            <EditText
+                android:inputType="textMultiLine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/txtComment"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="020dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="50dp"
+                android:gravity="top"
+                android:background="#ffeaeaea"
+                android:hint="Type your comment..."
+                android:padding="10dp"
+                android:textColorHint="#ffaeaeae"
+                android:textSize="15dp"
+                android:textColor="#ff000000" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:id="@+id/linearLayout7">
+            <Button
+                android:text="SAVE"
+                android:id="@+id/ActionAddComment"
+                android:textColor="#ffffff"
+                android:background="#ffe5a109"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="17dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

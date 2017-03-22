@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/ActionEventDetail"
+        android:background="#ff1e1e1e">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3"
+            android:layout_weight="10"
+            android:gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dp">
+            <TextView
+                android:text="sagiv danielsagiv danielsagiv danielsagiv danielsagiv danielsagiv danielsagiv danielsagiv daniel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtTitle"
+                android:textColor="#ffffffff"
+                android:singleLine="true"
+                android:layout_weight="1"
+                android:ellipsize="end" />
+            <TextView
+                android:text="Text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/txtTime"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textColor="#ffffffff" />
+            <ImageView
+                android:src="@drawable/icon_run"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:id="@+id/imgType" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

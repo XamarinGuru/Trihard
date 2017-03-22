@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://tempuri.org/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" name="Service1" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://go-heja.com:81/Service1.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://go-heja.com:81/Service1.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://go-heja.com:81/Service1.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://go-heja.com:81/Service1.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/tracker_srv" />
+      <xsd:import schemaLocation="http://go-heja.com:81/Service1.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/MongoDB.Bson" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IService1_updateMomgoData_InputMessage">
+    <wsdl:part name="parameters" element="tns:updateMomgoData" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateMomgoData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:updateMomgoDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateMomgoCalendar_InputMessage">
+    <wsdl:part name="parameters" element="tns:updateMomgoCalendar" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateMomgoCalendar_OutputMessage">
+    <wsdl:part name="parameters" element="tns:updateMomgoCalendarResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_athCurrData_InputMessage">
+    <wsdl:part name="parameters" element="tns:athCurrData" />
+  </wsdl:message>
+  <wsdl:message name="IService1_athCurrData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:athCurrDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_athCurrDataMongo_InputMessage">
+    <wsdl:part name="parameters" element="tns:athCurrDataMongo" />
+  </wsdl:message>
+  <wsdl:message name="IService1_athCurrDataMongo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:athCurrDataMongoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthNameById_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAthNameById" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthNameById_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAthNameByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetDataUsingDataContract_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDataUsingDataContract" />
+  </wsdl:message>
+  <wsdl:message name="IService1_GetDataUsingDataContract_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDataUsingDataContractResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_deleteMarker_InputMessage">
+    <wsdl:part name="parameters" element="tns:deleteMarker" />
+  </wsdl:message>
+  <wsdl:message name="IService1_deleteMarker_OutputMessage">
+    <wsdl:part name="parameters" element="tns:deleteMarkerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_addMarker_InputMessage">
+    <wsdl:part name="parameters" element="tns:addMarker" />
+  </wsdl:message>
+  <wsdl:message name="IService1_addMarker_OutputMessage">
+    <wsdl:part name="parameters" element="tns:addMarkerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllMarkersById_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAllMarkersById" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllMarkersById_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAllMarkersByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_createEvent_InputMessage">
+    <wsdl:part name="parameters" element="tns:createEvent" />
+  </wsdl:message>
+  <wsdl:message name="IService1_createEvent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:createEventResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventsNameAndId_InputMessage">
+    <wsdl:part name="parameters" element="tns:getEventsNameAndId" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventsNameAndId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getEventsNameAndIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventIdByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:getEventIdByName" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventIdByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getEventIdByNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getcurrentEventByDate_InputMessage">
+    <wsdl:part name="parameters" element="tns:getcurrentEventByDate" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getcurrentEventByDate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getcurrentEventByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventNameById_InputMessage">
+    <wsdl:part name="parameters" element="tns:getEventNameById" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventNameById_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getEventNameByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventNameByType_InputMessage">
+    <wsdl:part name="parameters" element="tns:getEventNameByType" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventNameByType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getEventNameByTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthcurrentLocation_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAthcurrentLocation" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthcurrentLocation_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAthcurrentLocationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getListedDeviceId_InputMessage">
+    <wsdl:part name="parameters" element="tns:getListedDeviceId" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getListedDeviceId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getListedDeviceIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_insertNewDevice_InputMessage">
+    <wsdl:part name="parameters" element="tns:insertNewDevice" />
+  </wsdl:message>
+  <wsdl:message name="IService1_insertNewDevice_OutputMessage">
+    <wsdl:part name="parameters" element="tns:insertNewDeviceResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_validateUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:validateUser" />
+  </wsdl:message>
+  <wsdl:message name="IService1_validateUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:validateUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_sessionUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:sessionUser" />
+  </wsdl:message>
+  <wsdl:message name="IService1_sessionUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:sessionUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getStartMarkerPosition_InputMessage">
+    <wsdl:part name="parameters" element="tns:getStartMarkerPosition" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getStartMarkerPosition_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getStartMarkerPositionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_insertDebugMarker_InputMessage">
+    <wsdl:part name="parameters" element="tns:insertDebugMarker" />
+  </wsdl:message>
+  <wsdl:message name="IService1_insertDebugMarker_OutputMessage">
+    <wsdl:part name="parameters" element="tns:insertDebugMarkerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUsrId_InputMessage">
+    <wsdl:part name="parameters" element="tns:getUsrId" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUsrId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getUsrIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthcurrentLocationMongo_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAthcurrentLocationMongo" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthcurrentLocationMongo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAthcurrentLocationMongoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_myResults_InputMessage">
+    <wsdl:part name="parameters" element="tns:myResults" />
+  </wsdl:message>
+  <wsdl:message name="IService1_myResults_OutputMessage">
+    <wsdl:part name="parameters" element="tns:myResultsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventDateNameId_InputMessage">
+    <wsdl:part name="parameters" element="tns:getEventDateNameId" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventDateNameId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getEventDateNameIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_groupResultsMongo_InputMessage">
+    <wsdl:part name="parameters" element="tns:groupResultsMongo" />
+  </wsdl:message>
+  <wsdl:message name="IService1_groupResultsMongo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:groupResultsMongoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getMyTrailForEventMongo_InputMessage">
+    <wsdl:part name="parameters" element="tns:getMyTrailForEventMongo" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getMyTrailForEventMongo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getMyTrailForEventMongoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthDataByDeviceId_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAthDataByDeviceId" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAthDataByDeviceId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAthDataByDeviceIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUserCalendar_InputMessage">
+    <wsdl:part name="parameters" element="tns:getUserCalendar" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUserCalendar_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getUserCalendarResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_resetCalendarEvent_InputMessage">
+    <wsdl:part name="parameters" element="tns:resetCalendarEvent" />
+  </wsdl:message>
+  <wsdl:message name="IService1_resetCalendarEvent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:resetCalendarEventResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateMomgoGroups_InputMessage">
+    <wsdl:part name="parameters" element="tns:updateMomgoGroups" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateMomgoGroups_OutputMessage">
+    <wsdl:part name="parameters" element="tns:updateMomgoGroupsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_removeFromGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:removeFromGroup" />
+  </wsdl:message>
+  <wsdl:message name="IService1_removeFromGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:removeFromGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllUsersForGroupManage_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAllUsersForGroupManage" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllUsersForGroupManage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAllUsersForGroupManageResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getIyemsForGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:getIyemsForGroup" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getIyemsForGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getIyemsForGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllathForGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAllathForGroup" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllathForGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAllathForGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getNearestEvent_InputMessage">
+    <wsdl:part name="parameters" element="tns:getNearestEvent" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getNearestEvent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getNearestEventResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateCoachNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:updateCoachNotes" />
+  </wsdl:message>
+  <wsdl:message name="IService1_updateCoachNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:updateCoachNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:getNotes" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUsrNickName_InputMessage">
+    <wsdl:part name="parameters" element="tns:getUsrNickName" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getUsrNickName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getUsrNickNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllIdsForNames_InputMessage">
+    <wsdl:part name="parameters" element="tns:getAllIdsForNames" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getAllIdsForNames_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getAllIdsForNamesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:getEventInfo" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getEventInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getEventInfoResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IService1">
+    <wsdl:operation name="updateMomgoData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/updateMomgoData" message="tns:IService1_updateMomgoData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/updateMomgoDataResponse" message="tns:IService1_updateMomgoData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="updateMomgoCalendar">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/updateMomgoCalendar" message="tns:IService1_updateMomgoCalendar_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/updateMomgoCalendarResponse" message="tns:IService1_updateMomgoCalendar_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="athCurrData">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/athCurrData" message="tns:IService1_athCurrData_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/athCurrDataResponse" message="tns:IService1_athCurrData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="athCurrDataMongo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/athCurrDataMongo" message="tns:IService1_athCurrDataMongo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/athCurrDataMongoResponse" message="tns:IService1_athCurrDataMongo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAthNameById">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAthNameById" message="tns:IService1_getAthNameById_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAthNameByIdResponse" message="tns:IService1_getAthNameById_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDataUsingDataContract">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/GetDataUsingDataContract" message="tns:IService1_GetDataUsingDataContract_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/GetDataUsingDataContractResponse" message="tns:IService1_GetDataUsingDataContract_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="deleteMarker">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/deleteMarker" message="tns:IService1_deleteMarker_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/deleteMarkerResponse" message="tns:IService1_deleteMarker_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="addMarker">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/addMarker" message="tns:IService1_addMarker_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/addMarkerResponse" message="tns:IService1_addMarker_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAllMarkersById">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAllMarkersById" message="tns:IService1_getAllMarkersById_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAllMarkersByIdResponse" message="tns:IService1_getAllMarkersById_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="createEvent">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/createEvent" message="tns:IService1_createEvent_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/createEventResponse" message="tns:IService1_createEvent_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getEventsNameAndId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventsNameAndId" message="tns:IService1_getEventsNameAndId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventsNameAndIdResponse" message="tns:IService1_getEventsNameAndId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getEventIdByName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventIdByName" message="tns:IService1_getEventIdByName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventIdByNameResponse" message="tns:IService1_getEventIdByName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getcurrentEventByDate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getcurrentEventByDate" message="tns:IService1_getcurrentEventByDate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getcurrentEventByDateResponse" message="tns:IService1_getcurrentEventByDate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getEventNameById">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventNameById" message="tns:IService1_getEventNameById_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventNameByIdResponse" message="tns:IService1_getEventNameById_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getEventNameByType">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventNameByType" message="tns:IService1_getEventNameByType_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventNameByTypeResponse" message="tns:IService1_getEventNameByType_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAthcurrentLocation">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAthcurrentLocation" message="tns:IService1_getAthcurrentLocation_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAthcurrentLocationResponse" message="tns:IService1_getAthcurrentLocation_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getListedDeviceId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getListedDeviceId" message="tns:IService1_getListedDeviceId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getListedDeviceIdResponse" message="tns:IService1_getListedDeviceId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="insertNewDevice">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/insertNewDevice" message="tns:IService1_insertNewDevice_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/insertNewDeviceResponse" message="tns:IService1_insertNewDevice_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="validateUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/validateUser" message="tns:IService1_validateUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/validateUserResponse" message="tns:IService1_validateUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="sessionUser">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/sessionUser" message="tns:IService1_sessionUser_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/sessionUserResponse" message="tns:IService1_sessionUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getStartMarkerPosition">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getStartMarkerPosition" message="tns:IService1_getStartMarkerPosition_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getStartMarkerPositionResponse" message="tns:IService1_getStartMarkerPosition_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="insertDebugMarker">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/insertDebugMarker" message="tns:IService1_insertDebugMarker_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/insertDebugMarkerResponse" message="tns:IService1_insertDebugMarker_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getUsrId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getUsrId" message="tns:IService1_getUsrId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getUsrIdResponse" message="tns:IService1_getUsrId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAthcurrentLocationMongo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAthcurrentLocationMongo" message="tns:IService1_getAthcurrentLocationMongo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAthcurrentLocationMongoResponse" message="tns:IService1_getAthcurrentLocationMongo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="myResults">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/myResults" message="tns:IService1_myResults_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/myResultsResponse" message="tns:IService1_myResults_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getEventDateNameId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventDateNameId" message="tns:IService1_getEventDateNameId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventDateNameIdResponse" message="tns:IService1_getEventDateNameId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="groupResultsMongo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/groupResultsMongo" message="tns:IService1_groupResultsMongo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/groupResultsMongoResponse" message="tns:IService1_groupResultsMongo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getMyTrailForEventMongo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getMyTrailForEventMongo" message="tns:IService1_getMyTrailForEventMongo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getMyTrailForEventMongoResponse" message="tns:IService1_getMyTrailForEventMongo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAthDataByDeviceId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAthDataByDeviceId" message="tns:IService1_getAthDataByDeviceId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAthDataByDeviceIdResponse" message="tns:IService1_getAthDataByDeviceId_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getUserCalendar">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getUserCalendar" message="tns:IService1_getUserCalendar_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getUserCalendarResponse" message="tns:IService1_getUserCalendar_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="resetCalendarEvent">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/resetCalendarEvent" message="tns:IService1_resetCalendarEvent_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/resetCalendarEventResponse" message="tns:IService1_resetCalendarEvent_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="updateMomgoGroups">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/updateMomgoGroups" message="tns:IService1_updateMomgoGroups_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/updateMomgoGroupsResponse" message="tns:IService1_updateMomgoGroups_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="removeFromGroup">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/removeFromGroup" message="tns:IService1_removeFromGroup_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/removeFromGroupResponse" message="tns:IService1_removeFromGroup_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAllUsersForGroupManage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAllUsersForGroupManage" message="tns:IService1_getAllUsersForGroupManage_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAllUsersForGroupManageResponse" message="tns:IService1_getAllUsersForGroupManage_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getIyemsForGroup">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getIyemsForGroup" message="tns:IService1_getIyemsForGroup_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getIyemsForGroupResponse" message="tns:IService1_getIyemsForGroup_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAllathForGroup">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAllathForGroup" message="tns:IService1_getAllathForGroup_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAllathForGroupResponse" message="tns:IService1_getAllathForGroup_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getNearestEvent">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getNearestEvent" message="tns:IService1_getNearestEvent_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getNearestEventResponse" message="tns:IService1_getNearestEvent_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="updateCoachNotes">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/updateCoachNotes" message="tns:IService1_updateCoachNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/updateCoachNotesResponse" message="tns:IService1_updateCoachNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getNotes">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getNotes" message="tns:IService1_getNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getNotesResponse" message="tns:IService1_getNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getUsrNickName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getUsrNickName" message="tns:IService1_getUsrNickName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getUsrNickNameResponse" message="tns:IService1_getUsrNickName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getAllIdsForNames">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getAllIdsForNames" message="tns:IService1_getAllIdsForNames_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getAllIdsForNamesResponse" message="tns:IService1_getAllIdsForNames_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getEventInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventInfo" message="tns:IService1_getEventInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventInfoResponse" message="tns:IService1_getEventInfo_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="updateMomgoData">
+      <soap:operation soapAction="http://tempuri.org/IService1/updateMomgoData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateMomgoCalendar">
+      <soap:operation soapAction="http://tempuri.org/IService1/updateMomgoCalendar" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="athCurrData">
+      <soap:operation soapAction="http://tempuri.org/IService1/athCurrData" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="athCurrDataMongo">
+      <soap:operation soapAction="http://tempuri.org/IService1/athCurrDataMongo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAthNameById">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAthNameById" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDataUsingDataContract">
+      <soap:operation soapAction="http://tempuri.org/IService1/GetDataUsingDataContract" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteMarker">
+      <soap:operation soapAction="http://tempuri.org/IService1/deleteMarker" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addMarker">
+      <soap:operation soapAction="http://tempuri.org/IService1/addMarker" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllMarkersById">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAllMarkersById" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createEvent">
+      <soap:operation soapAction="http://tempuri.org/IService1/createEvent" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventsNameAndId">
+      <soap:operation soapAction="http://tempuri.org/IService1/getEventsNameAndId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventIdByName">
+      <soap:operation soapAction="http://tempuri.org/IService1/getEventIdByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getcurrentEventByDate">
+      <soap:operation soapAction="http://tempuri.org/IService1/getcurrentEventByDate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventNameById">
+      <soap:operation soapAction="http://tempuri.org/IService1/getEventNameById" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventNameByType">
+      <soap:operation soapAction="http://tempuri.org/IService1/getEventNameByType" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAthcurrentLocation">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAthcurrentLocation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getListedDeviceId">
+      <soap:operation soapAction="http://tempuri.org/IService1/getListedDeviceId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertNewDevice">
+      <soap:operation soapAction="http://tempuri.org/IService1/insertNewDevice" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="validateUser">
+      <soap:operation soapAction="http://tempuri.org/IService1/validateUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sessionUser">
+      <soap:operation soapAction="http://tempuri.org/IService1/sessionUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getStartMarkerPosition">
+      <soap:operation soapAction="http://tempuri.org/IService1/getStartMarkerPosition" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertDebugMarker">
+      <soap:operation soapAction="http://tempuri.org/IService1/insertDebugMarker" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUsrId">
+      <soap:operation soapAction="http://tempuri.org/IService1/getUsrId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAthcurrentLocationMongo">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAthcurrentLocationMongo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="myResults">
+      <soap:operation soapAction="http://tempuri.org/IService1/myResults" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventDateNameId">
+      <soap:operation soapAction="http://tempuri.org/IService1/getEventDateNameId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="groupResultsMongo">
+      <soap:operation soapAction="http://tempuri.org/IService1/groupResultsMongo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMyTrailForEventMongo">
+      <soap:operation soapAction="http://tempuri.org/IService1/getMyTrailForEventMongo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAthDataByDeviceId">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAthDataByDeviceId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUserCalendar">
+      <soap:operation soapAction="http://tempuri.org/IService1/getUserCalendar" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="resetCalendarEvent">
+      <soap:operation soapAction="http://tempuri.org/IService1/resetCalendarEvent" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateMomgoGroups">
+      <soap:operation soapAction="http://tempuri.org/IService1/updateMomgoGroups" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeFromGroup">
+      <soap:operation soapAction="http://tempuri.org/IService1/removeFromGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllUsersForGroupManage">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAllUsersForGroupManage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getIyemsForGroup">
+      <soap:operation soapAction="http://tempuri.org/IService1/getIyemsForGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllathForGroup">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAllathForGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getNearestEvent">
+      <soap:operation soapAction="http://tempuri.org/IService1/getNearestEvent" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateCoachNotes">
+      <soap:operation soapAction="http://tempuri.org/IService1/updateCoachNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getNotes">
+      <soap:operation soapAction="http://tempuri.org/IService1/getNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getUsrNickName">
+      <soap:operation soapAction="http://tempuri.org/IService1/getUsrNickName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllIdsForNames">
+      <soap:operation soapAction="http://tempuri.org/IService1/getAllIdsForNames" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventInfo">
+      <soap:operation soapAction="http://tempuri.org/IService1/getEventInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service1">
+    <wsdl:port name="BasicHttpBinding_IService1" binding="tns:BasicHttpBinding_IService1">
+      <soap:address location="http://go-heja.com:81/Service1.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

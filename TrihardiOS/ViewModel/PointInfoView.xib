@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina5_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PointInfoView"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="dwj-2j-NgW" customClass="PointInfoView">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dut-4K-AIX" misplaced="YES">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="350"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name: This is Start Point" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aGm-Hc-3cd" misplaced="YES">
+                            <rect key="frame" x="20" y="43" width="339" height="20.5"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Interval : 5" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U7w-bA-oCO" misplaced="YES">
+                            <rect key="frame" x="20" y="222" width="78" height="18"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sGj-Yy-6AY" userLabel="BUTTON" misplaced="YES">
+                            <rect key="frame" x="41.5" y="270.5" width="331" height="55"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dYh-as-YJ9" misplaced="YES">
+                                    <rect key="frame" x="1" y="0.0" width="331" height="55"/>
+                                    <color key="backgroundColor" red="0.90196078430000004" green="0.63137254899999995" blue="0.035294117649999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                    <state key="normal" title="Navigate to this point">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="ActionNavigate:" destination="dwj-2j-NgW" eventType="touchUpInside" id="3"/>
+                                    </connections>
+                                </button>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_right.png" translatesAutoresizingMaskIntoConstraints="NO" id="bfW-rL-nh7" misplaced="YES">
+                                    <rect key="frame" x="248.5" y="22.5" width="100" height="10"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="10" id="fsm-PD-VKi"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="sGj-Yy-6AY" secondAttribute="height" multiplier="6:1" id="7fb-GD-yW0"/>
+                                <constraint firstAttribute="bottom" secondItem="dYh-as-YJ9" secondAttribute="bottom" id="N0v-4l-ekv"/>
+                                <constraint firstItem="dYh-as-YJ9" firstAttribute="leading" secondItem="sGj-Yy-6AY" secondAttribute="leading" id="NEA-c8-zQG"/>
+                                <constraint firstItem="bfW-rL-nh7" firstAttribute="centerX" secondItem="sGj-Yy-6AY" secondAttribute="centerX" multiplier="1.8" id="V44-qj-jza"/>
+                                <constraint firstAttribute="trailing" secondItem="dYh-as-YJ9" secondAttribute="trailing" id="nwK-1P-Snv"/>
+                                <constraint firstItem="dYh-as-YJ9" firstAttribute="top" secondItem="sGj-Yy-6AY" secondAttribute="top" id="omO-FL-IuT"/>
+                                <constraint firstItem="bfW-rL-nh7" firstAttribute="centerY" secondItem="sGj-Yy-6AY" secondAttribute="centerY" id="wON-5Y-4YX"/>
+                            </constraints>
+                        </view>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="aaa" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sVm-G1-oem" misplaced="YES">
+                            <rect key="frame" x="20" y="101.5" width="374" height="18"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tiS-gR-JvM" misplaced="YES">
+                            <rect key="frame" x="369" y="30" width="15" height="15"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="15" id="0Bv-ws-3dn"/>
+                                <constraint firstAttribute="width" secondItem="tiS-gR-JvM" secondAttribute="height" multiplier="1:1" id="U0z-5f-tUL"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="icon_cross.png"/>
+                            <connections>
+                                <action selector="ActionClose:" destination="dwj-2j-NgW" eventType="touchUpInside" id="2"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cSl-n1-Kfz" misplaced="YES">
+                            <rect key="frame" x="351.5" y="12.5" width="50" height="50"/>
+                            <connections>
+                                <action selector="ActionClose:" destination="dwj-2j-NgW" id="6" eventType="touchUpInside"/>
+                            </connections>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Description:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h1F-8V-bdN" misplaced="YES">
+                            <rect key="frame" x="20" y="83.5" width="90" height="18"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.10980392156862745" green="0.10980392156862745" blue="0.10980392156862745" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstItem="sGj-Yy-6AY" firstAttribute="top" secondItem="U7w-bA-oCO" secondAttribute="bottom" constant="30" id="3vQ-bN-sq8"/>
+                        <constraint firstItem="sGj-Yy-6AY" firstAttribute="centerX" secondItem="dut-4K-AIX" secondAttribute="centerX" id="4Zl-tv-eig"/>
+                        <constraint firstItem="h1F-8V-bdN" firstAttribute="leading" secondItem="dut-4K-AIX" secondAttribute="leading" constant="20" id="9yD-hS-Yfq"/>
+                        <constraint firstItem="sVm-G1-oem" firstAttribute="top" secondItem="h1F-8V-bdN" secondAttribute="bottom" id="ECx-In-Hcq"/>
+                        <constraint firstItem="sVm-G1-oem" firstAttribute="leading" secondItem="dut-4K-AIX" secondAttribute="leading" constant="20" id="FmK-9c-ELW"/>
+                        <constraint firstItem="tiS-gR-JvM" firstAttribute="width" secondItem="cSl-n1-Kfz" secondAttribute="width" multiplier="0.3" id="IZU-Yh-iwq"/>
+                        <constraint firstAttribute="height" constant="350" id="KE1-0i-IYg"/>
+                        <constraint firstItem="U7w-bA-oCO" firstAttribute="leading" secondItem="dut-4K-AIX" secondAttribute="leading" constant="20" id="KUw-rC-7Vd"/>
+                        <constraint firstItem="aGm-Hc-3cd" firstAttribute="centerY" secondItem="dut-4K-AIX" secondAttribute="centerY" multiplier="0.3" id="Out-FQ-y1Q"/>
+                        <constraint firstAttribute="trailing" secondItem="tiS-gR-JvM" secondAttribute="trailing" constant="30" id="UZP-ID-wTz"/>
+                        <constraint firstItem="tiS-gR-JvM" firstAttribute="height" secondItem="cSl-n1-Kfz" secondAttribute="height" multiplier="0.3" id="VJs-2Y-0oi"/>
+                        <constraint firstItem="tiS-gR-JvM" firstAttribute="top" secondItem="dut-4K-AIX" secondAttribute="top" constant="30" id="Wzq-jc-P5O"/>
+                        <constraint firstItem="tiS-gR-JvM" firstAttribute="centerX" secondItem="cSl-n1-Kfz" secondAttribute="centerX" id="Y5J-jf-7zv"/>
+                        <constraint firstItem="h1F-8V-bdN" firstAttribute="top" secondItem="aGm-Hc-3cd" secondAttribute="bottom" constant="20" id="a3R-LZ-f7M"/>
+                        <constraint firstItem="tiS-gR-JvM" firstAttribute="leading" secondItem="aGm-Hc-3cd" secondAttribute="trailing" constant="10" id="dFT-7V-AnJ"/>
+                        <constraint firstItem="sGj-Yy-6AY" firstAttribute="centerY" secondItem="dut-4K-AIX" secondAttribute="centerY" multiplier="1.7" id="dTp-nU-FkQ"/>
+                        <constraint firstItem="tiS-gR-JvM" firstAttribute="centerY" secondItem="cSl-n1-Kfz" secondAttribute="centerY" id="tbJ-tE-xx5"/>
+                        <constraint firstAttribute="trailing" secondItem="sVm-G1-oem" secondAttribute="trailing" constant="20" id="weN-f3-lEi"/>
+                        <constraint firstItem="aGm-Hc-3cd" firstAttribute="leading" secondItem="dut-4K-AIX" secondAttribute="leading" constant="20" id="x3j-xp-SXQ"/>
+                        <constraint firstItem="sGj-Yy-6AY" firstAttribute="width" secondItem="dut-4K-AIX" secondAttribute="width" multiplier="0.8" id="yGf-an-CsW"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="dut-4K-AIX" firstAttribute="top" secondItem="dwj-2j-NgW" secondAttribute="top" id="9T9-zI-MKv"/>
+                <constraint firstAttribute="trailing" secondItem="dut-4K-AIX" secondAttribute="trailing" id="ew1-4V-FAK"/>
+                <constraint firstItem="dut-4K-AIX" firstAttribute="leading" secondItem="dwj-2j-NgW" secondAttribute="leading" id="rS0-iS-gVs"/>
+            </constraints>
+            <connections>
+                <outlet property="lblDescription" destination="sVm-G1-oem" id="name-outlet-sVm-G1-oem"/>
+                <outlet property="lblInterval" destination="U7w-bA-oCO" id="name-outlet-U7w-bA-oCO"/>
+                <outlet property="lblName" destination="aGm-Hc-3cd" id="name-outlet-aGm-Hc-3cd"/>
+                <outlet property="viewButton" destination="sGj-Yy-6AY" id="name-outlet-sGj-Yy-6AY"/>
+            </connections>
+            <point key="canvasLocation" x="-170" y="16"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="icon_cross.png" width="100" height="100"/>
+        <image name="icon_right.png" width="100" height="100"/>
+        <image name="speed.png" width="313" height="313"/>
+        <image name="dist.png" width="313" height="313"/>
+        <image name="mont.png" width="313" height="313"/>
+        <image name="watt.png" width="313" height="313"/>
+        <image name="heart.png" width="313" height="313"/>
+        <image name="ninja.png" width="300" height="300"/>
+        <image name="pen.png" width="200" height="200"/>
+        <image name="icon.png" width="512" height="512"/>
+        <image name="Icon-72.png" width="72" height="72"/>
+        <image name="Icon-76.png" width="76" height="76"/>
+        <image name="Default.png" width="320" height="480"/>
+        <image name="Default-568h.png" width="320" height="568"/>
+        <image name="BG_new.png" width="1080" height="1796"/>
+        <image name="edit_icon.png" width="42" height="42"/>
+        <image name="text_icon.png" width="35" height="35"/>
+        <image name="button.png" width="984" height="90"/>
+        <image name="cell_icon.png" width="28" height="30"/>
+        <image name="email_icon.png" width="38" height="25"/>
+        <image name="key_icon.png" width="50" height="27"/>
+        <image name="user_icon.png" width="40" height="35"/>
+        <image name="heja_icon.png" width="72" height="72"/>
+        <image name="calen_icon_active.png" width="70" height="67"/>
+        <image name="transparent.png" width="200" height="40"/>
+        <image name="resume_active.png" width="170" height="170"/>
+        <image name="resume_inactive.png" width="170" height="170"/>
+        <image name="stop_active.png" width="170" height="170"/>
+        <image name="go_button.png" width="170" height="170"/>
+        <image name="timer_new.png" width="50" height="57"/>
+        <image name="watt_new.png" width="29" height="62"/>
+        <image name="speed_new.png" width="58" height="47"/>
+        <image name="runRound_new.png" width="260" height="260"/>
+        <image name="mont_new.png" width="64" height="38"/>
+        <image name="heart_new.png" width="64" height="56"/>
+        <image name="bikeRound_new.png" width="260" height="260"/>
+        <image name="dist_new.png" width="40" height="40"/>
+        <image name="active_tab.png" width="68" height="62"/>
+        <image name="icon_home_act.png" width="68" height="62"/>
+        <image name="icon_home_disable.png" width="68" height="62"/>
+        <image name="icon_bycle_act.png" width="68" height="62"/>
+        <image name="icon_bycle_disable.png" width="68" height="62"/>
+        <image name="icon_calendar_act.png" width="68" height="62"/>
+        <image name="icon_calendar_disable.png" width="68" height="62"/>
+        <image name="user_icon_act.png" width="40" height="35"/>
+        <image name="icon_watch.png" width="144" height="144"/>
+        <image name="icon_back.png" width="512" height="512"/>
+        <image name="pop_up_bg.png" width="500" height="207"/>
+        <image name="icon_.png" width="100" height="100"/>
+        <image name="icon_calendar.png" width="100" height="100"/>
+        <image name="icon_check.png" width="100" height="100"/>
+        <image name="icon_check1.png" width="100" height="100"/>
+        <image name="icon_check2.png" width="100" height="100"/>
+        <image name="icon_error.png" width="100" height="100"/>
+        <image name="icon_lock.png" width="100" height="100"/>
+        <image name="icon_phone.png" width="100" height="100"/>
+        <image name="icon_user.png" width="100" height="100"/>
+        <image name="icon_email.png" width="100" height="100"/>
+        <image name="icon_athlete.png" width="230" height="261"/>
+        <image name="icon_bike.png" width="187" height="169"/>
+        <image name="icon_clock.png" width="100" height="100"/>
+        <image name="icon_exit.png" width="100" height="100"/>
+        <image name="icon_long.png" width="101" height="84"/>
+        <image name="icon_pencil.png" width="100" height="100"/>
+        <image name="icon_run.png" width="159" height="163"/>
+        <image name="icon_swim.png" width="172" height="133"/>
+        <image name="icon_sync.png" width="100" height="100"/>
+        <image name="icon_triathlon.png" width="230" height="234"/>
+        <image name="tab_calendar.png" width="50" height="50"/>
+        <image name="tab_disable.png" width="100" height="100"/>
+        <image name="tab_enable.png" width="100" height="100"/>
+        <image name="tab_user.png" width="50" height="50"/>
+        <image name="icon_logo.png" width="1920" height="675"/>
+        <image name="icon_left.png" width="50" height="50"/>
+        <image name="icon_user_whit.png" width="40" height="40"/>
+        <image name="icon_down.png" width="100" height="100"/>
+        <image name="icon_delete.png" width="100" height="100"/>
+        <image name="icon_whistle.png" width="77" height="56"/>
+        <image name="icon_group_report.png" width="34" height="41"/>
+        <image name="icon_workout_report.png" width="34" height="38"/>
+        <image name="icon_other.png" width="136" height="169"/>
+        <image name="icon_01.png" width="254" height="254"/>
+        <image name="icon_02.png" width="254" height="254"/>
+        <image name="icon_03_inactive.png" width="254" height="254"/>
+        <image name="icon_03.png" width="254" height="254"/>
+        <image name="icon_04_inactive.png" width="254" height="254"/>
+        <image name="icon_04.png" width="254" height="254"/>
+        <image name="icon_05_inactive.png" width="254" height="254"/>
+        <image name="icon_05.png" width="254" height="254"/>
+        <image name="icon_06_inactive.png" width="254" height="254"/>
+        <image name="icon_06.png" width="254" height="254"/>
+        <image name="icon_07_inactive.png" width="254" height="254"/>
+        <image name="icon_07.png" width="254" height="254"/>
+        <image name="icon_changepw.png" width="120" height="120"/>
+        <image name="icon_logo_new.png" width="160" height="56"/>
+        <image name="no-photo-round.png" width="300" height="300"/>
+        <image name="splash_new.png" width="319" height="500"/>
+        <image name="icon_map_pin.png" width="35" height="35"/>
+        <image name="pin_camera.png" width="31" height="50"/>
+        <image name="pin_check_mark.png" width="31" height="50"/>
+        <image name="pin_east.png" width="31" height="50"/>
+        <image name="pin_finish.png" width="31" height="50"/>
+        <image name="pin_north.png" width="31" height="50"/>
+        <image name="pin_south.png" width="31" height="50"/>
+        <image name="pin_start.png" width="32" height="50"/>
+        <image name="pin_T1.png" width="31" height="50"/>
+        <image name="pin_T2.png" width="31" height="50"/>
+        <image name="pin_west.png" width="31" height="50"/>
+    </resources>
+</document>

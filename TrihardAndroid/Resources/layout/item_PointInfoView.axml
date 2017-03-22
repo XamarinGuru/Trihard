@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="320dp"
+    android:layout_margin="2dp"
+    android:background="#ffe63030">
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/linearLayout3"
+        android:layout_width="300dp"
+        android:layout_height="320dp"
+        android:background="#ff1e1e1e">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/linearLayout4"
+            android:layout_weight="1.5"
+            android:layout_marginLeft="15dp">
+            <TextView
+                android:text="Name: Point name"
+                android:id="@+id/lblName"
+                android:textColor="#ffffffff"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+            <ImageView
+                android:src="@drawable/icon_cross"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:id="@+id/ActionClose"
+                android:layout_margin="15dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:id="@+id/linearLayout4"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="0.5">
+            <TextView
+                android:text="Description"
+                android:id="@+id/lblAuthorName"
+                android:textColor="#ffffffff"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:text="this is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is comment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/lblDescription"
+            android:textColor="#ffffffff"
+            android:textSize="15dp"
+            android:textStyle="normal"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="2"
+            android:ellipsize="end" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:id="@+id/linearLayout4"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1">
+            <TextView
+                android:text="Interval: 1"
+                android:id="@+id/lblInterval"
+                android:textColor="#ffffffff"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Button xmlns:p2="http://schemas.android.com/tools"
+            android:text="Navigate to this point"
+            android:id="@+id/ActionNavigate"
+            android:background="#ffe5a109"
+            android:textColor="#ffffffff"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            p2:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp" />
+    </LinearLayout>
+</RelativeLayout>

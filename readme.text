@@ -1,0 +1,53 @@
+
+Maintain for each Go-Heja Groups.
+
+1. Android
+
+- Confirm App name & package name(with correct version number) as Group name
+	Path: ../Properties/AndroidManifest.xml
+
+- Confirm App icon & logo & splash
+	icon: ../Resources/drawable/icon.png
+	logo: ../Resources/drawable/icon_logo_new.png
+	splash: ../Resources/drawable/splash_new.png
+
+- Keystore Files
+	Path: keystore/[Group Name]/*.keystore
+	
+	We will store all keystore files into above path, it needs for you, Sagiv!
+
+	
+	
+
+2. iOS
+
+- Confirm App name & package name(with correct version number) as Group name
+	Path: Info.plist
+
+- Confirm App icon & logo & splash
+	icon: ../Resources/Images.xcassets -> (120 * 120).png
+	logo: ../Resources/icon_logo_new.png
+	splash: ../Resources/splash_new.png
+
+
+
+
+3. For Both iOS & Android
+
+- Confirm App constants
+	path: PortableLibrary/Constants.cs/SPEC_GROUP_TYPE
+
+- Confirm Xuni license
+	Path: PortableLibrary/XuniLicense.cs
+	(We will store all licenses in this file for all groups.)
+
+
+*****
+- Google map api key
+	We will generate SH1 for all groups and register it when you provide all keystore files of each groups.
+
+	After that, we don’t need this step anymore in the future.
+
+	Path:
+		Android: ../Properties/AssemblyInfo.cs
+		iOS: PortableLibrary/Constants.cs/GOOGLE_MAP_API_KEY

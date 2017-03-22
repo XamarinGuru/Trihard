@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component format="1" id="XCalendar">
+  <name>XCalendar</name>
+  <publisher>Softweb Solutions Inc.</publisher>
+  <publisher-url>http://www.softwebsolutions.com/</publisher-url>
+  <version>1.1</version>
+  <summary>XCalendar is a sleek, elegant, lightweight and modular calendar control for Xamarin.iOS.</summary>
+  <screenshots>
+    <img src="screenshots/1.png" title="1" />
+    <img src="screenshots/2.png" title="2" />
+  </screenshots>
+  <samples>
+    <sample id="XCalendarSample">
+      <name>iOS Sample</name>
+      <summary>iOS Sample</summary>
+    </sample>
+  </samples>
+</component>

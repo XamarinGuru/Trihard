@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Hello">Hello World, Click Me!</string>
+    <string name="ApplicationName">goheja</string>
+	<string name="app_name">Trihard</string>
+    <string name="demo_min_label"></string>
+    <string name="demo_max_label"></string>
+</resources>

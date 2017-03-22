@@ -1,0 +1,362 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7E904771-5A56-4C70-88F8-67D14558069C}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>goheja</RootNamespace>
+    <AssemblyName>goheja</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <AndroidTlsProvider></AndroidTlsProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AndroidLinkSkip />
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AndroidSupportedAbis>armeabi-v7a;arm64-v8a;x86_64;x86;armeabi</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <Debugger>Xamarin</Debugger>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86;x86_64;arm64-v8a</AndroidSupportedAbis>
+    <Debugger>Xamarin</Debugger>
+    <DebugSymbols>False</DebugSymbols>
+    <AndroidHttpClientHandlerType>System.Net.Http.HttpClientHandler</AndroidHttpClientHandlerType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Java.Interop" />
+    <Reference Include="Mono.Android" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\monoandroid1\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\monoandroid1\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\monoandroid1\GalaSoft.MvvmLight.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.6.2.1.0\lib\portable-net45+wp80+win8+wpa81\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoFitTextView">
+      <HintPath>..\packages\AutoFitTextView.0.2.1.0\lib\MonoAndroid403\AutoFitTextView.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Basement">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Basement.29.0.0.2\lib\MonoAndroid41\Xamarin.GooglePlayServices.Basement.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Base">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Base.29.0.0.2\lib\MonoAndroid41\Xamarin.GooglePlayServices.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Maps">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Maps.29.0.0.2\lib\MonoAndroid41\Xamarin.GooglePlayServices.Maps.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v4">
+      <HintPath>..\packages\Xamarin.Android.Support.v4.23.3.0\lib\MonoAndroid403\Xamarin.Android.Support.v4.dll</HintPath>
+    </Reference>
+    <Reference Include="Xuni.Android.Core">
+      <HintPath>..\packages\Xuni.Android.Core.2.3.20163.160\lib\MonoAndroid10\Xuni.Android.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Xuni.Android.Calendar">
+      <HintPath>..\packages\Xuni.Android.Calendar.2.3.20163.160\lib\MonoAndroid10\Xuni.Android.Calendar.dll</HintPath>
+    </Reference>
+    <Reference Include="Xuni.Android.ChartCore">
+      <HintPath>..\packages\Xuni.Android.ChartCore.2.3.20163.160\lib\MonoAndroid10\Xuni.Android.ChartCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Xuni.Android.FlexChart">
+      <HintPath>..\packages\Xuni.Android.FlexChart.2.3.20163.160\lib\MonoAndroid10\Xuni.Android.FlexChart.dll</HintPath>
+    </Reference>
+    <Reference Include="AndHUD">
+      <HintPath>..\Components\AndHUD-1.3.1\lib\android\AndHUD.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fragment\FragmentCalendar.cs" />
+    <Compile Include="Fragment\FragmentProfile.cs" />
+    <Compile Include="Fragment\FragmentEvents.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\LocationService.cs" />
+    <Compile Include="Services\LocationServiceBinder.cs" />
+    <Compile Include="Services\LocationServiceConnection.cs" />
+    <Compile Include="Services\ServiceConnectedEventArgs.cs" />
+    <Compile Include="App.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Activities\SplashActivity.cs" />
+    <Compile Include="Activities\RegisterActivity.cs" />
+    <Compile Include="Activities\SwipeTabActivity.cs" />
+    <Compile Include="Activities\BaseActivity.cs" />
+    <Compile Include="Utility\util.cs" />
+    <Compile Include="Services\BackgroundService.cs" />
+    <Compile Include="Activities\CloseApplicationActivity.cs" />
+    <Compile Include="Adapter\TabViewAdapter.cs" />
+    <Compile Include="Utility\AppSettings.cs" />
+    <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="Fragment\TimeFormatDialog.cs" />
+    <Compile Include="Activities\InitActivity.cs" />
+    <Compile Include="Activities\LoginActivity.cs" />
+    <Compile Include="Activities\EventCalendarActivity.cs" />
+    <Compile Include="Adapter\GoHejaEventAdapter.cs" />
+    <Compile Include="Activities\EventInstructionActivity.cs" />
+    <Compile Include="Activities\AddCommentActivity.cs" />
+    <Compile Include="Activities\AdjustTrainningActivity.cs" />
+    <Compile Include="Activities\EditProfileActivity.cs" />
+    <Compile Include="Activities\ForgotPasswordActivity.cs" />
+    <Compile Include="Activities\ChangePasswordActivity.cs" />
+    <Compile Include="Activities\LocationActivity.cs" />
+    <Compile Include="ViewModel\PointInfoDialog.cs" />
+    <Compile Include="Activities\AnalyticsActivity.cs" />
+    <Compile Include="Activities\SelectPTypeActivity.cs" />
+    <Compile Include="Web References\trackSvc\Reference.cs">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\font\Helvetica Neue CE 35 Thin.ttf" />
+    <AndroidAsset Include="Assets\font\arialbd.ttf" />
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+    <AndroidResource Include="Resources\drawable\active_tab.png" />
+    <AndroidResource Include="Resources\drawable\arrow_icon.png" />
+    <AndroidResource Include="Resources\drawable\bikeRound_new.png" />
+    <AndroidResource Include="Resources\drawable\border.png" />
+    <AndroidResource Include="Resources\drawable\border_bottom.png" />
+    <AndroidResource Include="Resources\drawable\border_vertical.png" />
+    <AndroidResource Include="Resources\drawable\button.png" />
+    <AndroidResource Include="Resources\drawable\cell_icon.png" />
+    <AndroidResource Include="Resources\drawable\dist_new.png" />
+    <AndroidResource Include="Resources\drawable\edit_icon.png" />
+    <AndroidResource Include="Resources\drawable\email_icon.png" />
+    <AndroidResource Include="Resources\drawable\go_button.png" />
+    <AndroidResource Include="Resources\drawable\header.png" />
+    <AndroidResource Include="Resources\drawable\heart_new.png" />
+    <AndroidResource Include="Resources\drawable\home_icon.png" />
+    <AndroidResource Include="Resources\drawable\horizontal_line.png" />
+    <AndroidResource Include="Resources\drawable\icon.png" />
+    <AndroidResource Include="Resources\drawable\icon_01.png" />
+    <AndroidResource Include="Resources\drawable\icon_02.png" />
+    <AndroidResource Include="Resources\drawable\icon_03.png" />
+    <AndroidResource Include="Resources\drawable\icon_04.png" />
+    <AndroidResource Include="Resources\drawable\icon_05.png" />
+    <AndroidResource Include="Resources\drawable\icon_06.png" />
+    <AndroidResource Include="Resources\drawable\icon_07.png" />
+    <AndroidResource Include="Resources\drawable\img_bg.png" />
+    <AndroidResource Include="Resources\drawable\line_new.png" />
+    <AndroidResource Include="Resources\drawable\mont_new.png" />
+    <AndroidResource Include="Resources\drawable\ninja.png" />
+    <AndroidResource Include="Resources\drawable\pop_up_bg.png" />
+    <AndroidResource Include="Resources\drawable\resume_active.png" />
+    <AndroidResource Include="Resources\drawable\resume_inactive.png" />
+    <AndroidResource Include="Resources\drawable\runRound_new.png" />
+    <AndroidResource Include="Resources\drawable\speed_new.png" />
+    <AndroidResource Include="Resources\drawable\splash.png" />
+    <AndroidResource Include="Resources\drawable\stop_active.png" />
+    <AndroidResource Include="Resources\drawable\switch_off.png" />
+    <AndroidResource Include="Resources\drawable\watt_new.png" />
+    <AndroidResource Include="Resources\layout\RegisterActivity.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AnalyticsActivity.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\fEvents.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\fProfile.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\values\style.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <None Include="packages.config" />
+    <AndroidResource Include="Resources\layout\SwipeTabActivity.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\fCalendar.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\icon_back.png" />
+    <AndroidResource Include="Resources\drawable\bg_new.png" />
+    <AndroidResource Include="Resources\layout\EditProfileActivity.axml" />
+    <AndroidResource Include="Resources\layout\InitActivity.axml" />
+    <AndroidResource Include="Resources\drawable\icon_logo.png" />
+    <AndroidResource Include="Resources\drawable\icon_email.png" />
+    <AndroidResource Include="Resources\drawable\icon_lock.png" />
+    <AndroidResource Include="Resources\drawable\icon_user.png" />
+    <AndroidResource Include="Resources\drawable\icon_error.png" />
+    <AndroidResource Include="Resources\drawable\icon_check.png" />
+    <AndroidResource Include="Resources\drawable\icon_cross.png" />
+    <AndroidResource Include="Resources\drawable\icon_calendar.png" />
+    <AndroidResource Include="Resources\drawable\icon_user_white.png" />
+    <AndroidResource Include="Resources\drawable\icon_bike.png" />
+    <AndroidResource Include="Resources\drawable\icon_run.png" />
+    <AndroidResource Include="Resources\drawable\icon_swim.png" />
+    <AndroidResource Include="Resources\drawable\icon_triathlon.png" />
+    <AndroidResource Include="Resources\drawable\icon_phone.png" />
+    <AndroidResource Include="Resources\drawable\icon_exit.png" />
+    <AndroidResource Include="Resources\drawable\icon_pencil.png" />
+    <AndroidResource Include="Resources\drawable\icon_sync.png" />
+    <AndroidResource Include="Resources\layout\LoginActivity.axml" />
+    <AndroidResource Include="Resources\drawable\icon_left.png" />
+    <AndroidResource Include="Resources\drawable\icon_down.png" />
+    <AndroidResource Include="Resources\drawable\icon_right.png" />
+    <AndroidResource Include="Resources\layout\EventCalendarActivity.axml" />
+    <AndroidResource Include="Resources\layout\ItemViewPagerCalendar.axml" />
+    <AndroidResource Include="Resources\layout\item_NitroEvent.axml" />
+    <AndroidResource Include="Resources\Anim\fromLeft.axml" />
+    <AndroidResource Include="Resources\Anim\toRight.axml" />
+    <AndroidResource Include="Resources\layout\EventInstructionActivity.axml" />
+    <AndroidResource Include="Resources\Anim\fromRight.axml" />
+    <AndroidResource Include="Resources\Anim\toLeft.axml" />
+    <AndroidResource Include="Resources\layout\item_Comment.axml" />
+    <AndroidResource Include="Resources\layout\AddCommentActivity.axml" />
+    <AndroidResource Include="Resources\layout\AdjustTrainningActivity.axml" />
+    <AndroidResource Include="Resources\drawable\icon_whistle.png" />
+    <AndroidResource Include="Resources\drawable\icon_delete.png" />
+    <AndroidResource Include="Resources\drawable\icon_group_report.png" />
+    <AndroidResource Include="Resources\drawable\icon_workout_report.png" />
+    <AndroidResource Include="Resources\drawable\icon_other.png" />
+    <AndroidResource Include="Resources\drawable\icon_03_inactive.png" />
+    <AndroidResource Include="Resources\drawable\icon_04_inactive.png" />
+    <AndroidResource Include="Resources\drawable\icon_05_inactive.png" />
+    <AndroidResource Include="Resources\drawable\icon_06_inactive.png" />
+    <AndroidResource Include="Resources\drawable\icon_07_inactive.png" />
+    <AndroidResource Include="Resources\layout\ForgotPasswordActivity.axml" />
+    <AndroidResource Include="Resources\layout\ChangePasswordActivity.axml" />
+    <AndroidResource Include="Resources\drawable\icon_changepw.png" />
+    <AndroidResource Include="Resources\drawable\icon_logo_new.png" />
+    <AndroidResource Include="Resources\drawable\splash_new.png" />
+    <AndroidResource Include="Resources\drawable\no_photo_round.png" />
+    <AndroidResource Include="Resources\drawable\icon_notification.png" />
+    <AndroidResource Include="Resources\drawable\icon_map_pin.png" />
+    <AndroidResource Include="Resources\layout\LocationActivity.axml" />
+    <AndroidResource Include="Resources\drawable\pin_camera.png" />
+    <AndroidResource Include="Resources\drawable\pin_check_mark.png" />
+    <AndroidResource Include="Resources\drawable\pin_east.png" />
+    <AndroidResource Include="Resources\drawable\pin_finish.png" />
+    <AndroidResource Include="Resources\drawable\pin_north.png" />
+    <AndroidResource Include="Resources\drawable\pin_south.png" />
+    <AndroidResource Include="Resources\drawable\pin_start.png" />
+    <AndroidResource Include="Resources\drawable\pin_T1.png" />
+    <AndroidResource Include="Resources\drawable\pin_T2.png" />
+    <AndroidResource Include="Resources\drawable\pin_west.png" />
+    <AndroidResource Include="Resources\layout\item_PointInfoView.axml" />
+    <AndroidResource Include="Resources\drawable\pin_me.png" />
+    <AndroidResource Include="Resources\drawable\pin_pfinish.png" />
+    <AndroidResource Include="Resources\drawable\pin_pstart.png" />
+    <AndroidResource Include="Resources\layout\SelectPTypeActivity.axml" />
+    <AndroidResource Include="Resources\drawable\bg_performance.png" />
+    <AndroidResource Include="Resources\values\attr.xml" />
+    <AndroidResource Include="Resources\drawable\icon_home.png" />
+    <None Include="Web References\trackSvc\Service1.xsd" />
+    <None Include="Web References\trackSvc\Service10.xsd" />
+    <None Include="Web References\trackSvc\Service11.xsd" />
+    <None Include="Web References\trackSvc\Service12.xsd" />
+    <None Include="Web References\trackSvc\Service13.xsd" />
+    <None Include="Web References\trackSvc\Service1.wsdl" />
+    <None Include="Web References\trackSvc\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <AndroidResource Include="Resources\drawable\timer_new.png" />
+    <AndroidResource Include="Resources\drawable\icon_check2.png" />
+    <AndroidResource Include="Resources\drawable\icon_clock.png" />
+    <AndroidResource Include="Resources\drawable\icon_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+		<Target Name="BeforeBuild">
+		</Target>
+		<Target Name="AfterBuild">
+		</Target>
+ -->
+  <ItemGroup>
+    <WCFMetadata Include="Service References" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\Service1" />
+    <WCFMetadataStorage Include="Service References\go_heja.com" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Activities\" />
+    <Folder Include="Utility\" />
+    <Folder Include="Adapter\" />
+    <Folder Include="Resources\Anim\" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="googleplayservices-maps">
+      <Version>29.0.0.2</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="AndHUD">
+      <Version>1.3.1</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PortableLibrary\PortableLibrary.csproj">
+      <Project>{E68B197F-245C-4D29-874D-7B9A6D6A58F7}</Project>
+      <Name>PortableLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://go-heja.com/Service1.svc?wsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\trackSvc</RelPath>
+      <UpdateFromURL>http://go-heja.com/Service1.svc?wsdl</UpdateFromURL>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Basement.29.0.0.2\build\Xamarin.GooglePlayServices.Basement.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Basement.29.0.0.2\build\Xamarin.GooglePlayServices.Basement.targets')" />
+</Project>

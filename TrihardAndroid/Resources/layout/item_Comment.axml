@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ActionEventDetail">
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3"
+            android:gravity="center_vertical">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:minWidth="25px"
+                android:minHeight="25px"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout4"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:text="David Smith"
+                    android:id="@+id/lblAuthorName"
+                    android:textColor="#ffffffff"
+                    android:textSize="14dp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:text="2:34 pm | 8/8/2016"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lblCommentDate"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:textSize="13dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="#ffffffff" />
+            </LinearLayout>
+            <TextView
+                android:text="this is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblComment"
+                android:textColor="#ffffffff"
+                android:textSize="14dp"
+                android:textStyle="normal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="20dp" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:minWidth="25px"
+                android:minHeight="25px"
+                android:id="@+id/linearLayout5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#ff1e1e1e" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

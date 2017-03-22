@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XCalendarSample", "XCalendarSample\XCalendarSample.csproj", "{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Release|iPhone = Release|iPhone
+		Ad-Hoc|iPhone = Ad-Hoc|iPhone
+		AppStore|iPhone = AppStore|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Debug|iPhone.Build.0 = Debug|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Release|iPhone.ActiveCfg = Release|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Release|iPhone.Build.0 = Release|iPhone
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{DDC9CBF2-3353-44DC-8B03-7F451DC33F99}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabsToSpaces = False
+		$2.inheritsSet = VisualStudio
+		$2.inheritsScope = text/plain
+		$2.scope = text/plain
+		$0.StandardHeader = $3
+		$3.Text = 
+		$3.IncludeInNewFiles = False
+		version = 1.0
+	EndGlobalSection
+EndGlobal

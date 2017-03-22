@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string></string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>MinimumOSVersion</key>
+	<string>9.0</string>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>Main</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>fetch</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>You are about to use location!</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Go-heja application will continue reporting your location in the background until you press ‘Stop’ to end your workout . This is for your safety and for your coach to monitor you.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.go-heja.trihard</string>
+	<key>UIRequiresFullScreen</key>
+	<string>YES</string>
+	<key>com.apple.developer.healthkit</key>
+	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Go-heja application will access your calendar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Take a Profile Photo and Workout Images</string>
+	<key>Custom Property</key>
+	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Take a Profile Photo and Workout Images from Camera Roll</string>
+	<key>NSLocationUsageDescription</key>
+	<string>You are about to use location!</string>
+	<key>NSLocationAlwasyUsageDescription</key>
+	<string>Go-heja application will continue reporting your location in the background until you press ‘Stop’ to end your workout . This is for your safety and for your coach to monitor you.</string>
+	<key>Custom Property1</key>
+	<string></string>
+	<key>XSAppIconAssets</key>
+	<string>Resources/Images.xcassets/AppIcons.appiconset</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>waze</string>
+	</array>
+	<key>CFBundleShortVersionString</key>
+	<string>3.0.0</string>
+	<key>CFBundleName</key>
+	<string>Trihard</string>
+</dict>
+</plist>

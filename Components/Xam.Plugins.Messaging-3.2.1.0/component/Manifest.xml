@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component format="1" id="Xam.Plugins.Messaging" is-shell="true">
+  <name>Messaging Plugin for Xamarin and Windows</name>
+  <publisher>Carel Lotz</publisher>
+  <publisher-url>http://www.twitter.com/cjlotz</publisher-url>
+  <src-url>https://github.com/cjlotz/Xamarin.Plugins</src-url>
+  <version>3.2.1.0</version>
+  <summary>Xamarin and Windows plugin to make phone call, send sms or send an e-mail.</summary>
+  <packages>
+    <package id="Xam.Plugins.Messaging" version="3.2.1.0" framework="winphone-8.1" />
+    <package id="Xam.Plugins.Messaging" version="3.2.1.0" framework="ios-unified" />
+    <package id="Xam.Plugins.Messaging" version="3.2.1.0" framework="android" />
+    <package id="Xam.Plugins.Messaging" version="3.2.1.0" framework="winphone-8.0" />
+    <package id="Xam.Plugins.Messaging" version="3.2.1.0" framework="ios" />
+    <package id="Xam.Plugins.Messaging" version="3.2.1.0" framework="mobile" />
+  </packages>
+  <samples>
+    <sample id="Plugin.Messaging.Samples">
+      <name>Messaging Samples (iOS, Android and Windows)</name>
+      <summary>Messaging Samples (iOS, Android and Windows)</summary>
+    </sample>
+  </samples>
+</component>

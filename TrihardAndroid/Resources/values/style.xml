@@ -1,0 +1,28 @@
+﻿<resources>
+    <style name="MyTheme.Splash" parent="android:Theme">
+        <item name="android:windowBackground">@drawable/splash_new</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+  <style name="BlackEditBox" parent="android:Theme">
+    <item name="android:paddingBottom">5dp</item>
+    <item name="android:textColor">#ffffff</item>
+    <item name="android:textColorHint">#ffffff</item>
+	<item name="android:background">@android:color/transparent</item>
+    <item name="android:textSize">12dp</item>
+  </style>
+	
+  <style name="BlackEditBoxWithImage" parent="android:Theme">
+    <item name="android:paddingLeft">5dp</item>
+    <item name="android:paddingBottom">5dp</item>
+    <item name="android:textColor">#ffffff</item>
+    <item name="android:textColorHint">#ffffff</item>
+	<item name="android:background">@android:color/transparent</item>
+    <item name="android:textSize">12dp</item>
+  </style>
+	
+  <style name="EditBoxIcon" parent="android:Theme">
+    <item name="android:scaleType">fitCenter</item>
+	<item name="android:paddingBottom">5dp</item>
+  </style>
+</resources>
