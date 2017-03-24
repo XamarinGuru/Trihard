@@ -7,7 +7,7 @@ namespace PortableLibrary
 		public const int MAP_ZOOM_LEVEL = 15;
 
 		#region specification for each group
-		public const string SPEC_GROUP_TYPE = "lamdan" ;
+		public const string SPEC_GROUP_TYPE = "trihard" ;
 		public const string DEVICE_CALENDAR_TITLE = "Trihard Calendar";
 		public const string GROUP_COLOR = "AD3290";
 		public const string PATH_USER_IMAGE = "data/goheja.trihard.com/files/me.png";
