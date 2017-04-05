@@ -43,27 +43,35 @@ namespace goheja
 
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			try
 			{
-				ShowLoadingView(Constants.MSG_LOADING_EVENT_DETAIL);
 
-				var eventDetail = GetEventDetail(selectedEvent._id);
-				var eventTotal = GetEventTotals(selectedEvent._id);
-				var eventComment = GetComments(selectedEvent._id);
-
-				AppSettings.selectedEvent = eventDetail;
-				AppSettings.selectedEvent._id = selectedEvent._id;
-				AppSettings.currentEventTotal = eventTotal;
-
-				RunOnUiThread(() =>
+				System.Threading.ThreadPool.QueueUserWorkItem(delegate
 				{
-					InitBindingEventData(eventDetail);
-					InitBindingEventTotal(eventTotal);
-					InitBindingEventComments(eventComment);
-				});
+					ShowLoadingView(Constants.MSG_LOADING_EVENT_DETAIL);
 
-				HideLoadingView();
-			});
+					var eventDetail = GetEventDetail(selectedEvent._id);
+					var eventTotal = GetEventTotals(selectedEvent._id);
+					var eventComment = GetComments(selectedEvent._id);
+
+					AppSettings.selectedEvent = eventDetail;
+					AppSettings.selectedEvent._id = selectedEvent._id;
+					AppSettings.currentEventTotal = eventTotal;
+
+					RunOnUiThread(() =>
+					{
+						InitBindingEventData(eventDetail);
+						InitBindingEventTotal(eventTotal);
+						InitBindingEventComments(eventComment);
+					});
+
+					HideLoadingView();
+				});
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 		}
 
 		void InitUISettings(GoHejaEvent selectedEvent)
@@ -175,9 +183,9 @@ namespace goheja
 						break;
 				}
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -207,9 +215,9 @@ namespace goheja
 				CompareEventResult(fDuration, TotalSecFromString(eventTotal.totals[2].value), lblPDuration, lblTDuration);
 				CompareEventResult(fLoad, ConvertToFloat(eventTotal.totals[7].value), lblPLoad, lblTload);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -235,9 +243,9 @@ namespace goheja
 					contentComment.AddView(commentView);
 				}
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 

@@ -83,9 +83,9 @@ namespace goheja
 
 				SetBitmapImg();
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(Activity, err.ToString(), ToastLength.Long).Show();
+				rootActivity.ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -155,9 +155,9 @@ namespace goheja
 					rootActivity.SaveUserImage(bitmapByteData);
 				}
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(Activity, err.ToString(), ToastLength.Long).Show();
+				rootActivity.ShowTrackMessageBox(ex.Message);
 			}
         }
 
@@ -178,9 +178,9 @@ namespace goheja
                 s2.Close();
                 GC.Collect();
             }
-            catch (Exception err)
+            catch (Exception ex)
             {
-                Toast.MakeText(Activity, err.ToString(), ToastLength.Long).Show();
+                rootActivity.ShowTrackMessageBox(ex.Message);
             }
         }
         private Bitmap NGetBitmap(Android.Net.Uri uriImage)
@@ -189,7 +189,7 @@ namespace goheja
             mBitmap = MediaStore.Images.Media.GetBitmap(Activity.ContentResolver, uriImage);
             return mBitmap;
         }
-        private static Bitmap GetRoundedCornerBitmap(Bitmap bitmap, int pixels)
+        private Bitmap GetRoundedCornerBitmap(Bitmap bitmap, int pixels)
         {
             Bitmap output = null;
 
@@ -212,22 +212,31 @@ namespace goheja
                 paint.SetXfermode(new PorterDuffXfermode(PorterDuff.Mode.SrcIn));
                 canvas.DrawBitmap(bitmap, rect, rect, paint);
             }
-            catch
+			catch(Exception ex)
             {
-				return null;
+				rootActivity.ShowTrackMessageBox(ex.Message);
             }
 
             return output;
         }
 
-        public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, bool filter)
+        public Bitmap scaleDown(Bitmap realImage, float maxImageSize, bool filter)
         {
-            float ratio = Math.Min((float)maxImageSize / realImage.Width, (float)maxImageSize / realImage.Width);
-            int width = (int)Math.Round((float)ratio * realImage.Width);
-            int height = (int)Math.Round((float)ratio * realImage.Width);
+			Bitmap result = null;
 
-            Bitmap newBitmap = Bitmap.CreateScaledBitmap(realImage, width, height, filter);
-            return newBitmap;
+			try
+			{
+				float ratio = Math.Min((float)maxImageSize / realImage.Width, (float)maxImageSize / realImage.Width);
+				int width = (int)Math.Round((float)ratio * realImage.Width);
+				int height = (int)Math.Round((float)ratio * realImage.Width);
+
+				result = Bitmap.CreateScaledBitmap(realImage, width, height, filter);
+			}
+			catch (Exception ex)
+			{
+				rootActivity.ShowTrackMessageBox(ex.Message);
+			}
+            return result;
         }
         void SetBitmapImg()
         {

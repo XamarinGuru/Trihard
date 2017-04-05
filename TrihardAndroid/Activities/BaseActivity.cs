@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Android.App;
 using Android.Content;
@@ -81,15 +82,15 @@ namespace goheja
 			});
 		}
 
-		public void ShowMessageBox(string title, string message, string cancelButton, string[] otherButtons, Action successHandler)
+		public void ShowMessageBox(string title, string message, string titleOKBtn, string titleCancelBtn, Action successHandler)
 		{
 			alert = new AlertDialog.Builder(this);
 			alert.SetTitle(title);
 			alert.SetMessage(message);
-			alert.SetPositiveButton("Cancel", (senderAlert, args) =>
+			alert.SetPositiveButton(titleCancelBtn, (senderAlert, args) =>
 			{
 			});
-			alert.SetNegativeButton("OK", (senderAlert, args) =>
+			alert.SetNegativeButton(titleOKBtn, (senderAlert, args) =>
 			{
 				successHandler();
 			});
@@ -99,10 +100,20 @@ namespace goheja
 			});
 		}
 
-		//public void ShowMessageBox(string title, string message)
-		//{
-		//	ShowMessageBox(title, message, "Ok", null, null);
-		//}
+		public void ShowTrackMessageBox(string trackMsg, [CallerFilePath] string filePath = null, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string caller = null)
+		{
+			alert = new AlertDialog.Builder(this);
+			alert.SetTitle("");
+			alert.SetMessage(Constants.MSG_COMMON);
+			alert.SetNegativeButton("OK", (senderAlert, args) =>
+			{
+				TrackErrorIntoServer(trackMsg, filePath, lineNumber, caller);
+			});
+			RunOnUiThread(() =>
+			{
+				alert.Show();
+			});
+		}
 
 		public void ShowMessageBox(string title, string message, bool isFinish = false)
 		{
@@ -110,7 +121,10 @@ namespace goheja
 			alert.SetTitle(title);
 			alert.SetMessage(message);
 			alert.SetCancelable(false);
-			alert.SetPositiveButton("OK", delegate { if (isFinish) Finish(); });
+			alert.SetPositiveButton("OK", delegate {
+				if (isFinish)
+					CloseApplication();
+			});
 			RunOnUiThread(() =>
 			{
 				alert.Show();
@@ -130,6 +144,7 @@ namespace goheja
 			Finish();
 		}
 
+#region error handling
 		public bool IsNetEnable()
 		{
 			ConnectivityManager connectivityManager = (ConnectivityManager)GetSystemService(ConnectivityService);
@@ -138,37 +153,82 @@ namespace goheja
 
 			if (!isOnline)
 			{
-				ShowMessageBox(null, Constants.MSG_NO_INTERNET);
+				ShowMessageBox(null, Constants.MSG_NO_INTERNET, true);
 				return false;
 			}
 			return true;
 		}
+
+		void TrackErrorIntoServer(string msgError, string filePath, int lineNumber, string caller)
+		{
+			var dateTime = DateTime.Now.ToString();
+			var userId = GetUserID();
+			var deviceModel = GetDeviceModel();
+			var errorDetail = string.Format(Constants.MSG_TRACK_ERROR_DETAIL, msgError, filePath, lineNumber, caller);
+			var msg = string.Format(Constants.MSG_TRACK_ERROR, dateTime, userId, deviceModel, Constants.SPEC_GROUP_TYPE, errorDetail);
+
+			ShowLoadingView(Constants.MSG_TRAKING_ERROR);
+
+			mTrackSvc.specLog(msg);
+
+			HideLoadingView();
+
+			CloseApplication();
+		}
+
+		public string GetDeviceModel()
+		{
+			string manufacturer = Build.Manufacturer;
+			string model = Build.Model;
+			return string.Format("{0} {1}", Build.Manufacturer, Android.OS.Build.Model);
+		}
+
+		void CloseApplication()
+		{
+			FinishAffinity();
+			Process.KillProcess(Process.MyPid());
+		}
+#endregion
 
 		#region integrate with web reference
 
 		#region USER_MANAGEMENT
 		public string RegisterUser(string fName, string lName, string deviceId, string userName, string psw, string email, int age, bool ageSpecified = true, bool acceptedTerms = true, bool acceptedTermsSpecified = true)
 		{
-			var result = mTrackSvc.insertNewDevice(fName, lName, deviceId, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
+			string result = "";
+
+			try
+			{
+				result = mTrackSvc.insertNewDevice(fName, lName, deviceId, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
+			}
+			catch(Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 			return result;
 		}
 
 		public bool LoginUser(string email, string password)
 		{
+			string userID = "0";
+
 			try
 			{
-				var userID = mTrackSvc.getListedDeviceId(email, password, Constants.SPEC_GROUP_TYPE);
+				userID = mTrackSvc.getListedDeviceId(email, password, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 
-				if (userID == "0")
-					return false;
-
+			if (userID == "0")
+			{
+				return false;
+			}
+			else
+			{
 				AppSettings.UserID = userID;
 				return true;
-			}
-			catch (Exception err)
-			{
-				ShowMessageBox(null, err.Message);
-				return false;
 			}
 		}
 
@@ -183,34 +243,35 @@ namespace goheja
 
 		public string GetCode(string email)
 		{
+			string result = "0";
+
 			try
 			{
-				var response = mTrackSvc.getCode(email, Constants.SPEC_GROUP_TYPE);
-
-				return response;
+				result = mTrackSvc.getCode(email, Constants.SPEC_GROUP_TYPE);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public int ResetPassword(string email, string password)
 		{
+			int result = 0;
+
 			try
 			{
-				int result = 0;
 				bool resultSpecified = false;
 				mTrackSvc.restPasword(email, password, Constants.SPEC_GROUP_TYPE, out result, out resultSpecified);
-
-				return result;
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return 0;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public string GetUserID()
@@ -228,42 +289,52 @@ namespace goheja
 
 				if (userID != "0")
 					AppSettings.UserID = userID;
-
-				return userID;
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return "0";
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return userID;
 		}
 
 		public RootMember GetUserObject()
 		{
+			RootMember result = new RootMember();
+
 			var userID = GetUserID();
 
 			try
 			{
 				var objUser = mTrackSvc.getUsrObject(userID, Constants.SPEC_GROUP_TYPE);
 				var jsonUser = FormatJsonType(objUser.ToString());
-				RootMember rootMember = JsonConvert.DeserializeObject<RootMember>(jsonUser);
-				return rootMember;
+				result = JsonConvert.DeserializeObject<RootMember>(jsonUser);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
-			return null;
+
+			return result;
 		}
 
 		public string UpdateUserDataJson(RootMember updatedUserObject, string updatedById = null)
 		{
-			var userID = GetUserID();
-			var jsonUser = JsonConvert.SerializeObject(updatedUserObject);
-			Console.WriteLine(jsonUser);
-			updatedById = userID;
-			var result = mTrackSvc.updateUserDataJson(userID, jsonUser, updatedById, Constants.SPEC_GROUP_TYPE);
+			string result = "";
+
+			try
+			{
+				var userID = GetUserID();
+				var jsonUser = JsonConvert.SerializeObject(updatedUserObject);
+				Console.WriteLine(jsonUser);
+				updatedById = userID;
+				result = mTrackSvc.updateUserDataJson(userID, jsonUser, updatedById, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
 			return result;
 		}
 		#endregion
@@ -271,132 +342,156 @@ namespace goheja
 		#region USER_GAUGE & PERFORMANCE DATA
 		public Gauge GetGauge()
 		{
+			Gauge result = new Gauge();
+
 			var userID = GetUserID();
 
 			try
 			{
 				var strGauge = mTrackSvc.getGaugeMob(DateTime.Now, true, userID, null, Constants.SPEC_GROUP_TYPE, null, "5");
-				Gauge gaugeObject = JsonConvert.DeserializeObject<Gauge>(strGauge);
-				return gaugeObject;
+				result = JsonConvert.DeserializeObject<Gauge>(strGauge);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
-			return null;
+
+			return result;
 		}
 
 		public ReportGraphData GetPerformance()
 		{
+			ReportGraphData result = new ReportGraphData();
+
 			var userID = GetUserID();
 
 			try
 			{
 				var strPerformance = mTrackSvc.getUserPmc(userID, Constants.SPEC_GROUP_TYPE);
-				var performanceObject = JsonConvert.DeserializeObject<ReportGraphData>(strPerformance.ToString());
-				return performanceObject;
+				result = JsonConvert.DeserializeObject<ReportGraphData>(strPerformance.ToString());
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
-			return null;
+
+			return result;
 		}
 
 		public PerformanceDataForDate GetPerformanceForDate(DateTime date)
 		{
+			PerformanceDataForDate result = new PerformanceDataForDate();
+
 			var userID = GetUserID();
 
 			try
 			{
 				var strPerformance = mTrackSvc.getPerformanceFordate(userID, date, true, Constants.SPEC_GROUP_TYPE);
-				var performanceObject = JsonConvert.DeserializeObject<PerformanceDataForDate>(strPerformance.ToString());
-				return performanceObject;
+				result = JsonConvert.DeserializeObject<PerformanceDataForDate>(strPerformance.ToString());
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
-			return null;
+
+			return result;
 		}
 		#endregion
 
 		#region EVENT_MANAGEMENT
 		public List<GoHejaEvent> GetPastEvents()
 		{
+			List<GoHejaEvent> result = new List<GoHejaEvent>();
+
 			try
 			{
 				var strPastEvents = mTrackSvc.getUserCalendarPast(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strPastEvents));
-				return CastGoHejaEvents(eventsData);
+				result = CastGoHejaEvents(eventsData);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public List<GoHejaEvent> GetTodayEvents()
 		{
+			List<GoHejaEvent> result = new List<GoHejaEvent>();
+
 			try
 			{
 				var strTodayEvents = mTrackSvc.getUserCalendarToday(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strTodayEvents));
-				return CastGoHejaEvents(eventsData);
+				result = CastGoHejaEvents(eventsData);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public List<GoHejaEvent> GetFutureEvents()
 		{
+			List<GoHejaEvent> result = new List<GoHejaEvent>();
+
 			try
 			{
 				var strFutureEvents = mTrackSvc.getUserCalendarFuture(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strFutureEvents));
-				return CastGoHejaEvents(eventsData);
+				result = CastGoHejaEvents(eventsData);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public GoHejaEvent GetEventDetail(string eventID)
 		{
+			GoHejaEvent result = new GoHejaEvent();
+
 			try
 			{
 				var strEventDetail = mTrackSvc.getEventMob(eventID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strEventDetail.ToString()));
-				return CastGoHejaEvents(eventsData)[0];
+				result = CastGoHejaEvents(eventsData)[0];
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				//ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
+				//return null;
 			}
+
+			return result;
 		}
 
 		public List<GoHejaEvent> CastGoHejaEvents(JArray events)
 		{
-
 			var returnEvents = new List<GoHejaEvent>();
 
 			if (events == null) return returnEvents;
 
-			foreach (var eventJson in events)
+			try
 			{
-				GoHejaEvent goHejaEvent = JsonConvert.DeserializeObject<GoHejaEvent>(eventJson.ToString());
-				returnEvents.Add(goHejaEvent);
+				foreach (var eventJson in events)
+				{
+					GoHejaEvent goHejaEvent = JsonConvert.DeserializeObject<GoHejaEvent>(eventJson.ToString());
+					returnEvents.Add(goHejaEvent);
+				}
 			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
 			return returnEvents;
 		}
 
@@ -410,8 +505,8 @@ namespace goheja
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
+				//return null;
 			}
 			return eventTotal;
 		}
@@ -426,8 +521,8 @@ namespace goheja
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
+				//return null;
 			}
 			return eventMarkers;
 		}
@@ -442,8 +537,8 @@ namespace goheja
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
+				//return null;
 			}
 			return eventMarkers;
 		}
@@ -494,7 +589,7 @@ namespace goheja
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
+				//ShowTrackMessageBox(ex.Message);
 				return null;
 			}
 			return returnTPoints;
@@ -515,7 +610,7 @@ namespace goheja
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
+				//ShowTrackMessageBox(ex.Message);
 				return null;
 			}
 			return comment;
@@ -523,16 +618,18 @@ namespace goheja
 
 		public object SetComment(string author, string authorId, string commentText, string eventId)
 		{
+			object result = new object();
+
 			try
 			{
-				var response = mTrackSvc.setComments(author, authorId, commentText, eventId, Constants.SPEC_GROUP_TYPE);
-				return response;
+				result = mTrackSvc.setComments(author, authorId, commentText, eventId, Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public void UpdateMemberNotes(string notes, string userID, string eventId, string username, string attended, string duration, string distance, string trainScore, string type)
@@ -540,30 +637,16 @@ namespace goheja
 			try
 			{
 				var response = mTrackSvc.updateMeberNotes(notes, userID, eventId, username, attended, duration, distance, trainScore, type, Constants.SPEC_GROUP_TYPE);
-				//return response;
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
-				return;
-			}
-		}
-
-		public void SaveUserImage(byte[] fileBytes)
-		{
-			try
-			{
-				var response = mTrackSvc.saveUserImage(AppSettings.UserID, fileBytes, Constants.SPEC_GROUP_TYPE);
-			}
-			catch (Exception err)
-			{
-				ShowMessageBox(null, "Save error\n" + err.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
 		public void UpdateMomgoData(string name,
 					string loc,
-					System.DateTime time,
+					DateTime time,
 					bool timeSpecified,
 					string deviceID,
 					float speed,
@@ -581,126 +664,208 @@ namespace goheja
 					string eventType,
 					string specGroup)
 		{
-			mTrackSvc.updateMomgoDataAsync(name, loc, time, timeSpecified, deviceID, speed, speedSpecified, id, country, dist, distSpecified, alt, altSpecified, bearing, bearingSpecified, recordType, recordTypeSpecified, eventType, specGroup, null);
+			try
+			{
+				mTrackSvc.updateMomgoDataAsync(name, loc, time, timeSpecified, deviceID, speed, speedSpecified, id, country, dist, distSpecified, alt, altSpecified, bearing, bearingSpecified, recordType, recordTypeSpecified, eventType, specGroup, null);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 		}
 		#endregion
 
 		public string GetTypeStrFromID(string typeID)
 		{
-			return Constants.PRACTICE_TYPES[int.Parse(typeID) - 1];
+			string result = "";
+
+			try
+			{
+				result = Constants.PRACTICE_TYPES[int.Parse(typeID) - 1];
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 		public string GetTypeIDFromStr(string typeStr)
 		{
-			return (Array.IndexOf(Constants.PRACTICE_TYPES, typeStr) + 1).ToString();
+			string result = "";
+
+			try
+			{
+				result = (Array.IndexOf(Constants.PRACTICE_TYPES, typeStr) + 1).ToString();
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 
 		public double DistanceAtoB(TPoint pA, TPoint pB)
 		{
-			Location pointA = new Location("");
-			pointA.Latitude = pA.Latitude;
-			pointA.Longitude = pA.Longitude;
+			double result = 0;
 
-			Location pointB = new Location("");
-			pointB.Latitude = pB.Latitude;
-			pointB.Longitude = pB.Longitude;
+			try
+			{
+				Location pointA = new Location("");
+				pointA.Latitude = pA.Latitude;
+				pointA.Longitude = pA.Longitude;
 
-			float distance = pointA.DistanceTo(pointB);
+				Location pointB = new Location("");
+				pointB.Latitude = pB.Latitude;
+				pointB.Longitude = pB.Longitude;
 
-			return distance;
+				result = pointA.DistanceTo(pointB);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 
 		public void CompareEventResult(float planned, float total, TextView lblPlanned, TextView lblTotal)
 		{
-			if (planned == total || planned == 0 || total == 0)
+			try
 			{
-				lblPlanned.SetTextColor(COLOR_ORANGE);
-				lblTotal.SetTextColor(COLOR_ORANGE);
-				return;
-			}
+				if (planned == total || planned == 0 || total == 0)
+				{
+					lblPlanned.SetTextColor(COLOR_ORANGE);
+					lblTotal.SetTextColor(COLOR_ORANGE);
+					return;
+				}
 
-			if (planned > total)
-			{
-				var delta = (planned - total) / total;
-				if (delta < 0.15)
+				if (planned > total)
 				{
-					lblPlanned.SetTextColor(COLOR_ORANGE);
-					lblTotal.SetTextColor(COLOR_ORANGE);
+					var delta = (planned - total) / total;
+					if (delta < 0.15)
+					{
+						lblPlanned.SetTextColor(COLOR_ORANGE);
+						lblTotal.SetTextColor(COLOR_ORANGE);
+					}
+					else
+					{
+						lblPlanned.SetTextColor(COLOR_BLUE);
+						lblTotal.SetTextColor(COLOR_BLUE);
+					}
 				}
-				else {
-					lblPlanned.SetTextColor(COLOR_BLUE);
-					lblTotal.SetTextColor(COLOR_BLUE);
+				else if (planned < total)
+				{
+					var delta = (total - planned) / planned;
+					if (delta < 0.15)
+					{
+						lblPlanned.SetTextColor(COLOR_ORANGE);
+						lblTotal.SetTextColor(COLOR_ORANGE);
+					}
+					else
+					{
+						lblPlanned.SetTextColor(COLOR_RED);
+						lblTotal.SetTextColor(COLOR_RED);
+					}
 				}
 			}
-			else if (planned < total)
+			catch (Exception ex)
 			{
-				var delta = (total - planned) / planned;
-				if (delta < 0.15)
-				{
-					lblPlanned.SetTextColor(COLOR_ORANGE);
-					lblTotal.SetTextColor(COLOR_ORANGE);
-				}
-				else {
-					lblPlanned.SetTextColor(COLOR_RED);
-					lblTotal.SetTextColor(COLOR_RED);
-				}
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
 		public bool ValidateUserNickName(string nickName)
 		{
-			var validate = mTrackSvc.validateNickName(nickName, Constants.SPEC_GROUP_TYPE);
-			if (validate != "1")
+			string result = "0";
+
+			try
 			{
-				return true;
+				result = mTrackSvc.validateNickName(nickName, Constants.SPEC_GROUP_TYPE);
 			}
-			else {
-				return false;
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result == "1" ? false : true;
 		}
 
 		private string FormatJsonType(string jsonData)
 		{
-			var returnString = jsonData.Replace(Constants.INVALID_JSONS1[0], "\"");
-			returnString = returnString.Replace(Constants.INVALID_JSONS1[1], "\"");
-			returnString = returnString.Replace(Constants.INVALID_JSONS1[2], "\"");
+			string result = "";
+			try
+			{
+				var returnString = jsonData.Replace(Constants.INVALID_JSONS1[0], "\"");
+				returnString = returnString.Replace(Constants.INVALID_JSONS1[1], "\"");
+				result = returnString.Replace(Constants.INVALID_JSONS1[2], "\"");
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 
-			return returnString;
+			return result;
 		}
 
 		public string FormatEventDescription(string rawString)
 		{
 			if (rawString == "") return rawString;
 
-			int startIndex = rawString.IndexOf("<textarea");
-			int endIndex = rawString.IndexOf(">");
+			string result = "";
 
-			if (startIndex < 0 || endIndex < 0) return rawString;
+			try
+			{
+				int startIndex = rawString.IndexOf("<textarea");
+				int endIndex = rawString.IndexOf(">");
 
-			int count = endIndex - startIndex;
+				if (startIndex < 0 || endIndex < 0) return rawString;
 
-			var theString = new StringBuilder(rawString);
-			theString.Remove(startIndex, count);
+				int count = endIndex - startIndex;
 
-			var returnString = theString.ToString();
-			returnString = returnString.Replace("</textarea><br/>", "");
-			return returnString;
+				var theString = new StringBuilder(rawString);
+				theString.Remove(startIndex, count);
+
+				var returnString = theString.ToString();
+				result = returnString.Replace("</textarea><br/>", "");
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 
 		public int GetFormatedDurationAsMin(string strTime)
 		{
 			if (strTime == "") return 0;
 
-			var arrTimes = strTime.Split(new char[] { ':' });
+			int result = 0;
 
-			var hrs = int.Parse(arrTimes[0]);
-			var min = int.Parse(arrTimes[1]);
+			try
+			{
+				var arrTimes = strTime.Split(new char[] { ':' });
 
-			return hrs * 60 + min;
+				var hrs = int.Parse(arrTimes[0]);
+				var min = int.Parse(arrTimes[1]);
+
+				result = hrs * 60 + min;
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 
 		public float TotalSecFromString(string strTime)
 		{
 			if (strTime == "") return 0;
+
+			float result = 0;
 
 			try
 			{
@@ -710,27 +875,34 @@ namespace goheja
 				var min = int.Parse(arrTimes[1]);
 				var sec = int.Parse(arrTimes[2]);
 
-				return hrs * 3600 + min * 60 + sec;
+				result = hrs * 3600 + min * 60 + sec;
 			}
-			catch
+			catch (Exception ex)
 			{
+				//ShowTrackMessageBox(ex.Message);
 				return 0;
 			}
+
+			return result;
 		}
 
 		public float ConvertToFloat(string value)
 		{
-			if (value == null || value == "")
-				return 0;
+			if (value == null || value == "") return 0;
+
+			float result = 0;
 
 			try
 			{
-				return float.Parse(value);
+				result = float.Parse(value);
 			}
-			catch
+			catch(Exception ex)
 			{
+				//ShowTrackMessageBox(ex.Message);
 				return 0;
 			}
+
+			return result;
 		}
 
 		public string FormatNumber(string number)
@@ -746,6 +918,18 @@ namespace goheja
 			}
 		}
 
+		public void SaveUserImage(byte[] fileBytes)
+		{
+			try
+			{
+				var response = mTrackSvc.saveUserImage(AppSettings.UserID, fileBytes, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+		}
+
 		public void MarkAsInvalide(ImageView validEmail, LinearLayout errorEmail, bool isInvalid)
 		{
 			if (validEmail != null)
@@ -757,68 +941,89 @@ namespace goheja
 
 		public Bitmap GetPinIconByType(string pointType)
 		{
-			int strPinImg = 0;
-			switch (pointType)
+			Bitmap result = null;
+
+			try
 			{
-				case "1":
-				case "START":
-					strPinImg = Resource.Drawable.pin_start;
-					break;
-				case "2":
-				case "FINISH":
-					strPinImg = Resource.Drawable.pin_finish;
-					break;
-				case "3":
-				case "CHECK_POINT":
-					strPinImg = Resource.Drawable.pin_check_mark;
-					break;
-				case "4":
-				case "CAMERA":
-					strPinImg = Resource.Drawable.pin_camera;
-					break;
-				case "5":
-				case "NORTH":
-					strPinImg = Resource.Drawable.pin_north;
-					break;
-				case "6":
-				case "EAST":
-					strPinImg = Resource.Drawable.pin_east;
-					break;
-				case "7":
-				case "SOUTH":
-					strPinImg = Resource.Drawable.pin_south;
-					break;
-				case "8":
-				case "WEST":
-					strPinImg = Resource.Drawable.pin_west;
-					break;
-				case "9":
-				case "T1":
-					strPinImg = Resource.Drawable.pin_T1;
-					break;
-				case "10":
-				case "T2":
-					strPinImg = Resource.Drawable.pin_T2;
-					break;
-				case "pSTART":
-					strPinImg = Resource.Drawable.pin_pstart;
-					break;
-				case "pFINISH":
-					strPinImg = Resource.Drawable.pin_pfinish;
-					break;
+				int strPinImg = 0;
+				switch (pointType)
+				{
+					case "1":
+					case "START":
+						strPinImg = Resource.Drawable.pin_start;
+						break;
+					case "2":
+					case "FINISH":
+						strPinImg = Resource.Drawable.pin_finish;
+						break;
+					case "3":
+					case "CHECK_POINT":
+						strPinImg = Resource.Drawable.pin_check_mark;
+						break;
+					case "4":
+					case "CAMERA":
+						strPinImg = Resource.Drawable.pin_camera;
+						break;
+					case "5":
+					case "NORTH":
+						strPinImg = Resource.Drawable.pin_north;
+						break;
+					case "6":
+					case "EAST":
+						strPinImg = Resource.Drawable.pin_east;
+						break;
+					case "7":
+					case "SOUTH":
+						strPinImg = Resource.Drawable.pin_south;
+						break;
+					case "8":
+					case "WEST":
+						strPinImg = Resource.Drawable.pin_west;
+						break;
+					case "9":
+					case "T1":
+						strPinImg = Resource.Drawable.pin_T1;
+						break;
+					case "10":
+					case "T2":
+						strPinImg = Resource.Drawable.pin_T2;
+						break;
+					case "pSTART":
+						strPinImg = Resource.Drawable.pin_pstart;
+						break;
+					case "pFINISH":
+						strPinImg = Resource.Drawable.pin_pfinish;
+						break;
+				}
+
+				result = BitmapFactory.DecodeResource(Resources, strPinImg);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
 			}
 
-			return BitmapFactory.DecodeResource(Resources, strPinImg);
+			return result;
 		}
 
-		public static Bitmap ScaleDownImg(Bitmap realImage, float maxImageSize, bool filter)
+		public Bitmap ScaleDownImg(Bitmap realImage, float maxImageSize, bool filter)
 		{
-			float ratio = Math.Min((float)maxImageSize / realImage.Width, (float)maxImageSize / realImage.Height);
-			int width = (int)Math.Round((float)ratio * realImage.Width);
-			int height = (int)Math.Round((float)ratio * realImage.Height);
+			Bitmap result = null;
 
-			Bitmap newBitmap = Bitmap.CreateScaledBitmap(realImage, width, height, filter);
-			return newBitmap;
+			try
+			{
+				float ratio = Math.Min((float)maxImageSize / realImage.Width, (float)maxImageSize / realImage.Height);
+				int width = (int)Math.Round((float)ratio * realImage.Width);
+				int height = (int)Math.Round((float)ratio * realImage.Height);
+
+				result = Bitmap.CreateScaledBitmap(realImage, width, height, filter);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 
 		#endregion
@@ -846,24 +1051,31 @@ namespace goheja
 
 		public void SetListViewHeightBasedOnChildren(ListView listView)
 		{
-			GoHejaEventAdapter listAdapter = listView.Adapter as GoHejaEventAdapter;
-			if (listAdapter == null)
-				return;
-
-			int totalHeight = 0;
-			int desiredWidth = View.MeasureSpec.MakeMeasureSpec(listView.Width, MeasureSpecMode.AtMost);
-			for (int i = 0; i < listAdapter.Count; i++)
+			try
 			{
-				View listItem = listAdapter.GetView(i, null, listView);
-				int heightSpec = View.MeasureSpec.MakeMeasureSpec(0, MeasureSpecMode.Unspecified);
-				listItem.Measure(desiredWidth, heightSpec);
-				totalHeight += listItem.MeasuredHeight;
-			}
+				GoHejaEventAdapter listAdapter = listView.Adapter as GoHejaEventAdapter;
+				if (listAdapter == null)
+					return;
 
-			ViewGroup.LayoutParams lp = listView.LayoutParameters;
-			lp.Height = totalHeight + (listView.DividerHeight * (listAdapter.Count - 1));
-			listView.LayoutParameters = lp;
-			listView.RequestLayout();
+				int totalHeight = 0;
+				int desiredWidth = View.MeasureSpec.MakeMeasureSpec(listView.Width, MeasureSpecMode.AtMost);
+				for (int i = 0; i < listAdapter.Count; i++)
+				{
+					View listItem = listAdapter.GetView(i, null, listView);
+					int heightSpec = View.MeasureSpec.MakeMeasureSpec(0, MeasureSpecMode.Unspecified);
+					listItem.Measure(desiredWidth, heightSpec);
+					totalHeight += listItem.MeasuredHeight;
+				}
+
+				ViewGroup.LayoutParams lp = listView.LayoutParameters;
+				lp.Height = totalHeight + (listView.DividerHeight * (listAdapter.Count - 1));
+				listView.LayoutParameters = lp;
+				listView.RequestLayout();
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 		}
 	}
 }

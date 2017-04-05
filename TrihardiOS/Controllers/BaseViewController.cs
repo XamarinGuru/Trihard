@@ -9,14 +9,17 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using CoreLocation;
 using CoreGraphics;
+using System.Runtime.CompilerServices;
 
 namespace location2
 {
 	public partial class BaseViewController : UIViewController
 	{
 		public UIColor GROUP_COLOR;
-		UIColor[] PATH_COLORS = { UIColor.Red, new UIColor(38/255f, 127/255f, 0, alpha: 1.0f), UIColor.Blue };
-		UIColor COLOR_ORANGE = new UIColor(red: 0.90f, green: 0.63f, blue: 0.04f, alpha: 1.0f);
+		UIColor[] PATH_COLORS = { UIColor.Red, new UIColor(38 / 255f, 127 / 255f, 0, 1.0f), UIColor.Blue };
+		UIColor COLOR_ORANGE = new UIColor(229 / 255f, 161 / 255f, 9 / 225f, 1.0f);
+		UIColor COLOR_RED = new UIColor(179 / 255f, 66 / 255f, 17 / 225f, 1.0f);
+		UIColor COLOR_BLUE = new UIColor(21 / 255f, 181 / 255f, 98 / 225f, 1.0f);
 
 		protected float scroll_amount = 0.0f;
 		protected bool moveViewUp = false;
@@ -89,10 +92,33 @@ namespace location2
 			});
 		}
 
-		//overloaded method
-		protected void ShowMessageBox(string title, string message)
+		protected void ShowTrackMessageBox(string trackMsg, [CallerFilePath] string filePath = null, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string caller = null)
 		{
-			InvokeOnMainThread(() => { ShowMessageBox(title, message, "Ok", null, null); });
+			InvokeOnMainThread(() =>
+			{
+				var alertView = new UIAlertView("", Constants.MSG_COMMON, null, "Ok", null);
+				alertView.Clicked += (sender, e) =>
+				{
+					TrackErrorIntoServer(trackMsg, filePath, lineNumber, caller);
+				};
+				alertView.Show();
+				//ShowMessageBox(title, message, "Ok", null, null); 
+			});
+		}
+
+		protected void ShowMessageBox(string title, string message, bool isFinish = false)
+		{
+			InvokeOnMainThread(() =>
+			{
+				var alertView = new UIAlertView(title, message, null, "Ok", null);
+				alertView.Clicked += (sender, e) =>
+				{
+					if (isFinish)
+						CloseApplication();
+				};
+				alertView.Show();
+				//ShowMessageBox(title, message, "Ok", null, null); 
+			});
 		}
 
 		protected bool TextFieldShouldReturn(UITextField textField)
@@ -101,48 +127,89 @@ namespace location2
 			return true;
 		}
 
+		#region error handling
 		public bool IsNetEnable()
 		{
 			bool isOnline = mConnection.IsHostReachable(Constants.URL_GOOGLE) ? true : false;
 			if (!isOnline)
 			{
-				ShowMessageBox(null, Constants.MSG_NO_INTERNET);
+				ShowMessageBox(null, Constants.MSG_NO_INTERNET, true);
 				return false;
 			}
 			return true;
 		}
 
+		void TrackErrorIntoServer(string msgError, string filePath, int lineNumber, string caller)
+		{
+			var dateTime = DateTime.Now.ToString();
+			var userId = GetUserID();
+			var deviceModel = GetDeviceModel();
+			var errorDetail = string.Format(Constants.MSG_TRACK_ERROR_DETAIL, msgError, filePath, lineNumber, caller);
+			var msg = string.Format(Constants.MSG_TRACK_ERROR, dateTime, userId, deviceModel, Constants.SPEC_GROUP_TYPE, errorDetail);
+
+			ShowLoadingView(Constants.MSG_TRAKING_ERROR);
+
+			mTrackSvc.specLog(msg);
+
+			HideLoadingView();
+
+			CloseApplication();
+			//ShowMessageBox(null, msg);
+		}
+
+		public string GetDeviceModel()
+		{
+			return new iOSHardware().GetModel(DeviceHardware.Version);
+		}
+
+		void CloseApplication()
+		{
+			System.Threading.Thread.CurrentThread.Abort();
+		}
+		#endregion
+
 		#region integrate with web reference
+
+		#region USER_MANAGEMENT
 		public string RegisterUser(string fName, string lName, string deviceId, string userName, string psw, string email, int age, bool ageSpecified = true, bool acceptedTerms = true, bool acceptedTermsSpecified = true)
 		{
+			string result = "";
+
 			try
 			{
-				var result = mTrackSvc.insertNewDevice(fName, lName, deviceId, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
-				return result;
+				result = mTrackSvc.insertNewDevice(fName, lName, deviceId, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception ex)
 			{
-				return ex.Message;
+				ShowTrackMessageBox(ex.Message);
 			}
+			return result;
 		}
+
 		public bool LoginUser(string email, string password)
 		{
+			string userID = "0";
+
 			try
 			{
-				var userID = mTrackSvc.getListedDeviceId(email, password, Constants.SPEC_GROUP_TYPE);
+				userID = mTrackSvc.getListedDeviceId(email, password, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 
-				if (userID == "0")
-					return false;
-				
+			if (userID == "0")
+			{
+				return false;
+			}
+			else
+			{
 				AppSettings.UserID = userID;
 				return true;
 			}
-			catch (Exception err)
-			{
-				ShowMessageBox(null, err.Message);
-				return false;
-			}
 		}
+
 		public void SignOutUser()
 		{
 			AppSettings.UserID = string.Empty;
@@ -154,36 +221,36 @@ namespace location2
 
 		public string GetCode(string email)
 		{
+			string result = "0";
+
 			try
 			{
-				var response = mTrackSvc.getCode(email, Constants.SPEC_GROUP_TYPE);
-
-				return response;
+				result = mTrackSvc.getCode(email, Constants.SPEC_GROUP_TYPE);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public int ResetPassword(string email, string password)
 		{
+			int result = 0;
+
 			try
 			{
-				int result = 0;
 				bool resultSpecified = false;
 				mTrackSvc.restPasword(email, password, Constants.SPEC_GROUP_TYPE, out result, out resultSpecified);
-
-				return result;
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return 0;
+				ShowTrackMessageBox(ex.Message);
 			}
-		}
 
+			return result;
+		}
 
 		public string GetUserID()
 		{
@@ -193,178 +260,216 @@ namespace location2
 
 			if (AppSettings.Email == string.Empty || AppSettings.Password == string.Empty || AppSettings.Email == null || AppSettings.Password == null)
 				return "0";
-			
+
 			try
 			{
 				userID = mTrackSvc.getListedDeviceId(AppSettings.Email, AppSettings.Password, Constants.SPEC_GROUP_TYPE);
 
 				if (userID != "0")
 					AppSettings.UserID = userID;
-				
-				return userID;
-			}
-			catch (Exception err)
-			{
-				ShowMessageBox(null, err.Message);
-				return "0";
-			}
-		}
-
-		public Gauge GetGauge()
-		{
-			var userID = GetUserID();
-
-			try
-			{
-				var strGauge = mTrackSvc.getGaugeMob(DateTime.Now, true, userID, null, Constants.SPEC_GROUP_TYPE, null, "5");
-				Gauge gaugeObject = JsonConvert.DeserializeObject<Gauge>(strGauge);
-				return gaugeObject;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
-			return null;
-		}
 
-		public ReportGraphData GetPerformance()
-		{
-			var userID = GetUserID();
-
-			try
-			{
-				var strPerformance = mTrackSvc.getUserPmc(userID, Constants.SPEC_GROUP_TYPE);
-				var performanceObject = JsonConvert.DeserializeObject<ReportGraphData>(strPerformance.ToString());
-				return performanceObject;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
-			}
-			return null;
-		}
-
-		public PerformanceDataForDate GetPerformanceForDate(DateTime date)
-		{
-			var userID = GetUserID();
-
-			try
-			{
-				var strPerformance = mTrackSvc.getPerformanceFordate(userID, date, true, Constants.SPEC_GROUP_TYPE);
-				var performanceObject = JsonConvert.DeserializeObject<PerformanceDataForDate>(strPerformance.ToString());
-				return performanceObject;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
-			}
-			return null;
+			return userID;
 		}
 
 		public RootMember GetUserObject()
 		{
+			RootMember result = new RootMember();
+
 			var userID = GetUserID();
 
 			try
 			{
 				var objUser = mTrackSvc.getUsrObject(userID, Constants.SPEC_GROUP_TYPE);
 				var jsonUser = FormatJsonType(objUser.ToString());
-				RootMember rootMember = JsonConvert.DeserializeObject<RootMember>(jsonUser);
-				return rootMember;
+				result = JsonConvert.DeserializeObject<RootMember>(jsonUser);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
-				ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 			}
-			return null;
+
+			return result;
 		}
 
 		public string UpdateUserDataJson(RootMember updatedUserObject, string updatedById = null)
 		{
+			string result = "";
+
+			try
+			{
+				var userID = GetUserID();
+				var jsonUser = JsonConvert.SerializeObject(updatedUserObject);
+				Console.WriteLine(jsonUser);
+				updatedById = userID;
+				result = mTrackSvc.updateUserDataJson(userID, jsonUser, updatedById, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
+		}
+		#endregion
+
+		#region USER_GAUGE & PERFORMANCE DATA
+		public Gauge GetGauge()
+		{
+			Gauge result = new Gauge();
+
 			var userID = GetUserID();
-			var jsonUser = JsonConvert.SerializeObject(updatedUserObject);
-			Console.WriteLine(jsonUser);
-			updatedById = userID;
-			var result = mTrackSvc.updateUserDataJson(userID, jsonUser, updatedById, Constants.SPEC_GROUP_TYPE);
+
+			try
+			{
+				var strGauge = mTrackSvc.getGaugeMob(DateTime.Now, true, userID, null, Constants.SPEC_GROUP_TYPE, null, "5");
+				result = JsonConvert.DeserializeObject<Gauge>(strGauge);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
 			return result;
 		}
 
+		public ReportGraphData GetPerformance()
+		{
+			ReportGraphData result = new ReportGraphData();
+
+			var userID = GetUserID();
+
+			try
+			{
+				var strPerformance = mTrackSvc.getUserPmc(userID, Constants.SPEC_GROUP_TYPE);
+				result = JsonConvert.DeserializeObject<ReportGraphData>(strPerformance.ToString());
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
+		}
+
+		public PerformanceDataForDate GetPerformanceForDate(DateTime date)
+		{
+			PerformanceDataForDate result = new PerformanceDataForDate();
+
+			var userID = GetUserID();
+
+			try
+			{
+				var strPerformance = mTrackSvc.getPerformanceFordate(userID, date, true, Constants.SPEC_GROUP_TYPE);
+				result = JsonConvert.DeserializeObject<PerformanceDataForDate>(strPerformance.ToString());
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
+		}
+		#endregion
+
+		#region EVENT_MANAGEMENT
 		public List<GoHejaEvent> GetPastEvents()
 		{
+			List<GoHejaEvent> result = new List<GoHejaEvent>();
+
 			try
 			{
 				var strPastEvents = mTrackSvc.getUserCalendarPast(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strPastEvents));
-				return CastGoHejaEvents(eventsData);
+				result = CastGoHejaEvents(eventsData);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public List<GoHejaEvent> GetTodayEvents()
 		{
+			List<GoHejaEvent> result = new List<GoHejaEvent>();
+
 			try
 			{
 				var strTodayEvents = mTrackSvc.getUserCalendarToday(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strTodayEvents));
-				return CastGoHejaEvents(eventsData);
+				result = CastGoHejaEvents(eventsData);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public List<GoHejaEvent> GetFutureEvents()
 		{
+			List<GoHejaEvent> result = new List<GoHejaEvent>();
+
 			try
 			{
 				var strFutureEvents = mTrackSvc.getUserCalendarFuture(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strFutureEvents));
-				return CastGoHejaEvents(eventsData);
+				result = CastGoHejaEvents(eventsData);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public GoHejaEvent GetEventDetail(string eventID)
 		{
+			GoHejaEvent result = new GoHejaEvent();
+
 			try
 			{
 				var strEventDetail = mTrackSvc.getEventMob(eventID, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strEventDetail.ToString()));
-				return CastGoHejaEvents(eventsData)[0];
+				result = CastGoHejaEvents(eventsData)[0];
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				ShowMessageBox(null, err.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
+				//return null;
 			}
+
+			return result;
 		}
 
 		public List<GoHejaEvent> CastGoHejaEvents(JArray events)
 		{
-			
 			var returnEvents = new List<GoHejaEvent>();
 
 			if (events == null) return returnEvents;
 
-			foreach (var eventJson in events)
+			try
 			{
-				GoHejaEvent goHejaEvent = JsonConvert.DeserializeObject<GoHejaEvent>(eventJson.ToString());
-				returnEvents.Add(goHejaEvent);
+				foreach (var eventJson in events)
+				{
+					GoHejaEvent goHejaEvent = JsonConvert.DeserializeObject<GoHejaEvent>(eventJson.ToString());
+					returnEvents.Add(goHejaEvent);
+				}
 			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
 			return returnEvents;
 		}
 
@@ -378,8 +483,8 @@ namespace location2
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
+				//return null;
 			}
 			return eventTotal;
 		}
@@ -394,7 +499,7 @@ namespace location2
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 				return null;
 			}
 			return eventMarkers;
@@ -410,7 +515,7 @@ namespace location2
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
+				ShowTrackMessageBox(ex.Message);
 				return null;
 			}
 			return eventMarkers;
@@ -462,7 +567,7 @@ namespace location2
 			}
 			catch (Exception ex)
 			{
-				//ShowMessageBox(null, ex.Message);
+				//ShowTrackMessageBox(ex.Message);
 				return null;
 			}
 			return returnTPoints;
@@ -482,7 +587,7 @@ namespace location2
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
+				//ShowTrackMessageBox(ex.Message);
 				return null;
 			}
 			return comment;
@@ -490,16 +595,18 @@ namespace location2
 
 		public object SetComment(string author, string authorId, string commentText, string eventId)
 		{
+			object result = new object();
+
 			try
 			{
-				var response = mTrackSvc.setComments(author, authorId, commentText, eventId, Constants.SPEC_GROUP_TYPE);
-				return response;
+				result = mTrackSvc.setComments(author, authorId, commentText, eventId, Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
-				return null;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
 
 		public void UpdateMemberNotes(string notes, string userID, string eventId, string username, string attended, string duration, string distance, string trainScore, string type)
@@ -507,18 +614,16 @@ namespace location2
 			try
 			{
 				var response = mTrackSvc.updateMeberNotes(notes, userID, eventId, username, attended, duration, distance, trainScore, type, Constants.SPEC_GROUP_TYPE);
-				//return response;
 			}
 			catch (Exception ex)
 			{
-				ShowMessageBox(null, ex.Message);
-				return;
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
 		public void UpdateMomgoData(string name,
 					string loc,
-					System.DateTime time,
+					DateTime time,
 					bool timeSpecified,
 					string deviceID,
 					float speed,
@@ -536,127 +641,143 @@ namespace location2
 					string eventType,
 					string specGroup)
 		{
-			mTrackSvc.updateMomgoData(name, loc, time, true, AppSettings.DeviceUDID, speed, true, athId, country, dist, true, alt, true, bearing, true, 1, true, eventType, specGroup);
+			try
+			{
+				mTrackSvc.updateMomgoData(name, loc, time, true, AppSettings.DeviceUDID, speed, true, athId, country, dist, true, alt, true, bearing, true, 1, true, eventType, specGroup);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 		}
+		#endregion
 
 		public string GetTypeStrFromID(string typeID)
 		{
-			return Constants.PRACTICE_TYPES[int.Parse(typeID) - 1];
+			string result = "";
+
+			try
+			{
+				result = Constants.PRACTICE_TYPES[int.Parse(typeID) - 1];
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 		public string GetTypeIDFromStr(string typeStr)
 		{
-			return (Array.IndexOf(Constants.PRACTICE_TYPES, typeStr) + 1).ToString();
+			string result = "";
+
+			try
+			{
+				result = (Array.IndexOf(Constants.PRACTICE_TYPES, typeStr) + 1).ToString();
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
 		}
 
 		public double DistanceAtoB(TPoint pA, TPoint pB)
 		{
-			CLLocation pointA = new CLLocation(pA.Latitude, pA.Longitude);
-			CLLocation pointB = new CLLocation(pB.Latitude, pB.Longitude);
-			var distance = pointA.DistanceFrom(pointB);
-			return distance;
-		}
-
-		public int GetFormatedDurationAsMin(string strTime)
-		{
-			if (strTime == "") return 0;
-
-			var arrTimes = strTime.Split(new char[] { ':' });
-
-			var hrs = int.Parse(arrTimes[0]);
-			var min = int.Parse(arrTimes[1]);
-
-			return hrs * 60 + min;
-		}
-
-		public float TotalSecFromString(string strTime)
-		{
-			if (strTime == "") return 0;
+			double result = 0;
 
 			try
 			{
-				var arrTimes = strTime.Split(new char[] { ':' });
-
-				var hrs = int.Parse(arrTimes[0]);
-				var min = int.Parse(arrTimes[1]);
-				var sec = int.Parse(arrTimes[2]);
-
-				return hrs * 3600 + min * 60 + sec;
+				CLLocation pointA = new CLLocation(pA.Latitude, pA.Longitude);
+				CLLocation pointB = new CLLocation(pB.Latitude, pB.Longitude);
+				result = pointA.DistanceFrom(pointB);
 			}
-			catch
+			catch (Exception ex)
 			{
-				return 0;
+				ShowTrackMessageBox(ex.Message);
 			}
+
+			return result;
 		}
-
-		public float ConvertToFloat(string value)
-		{
-			if (value == null || value == "")
-				return 0;
-
-			try
-			{
-				return float.Parse(value);
-			}
-			catch
-			{
-				return 0;
-			}
-		}
-
 
 		public void CompareEventResult(float planned, float total, UILabel lblPlanned, UILabel lblTotal)
 		{
-			if (planned == total || planned == 0 || total == 0)
+			try
 			{
-				lblPlanned.TextColor = COLOR_ORANGE;
-				lblTotal.TextColor = COLOR_ORANGE;
-				return;
-			}
+				if (planned == total || planned == 0 || total == 0)
+				{
+					lblPlanned.TextColor = COLOR_ORANGE;
+					lblTotal.TextColor = COLOR_ORANGE;
+					return;
+				}
 
-			if (planned > total)
-			{
-				var delta = (planned - total) / total;
-				if (delta < 0.15)
+				if (planned > total)
 				{
-					lblPlanned.TextColor = COLOR_ORANGE;
-					lblTotal.TextColor = COLOR_ORANGE;
+					var delta = (planned - total) / total;
+					if (delta < 0.15)
+					{
+						lblPlanned.TextColor = COLOR_ORANGE;
+						lblTotal.TextColor = COLOR_ORANGE;
+					}
+					else
+					{
+						lblPlanned.TextColor = COLOR_BLUE;
+						lblTotal.TextColor = COLOR_BLUE;
+					}
 				}
-				else {
-					lblPlanned.TextColor = new UIColor(21 / 255f, 181 / 255f, 98 / 255f, 1.0f);
-					lblTotal.TextColor = new UIColor(21 / 255f, 181 / 255f, 98 / 255f, 1.0f);
+				else if (planned < total)
+				{
+					var delta = (total - planned) / planned;
+					if (delta < 0.15)
+					{
+						lblPlanned.TextColor = COLOR_ORANGE;
+						lblTotal.TextColor = COLOR_ORANGE;
+					}
+					else
+					{
+						lblPlanned.TextColor = UIColor.Red;
+						lblTotal.TextColor = UIColor.Red;
+					}
 				}
 			}
-			else if (planned < total)
+			catch (Exception ex)
 			{
-				var delta = (total - planned) / planned;
-				if (delta < 0.15)
-				{
-					lblPlanned.TextColor = COLOR_ORANGE;
-					lblTotal.TextColor = COLOR_ORANGE;
-				}
-				else {
-					lblPlanned.TextColor = UIColor.Red;
-					lblTotal.TextColor = UIColor.Red;
-				}
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
 		public bool ValidateUserNickName(string nickName)
 		{
-			var validate = mTrackSvc.validateNickName(nickName, Constants.SPEC_GROUP_TYPE);
-			if (validate != "1")
-				return true;
-			else
-				return false;
+			string result = "0";
+
+			try
+			{
+				result = mTrackSvc.validateNickName(nickName, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result == "1" ? false : true;
 		}
 
 		private string FormatJsonType(string jsonData)
 		{
-			var returnString = jsonData.Replace(Constants.INVALID_JSONS1[0], "\"");
-			returnString = returnString.Replace(Constants.INVALID_JSONS1[1], "\"");
-			returnString = returnString.Replace(Constants.INVALID_JSONS1[2], "\"");
+			string result = "";
+			try
+			{
+				var returnString = jsonData.Replace(Constants.INVALID_JSONS1[0], "\"");
+				returnString = returnString.Replace(Constants.INVALID_JSONS1[1], "\"");
+				result = returnString.Replace(Constants.INVALID_JSONS1[2], "\"");
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 
-			return returnString;
+			return result;
 		}
 
 		public string FormatEventDescription(string eventJson)
@@ -666,6 +787,73 @@ namespace location2
 			returnString = returnString.Replace(Constants.INVALID_JSONS2[2], "");
 
 			return returnString;
+		}
+
+		public int GetFormatedDurationAsMin(string strTime)
+		{
+			if (strTime == "") return 0;
+
+			int result = 0;
+
+			try
+			{
+				var arrTimes = strTime.Split(new char[] { ':' });
+
+				var hrs = int.Parse(arrTimes[0]);
+				var min = int.Parse(arrTimes[1]);
+
+				result = hrs * 60 + min;
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
+		}
+
+		public float TotalSecFromString(string strTime)
+		{
+			if (strTime == "") return 0;
+
+			float result = 0;
+
+			try
+			{
+				var arrTimes = strTime.Split(new char[] { ':' });
+
+				var hrs = int.Parse(arrTimes[0]);
+				var min = int.Parse(arrTimes[1]);
+				var sec = int.Parse(arrTimes[2]);
+
+				result = hrs * 3600 + min * 60 + sec;
+			}
+			catch (Exception ex)
+			{
+				//ShowTrackMessageBox(ex.Message);
+				return 0;
+			}
+
+			return result;
+		}
+
+		public float ConvertToFloat(string value)
+		{
+			if (value == null || value == "") return 0;
+
+			float result = 0;
+
+			try
+			{
+				result = float.Parse(value);
+			}
+			catch (Exception ex)
+			{
+				//ShowTrackMessageBox(ex.Message);
+				return 0;
+			}
+
+			return result;
 		}
 
 		public string FormatNumber(string number)
@@ -680,85 +868,117 @@ namespace location2
 				return number;
 			}
 		}
-		#endregion
 
-		public NSDate ConvertDateTimeToNSDate(DateTime date)
+		public void SaveUserImage(UIImage img)
 		{
-			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
-				new DateTime(2001, 1, 1, 0, 0, 0));
+			try
+			{
+				var scaledImage = MaxResizeImage(img, 100, 100);
+				NSData imgData = scaledImage.AsPNG();
+				//save to local
+				var documentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+				string jpgFilename = System.IO.Path.Combine(documentsDirectory, "meImg.jpg");
 
-			//return NSDate.FromTimeIntervalSinceReferenceDate(
-			//	(date - newDate).TotalSeconds + 3600);
-			return NSDate.FromTimeIntervalSinceReferenceDate(
-				(date - newDate).TotalSeconds);
+				NSError err = null;
+				if (!imgData.Save(jpgFilename, false, out err))
+				{
+					ShowMessageBox(null, "NOT saved as " + jpgFilename + " because" + err.LocalizedDescription);
+				}
+
+				//save to server
+
+				var fileBytes = new Byte[imgData.Length];
+				System.Runtime.InteropServices.Marshal.Copy(imgData.Bytes, fileBytes, 0, Convert.ToInt32(imgData.Length));
+
+				var response = mTrackSvc.saveUserImage(AppSettings.UserID, fileBytes, Constants.SPEC_GROUP_TYPE);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
 		}
 
-		public static DateTime ConvertNSDateToDateTime(NSDate date)
+		public void MarkAsInvalide(UIButton validEmail, UIView errorEmail, bool isInvalid)
 		{
-			DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
-			reference = reference.AddSeconds(date.SecondsSinceReferenceDate);
-			if (reference.IsDaylightSavingTime())
+			InvokeOnMainThread(() =>
 			{
-				reference = reference.AddHours(1);
-			}
-			return reference;
+				if (validEmail != null)
+					validEmail.Selected = isInvalid;
+
+				if (errorEmail != null)
+					errorEmail.Hidden = !isInvalid;
+			});
 		}
 
 		public UIImage GetPinIconByType(string pointType)
 		{
-			var strPinImg = "";
-			switch (pointType)
+			UIImage result = null;
+
+			try
 			{
-				case "1":
-				case "START":
-					strPinImg = "pin_start.png";
-					break;
-				case "2":
-				case "FINISH":
-					strPinImg = "pin_finish.png";
-					break;
-				case "3":
-				case "CHECK_POINT":
-					strPinImg = "pin_check_mark.png";
-					break;
-				case "4":
-				case "CAMERA":
-					strPinImg = "pin_camera.png";
-					break;
-				case "5":
-				case "NORTH":
-					strPinImg = "pin_north.png";
-					break;
-				case "6":
-				case "EAST":
-					strPinImg = "pin_east.png";
-					break;
-				case "7":
-				case "SOUTH":
-					strPinImg = "pin_south.png";
-					break;
-				case "8":
-				case "WEST":
-					strPinImg = "pin_west.png";
-					break;
-				case "9":
-				case "T1":
-					strPinImg = "pin_T1.png";
-					break;
-				case "10":
-				case "T2":
-					strPinImg = "pin_T2.png";
-					break;
-				case "pSTART":
-					strPinImg = "pin_pstart.png";
-					break;
-				case "pFINISH":
-					strPinImg = "pin_pfinish.png";
-					break;
+				var strPinImg = "";
+				switch (pointType)
+				{
+					case "1":
+					case "START":
+						strPinImg = "pin_start.png";
+						break;
+					case "2":
+					case "FINISH":
+						strPinImg = "pin_finish.png";
+						break;
+					case "3":
+					case "CHECK_POINT":
+						strPinImg = "pin_check_mark.png";
+						break;
+					case "4":
+					case "CAMERA":
+						strPinImg = "pin_camera.png";
+						break;
+					case "5":
+					case "NORTH":
+						strPinImg = "pin_north.png";
+						break;
+					case "6":
+					case "EAST":
+						strPinImg = "pin_east.png";
+						break;
+					case "7":
+					case "SOUTH":
+						strPinImg = "pin_south.png";
+						break;
+					case "8":
+					case "WEST":
+						strPinImg = "pin_west.png";
+						break;
+					case "9":
+					case "T1":
+						strPinImg = "pin_T1.png";
+						break;
+					case "10":
+					case "T2":
+						strPinImg = "pin_T2.png";
+						break;
+					case "pSTART":
+						strPinImg = "pin_pstart.png";
+						break;
+					case "pFINISH":
+						strPinImg = "pin_pfinish.png";
+						break;
+				}
+				result = UIImage.FromFile(strPinImg);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
 			}
 
-			return UIImage.FromFile(strPinImg);
+			return result;
 		}
+
+
+
+
 
 		public UIImage MaxResizeImage(UIImage sourceImage, float maxWidth, float maxHeight)
 		{
@@ -790,47 +1010,7 @@ namespace location2
 			return currentImage;
 		}
 
-		public void SaveUserImage(UIImage img)
-		{
-			try
-			{
-				var scaledImage = MaxResizeImage(img, 100, 100);
-				NSData imgData = scaledImage.AsPNG();
-				//save to local
-				var documentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-				string jpgFilename = System.IO.Path.Combine(documentsDirectory, "meImg.jpg");
 
-				NSError err = null;
-				if (!imgData.Save(jpgFilename, false, out err))
-				{
-					ShowMessageBox(null, "NOT saved as " + jpgFilename + " because" + err.LocalizedDescription);
-				}
-
-				//save to server
-
-				var fileBytes = new Byte[imgData.Length];
-				System.Runtime.InteropServices.Marshal.Copy(imgData.Bytes, fileBytes, 0, Convert.ToInt32(imgData.Length));
-
-				var response = mTrackSvc.saveUserImage(AppSettings.UserID, fileBytes, Constants.SPEC_GROUP_TYPE);
-			}
-			catch (Exception err)
-			{
-				
-				ShowMessageBox(null, "Save error");
-			}
-		}
-
-		public void MarkAsInvalide(UIButton validEmail, UIView errorEmail, bool isInvalid)
-		{
-			InvokeOnMainThread(() =>
-			{
-				if (validEmail != null)
-					validEmail.Selected = isInvalid;
-
-				if (errorEmail != null)
-					errorEmail.Hidden = !isInvalid;
-			});
-		}
 
 		protected void SetupDatePicker(UITextField field)
 		{
@@ -883,58 +1063,6 @@ namespace location2
 				field.ResignFirstResponder();
 			}
 		}
-		protected static DateTime NSDateToDateTime(NSDate date)
-		{
-			DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
-			reference = reference.AddSeconds(date.SecondsSinceReferenceDate);
-			if (reference.IsDaylightSavingTime())
-			{
-				reference = reference.AddHours(1);
-			}
-			return reference;
-		}
-
-
-		public DateTime ConvertUTCToLocalTimeZone(DateTime dateTimeUtc)
-		{
-			NSTimeZone sourceTimeZone = new NSTimeZone("UTC");
-			NSTimeZone destinationTimeZone = NSTimeZone.LocalTimeZone;
-			NSDate sourceDate = DateTimeToNativeDate(dateTimeUtc);
-
-			int sourceGMTOffset = (int)sourceTimeZone.SecondsFromGMT(sourceDate);
-			int destinationGMTOffset = (int)destinationTimeZone.SecondsFromGMT(sourceDate);
-			int interval = sourceGMTOffset - destinationGMTOffset;
-
-			var destinationDate = dateTimeUtc.AddSeconds(interval);
-			//var destinationDate = sourceDate.AddSeconds(interval);
-			//var dateTime = NativeDateToDateTime(destinationDate);
-			return destinationDate;
-		}
-
-		/// <summary>
-		/// Converts a System.DateTime to an NSDate
-		/// </summary>
-		/// <returns>The time to native date.</returns>
-		/// <param name="date">Date.</param>
-		public static NSDate DateTimeToNativeDate(DateTime date)
-		{
-			DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(
-				new DateTime(2001, 1, 1, 0, 0, 0));
-			return NSDate.FromTimeIntervalSinceReferenceDate(
-				(date - reference).TotalSeconds);
-		}
-
-		/// <summary>
-		/// Converts a NSDate to System.DateTime
-		/// </summary>
-		/// <returns>The date to date time.</returns>
-		/// <param name="date">Date.</param>
-		public static DateTime NativeDateToDateTime(NSDate date)
-		{
-			DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(
-				new DateTime(2001, 1, 1, 0, 0, 0));
-			return reference.AddSeconds(date.SecondsSinceReferenceDate);
-		}
 
 		protected void SetupPicker(UITextField field, string type)
 		{
@@ -963,7 +1091,7 @@ namespace location2
 				picker_model = new PacePickerViewModel(field);
 			else if (type == "type")
 				picker_model = new PTypePickerViewModel(field);
-			
+
 			UIPickerView picker = new UIPickerView();
 			picker.BackgroundColor = UIColor.White;
 			picker.Model = picker_model;
@@ -1000,7 +1128,7 @@ namespace location2
 
 			public override string GetTitle(UIPickerView pickerView, nint row, nint component)
 			{
-				return ((int)row + 1).ToString() ;
+				return ((int)row + 1).ToString();
 			}
 
 			public override void Selected(UIPickerView pickerView, nint row, nint component)
@@ -1224,6 +1352,59 @@ namespace location2
 
 			View.LayoutIfNeeded();
 		}
+		#endregion
+
+
+		#region NSDate vs DateTime
+		public DateTime ConvertUTCToLocalTimeZone(DateTime dateTimeUtc)
+		{
+			NSTimeZone sourceTimeZone = new NSTimeZone("UTC");
+			NSTimeZone destinationTimeZone = NSTimeZone.LocalTimeZone;
+			NSDate sourceDate = DateTimeToNativeDate(dateTimeUtc);
+
+			int sourceGMTOffset = (int)sourceTimeZone.SecondsFromGMT(sourceDate);
+			int destinationGMTOffset = (int)destinationTimeZone.SecondsFromGMT(sourceDate);
+			int interval = sourceGMTOffset - destinationGMTOffset;
+
+			var destinationDate = dateTimeUtc.AddSeconds(interval);
+			//var destinationDate = sourceDate.AddSeconds(interval);
+			//var dateTime = NativeDateToDateTime(destinationDate);
+			return destinationDate;
+		}
+
+		public static NSDate DateTimeToNativeDate(DateTime date)
+		{
+			DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(
+				new DateTime(2001, 1, 1, 0, 0, 0));
+			return NSDate.FromTimeIntervalSinceReferenceDate(
+				(date - reference).TotalSeconds);
+		}
+		public NSDate ConvertDateTimeToNSDate(DateTime date)
+		{
+			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
+				new DateTime(2001, 1, 1, 0, 0, 0));
+
+			TimeZoneInfo localZone = TimeZoneInfo.Local;
+
+			bool isDayLight = TimeZoneInfo.Local.IsDaylightSavingTime(date);
+
+			if (isDayLight)
+				return NSDate.FromTimeIntervalSinceReferenceDate((date - newDate).TotalSeconds - 3600);
+			else
+				return NSDate.FromTimeIntervalSinceReferenceDate((date - newDate).TotalSeconds);
+		}
+
+		protected static DateTime NSDateToDateTime(NSDate date)
+		{
+			DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
+			reference = reference.AddSeconds(date.SecondsSinceReferenceDate);
+			if (reference.IsDaylightSavingTime())
+			{
+				reference = reference.AddHours(1);
+			}
+			return reference;
+		}
+		#endregion
 	}
 }
 

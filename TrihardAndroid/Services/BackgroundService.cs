@@ -60,10 +60,10 @@ namespace goheja
 				var calendarsUri = CalendarContract.Calendars.ContentUri;
 
 				string[] calendarsProjection = {
-			   CalendarContract.Calendars.InterfaceConsts.Id,
-			   CalendarContract.Calendars.InterfaceConsts.CalendarDisplayName,
-			   CalendarContract.Calendars.InterfaceConsts.AccountName
-			};
+				   CalendarContract.Calendars.InterfaceConsts.Id,
+				   CalendarContract.Calendars.InterfaceConsts.CalendarDisplayName,
+				   CalendarContract.Calendars.InterfaceConsts.AccountName
+				};
 
 				var cursor = ApplicationContext.ContentResolver.Query(calendarsUri, calendarsProjection, null, null, null);
 
@@ -108,9 +108,9 @@ namespace goheja
 
 				UpdateGoHejaEvents();
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				baseVC.ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -134,11 +134,11 @@ namespace goheja
 				var eventURI = CalendarContract.Events.ContentUri;
 
 				string[] eventsProjection = {
-				"_id",
-				CalendarContract.Events.InterfaceConsts.Title
-			   , CalendarContract.Events.InterfaceConsts.Dtstart
-			   , CalendarContract.Events.InterfaceConsts.Dtend
-			};
+					"_id",
+					CalendarContract.Events.InterfaceConsts.Title
+				   , CalendarContract.Events.InterfaceConsts.Dtstart
+				   , CalendarContract.Events.InterfaceConsts.Dtend
+				};
 				DateTime now = DateTime.Now;
 				DateTime startNow = new DateTime(now.Year, now.Month, now.Day);
 				var startString = GetDateTimeMS(startNow).ToString();
@@ -158,13 +158,13 @@ namespace goheja
 					} while (calCursor.MoveToNext());
 				}
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				baseVC.ShowTrackMessageBox(ex.Message);
 			}
 		}
 
-		private void AddEventsToGoHejaCalendar(List<GoHejaEvent> events)
+		void AddEventsToGoHejaCalendar(List<GoHejaEvent> events)
 		{
 			if (calendarID == -1 || events == null || events.Count == 0) return;
 
@@ -216,14 +216,6 @@ namespace goheja
 									"Planned distance : " + formattedDistance + "KM" + Environment.NewLine +
 									"Duration : " + strDuration + Environment.NewLine;
 
-					//var encodedTitle = System.Web.HttpUtility.UrlEncode(goHejaEvent.title);
-
-					//var strDate = startDate.ToString();//String.Format("{ 0:MM/dd/yyyy hh:mm:ss a}", startDate.ToString());
-					//var encodedDate = System.Web.HttpUtility.UrlEncode(strDate);
-					//var encodedEventURL = String.Format(Constants.URL_EVENT_MAP, encodedTitle, encodedDate, AppSettings.Username);
-
-					//note += Environment.NewLine + encodedEventURL;
-
 					#region create event
 					ContentValues eventValues = new ContentValues();
 					eventValues.Put(CalendarContract.Events.InterfaceConsts.CalendarId, calendarID);
@@ -261,9 +253,9 @@ namespace goheja
 					#endregion
 				}
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				baseVC.ShowTrackMessageBox(ex.Message);
 			}
 		}
 

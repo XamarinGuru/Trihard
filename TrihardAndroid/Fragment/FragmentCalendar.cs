@@ -274,9 +274,9 @@ namespace goheja
 				mPChart.ZoomMode = ZoomMode.X;
 				mPChart.AxisX.Scale = 1;
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(Activity, err.ToString(), ToastLength.Long).Show();
+				rootActivity.ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -299,9 +299,9 @@ namespace goheja
 				lblRunStress.Text = rootActivity.FormatNumber(gaugeData.Bike[2].value) + "%";
 				lblSwimStress.Text = rootActivity.FormatNumber(gaugeData.Bike[2].value) + "%";
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(Activity, err.ToString(), ToastLength.Long).Show();
+				rootActivity.ShowTrackMessageBox(ex.Message);
 			}
 		}
 

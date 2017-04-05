@@ -63,34 +63,34 @@ namespace goheja
 		ISharedPreferencesEditor filePrefEdit;
 
 		Location _currentLocation;
-        Location _lastLocation;
+		Location _lastLocation;
 
-        TextView _speedText, _altitudeText, _distance, _timerText, _title;
-        float lastAlt, dist, gainAlt;
+		TextView _speedText, _altitudeText, _distance, _timerText, _title;
+		float lastAlt, dist, gainAlt;
 
-        int fFlag = 1;
-        
-        Button btnStartPause;
-        Button btnStop;
+		int fFlag = 1;
+
+		Button btnStartPause;
+		Button btnStop;
 		Button btnLapDist;
 
-        Timer _timer = new Timer();
-        int duration = 0;
-        int lapDuration = 0;
-        
-        DateTime tempTime = DateTime.Now;
+		Timer _timer = new Timer();
+		int duration = 0;
+		int lapDuration = 0;
+
+		DateTime tempTime = DateTime.Now;
 
 		private RootMemberModel MemberModel { get; set; }
 
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
+		protected override void OnCreate(Bundle savedInstanceState)
+		{
+			base.OnCreate(savedInstanceState);
 			SetContentView(Resource.Layout.AnalyticsActivity);
 
 			this.Window.SetFlags(WindowManagerFlags.KeepScreenOn, WindowManagerFlags.KeepScreenOn);
-			
+
 			if (!IsNetEnable()) return;
-            
+
 			MemberModel = new RootMemberModel();
 			MemberModel.rootMember = GetUserObject();
 
@@ -102,9 +102,9 @@ namespace goheja
 			contextPrefEdit = contextPref.Edit();
 			filePrefEdit = filePref.Edit();
 
-            contextPrefEdit.PutFloat("gainAlt", 0f).Commit();
-            contextPrefEdit.PutFloat("lastAlt", 0f).Commit();
-            contextPrefEdit.PutFloat("dist", 0f).Commit();
+			contextPrefEdit.PutFloat("gainAlt", 0f).Commit();
+			contextPrefEdit.PutFloat("lastAlt", 0f).Commit();
+			contextPrefEdit.PutFloat("dist", 0f).Commit();
 
 			filePrefEdit.PutFloat("lastAlt", 0f);
 			filePrefEdit.PutFloat("gainAlt", 0f);
@@ -115,7 +115,7 @@ namespace goheja
 			InitUISettings();
 
 			//CheckLocationPermission();
-        }
+		}
 
 		void InitUISettings()
 		{
@@ -197,9 +197,9 @@ namespace goheja
 
 				SetNearestEventMarkers(currentLocation);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -214,7 +214,7 @@ namespace goheja
 
 				HideLoadingView();
 
-				if (mEventMarker == null || mEventMarker.markers.Count == 0) return;
+				if (mEventMarker == null || mEventMarker.markers == null || mEventMarker.markers.Count == 0) return;
 
 				try
 				{
@@ -238,9 +238,9 @@ namespace goheja
 						mMapView.MoveCamera(CameraUpdateFactory.NewLatLngBounds(mapBounds.Build(), 50));
 					});
 				}
-				catch (Exception err)
+				catch (Exception ex)
 				{
-					Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+					ShowTrackMessageBox(ex.Message);
 				}
 			});
 		}
@@ -265,9 +265,9 @@ namespace goheja
 					pointIDs.Add(marker.Id);
 				});
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -286,9 +286,9 @@ namespace goheja
 				PointInfoDialog myDiag = PointInfoDialog.newInstance(selectedPoint);
 				myDiag.Show(FragmentManager, "Diag");
 			}
-			catch
+			catch(Exception ex)
 			{
-				return true;
+				ShowTrackMessageBox(ex.Message);
 			}
 
 			return true;
@@ -298,8 +298,8 @@ namespace goheja
 
 
 
-        private void ActionStartPause(object sender, EventArgs e)
-        {
+		private void ActionStartPause(object sender, EventArgs e)
+		{
 			if (!_locationManager.IsProviderEnabled(LocationManager.GpsProvider))
 			{
 				ShowMessageBox(null, Constants.MSG_GPS_DISABLED);
@@ -351,7 +351,7 @@ namespace goheja
 
 				pState = PRACTICE_STATE.playing;
 			}
-        }
+		}
 
 		void StartTimer()
 		{
@@ -359,20 +359,20 @@ namespace goheja
 			_timer.Elapsed += OnTimedEvent;
 			_timer.Enabled = true;
 		}
-        private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            if (pState == PRACTICE_STATE.playing)
-            {
-                duration++;
-                lapDuration++;
-            }
-            var timespan = TimeSpan.FromSeconds(duration);
+		private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			if (pState == PRACTICE_STATE.playing)
+			{
+				duration++;
+				lapDuration++;
+			}
+			var timespan = TimeSpan.FromSeconds(duration);
 
-            RunOnUiThread(() =>
-            {
-                _timerText.Text = timespan.ToString(@"hh\:mm\:ss");
-            });
-        }
+			RunOnUiThread(() =>
+			{
+				_timerText.Text = timespan.ToString(@"hh\:mm\:ss");
+			});
+		}
 
 		private void ActionBack(object sender, EventArgs e)
 		{
@@ -384,13 +384,13 @@ namespace goheja
 			}
 			else
 			{
-				ShowMessageBox(null, Constants.MSG_COMFIRM_STOP_SPORT_COMP, "Cancel", new[] { "OK" }, StopPractice);
+				ShowMessageBox(null, Constants.MSG_COMFIRM_STOP_SPORT_COMP, "OK", "Cancel", StopPractice);
 			}
 		}
-        private void ActionStop(object sender, EventArgs e)
-        {
+		private void ActionStop(object sender, EventArgs e)
+		{
 			StopPractice();
-        }
+		}
 		private void StopPractice()
 		{
 			_title.Text = "Go-Heja Live is ready...";
@@ -451,7 +451,7 @@ namespace goheja
 
 			if (ShouldShowRequestPermissionRationale(permission))
 			{
-				ShowMessageBox(null, "Location access is required to gaugo your sports.", "Cancel", new[] { "OK" }, SendingPermissionRequest);
+				ShowMessageBox(null, "Location access is required to gaugo your sports.", "OK", "Cancel", SendingPermissionRequest);
 				return;
 			}
 			SendingPermissionRequest();
@@ -472,18 +472,18 @@ namespace goheja
 
 
 		#endregion
-        private void StartLocationService()
-        {
-            _title.Text = "Searching for GPS...";
+		private void StartLocationService()
+		{
+			_title.Text = "Searching for GPS...";
 			SetMap();
-        }
+		}
 
-        #region Android Location Service methods
+		#region Android Location Service methods
 
-        ///<summary>
-        /// Updates UI with location data
-        /// </summary>
-        TimeSpan ts = new TimeSpan(0, 0, 20);
+		///<summary>
+		/// Updates UI with location data
+		/// </summary>
+		TimeSpan ts = new TimeSpan(0, 0, 20);
 
 		public void vibrate(long time)
 		{
@@ -518,33 +518,24 @@ namespace goheja
 		public void OnStatusChanged(string provider, Availability status, Bundle extras) { _title.Text = "GPS low signal"; }
 
 		public void OnLocationChanged(Location location)
-        {
-            string status = "online";
+		{
+			string status = "online";
 
-    //        if (!isStarted)
-    //        {
-    //            _title.Text = "Nitro ready...";
-    //            _speedText.Text = "0.0";
-    //            _altitudeText.Text = "0.0";
-    //            _distance.Text = "0.0";
-				//return;
-    //        }
+			_currentLocation = location;
 
-            _currentLocation = location;
-            
-            try
-            {
-                RunOnUiThread(() =>
-                {
-                    if (_currentLocation == null)
-                    {
-                        _title.Text = "Unable to determine your location.";
-                    }
-                    else
-                    {
+			try
+			{
+				RunOnUiThread(() =>
+				{
+					if (_currentLocation == null)
+					{
+						_title.Text = "Unable to determine your location.";
+					}
+					else
+					{
 						_title.Text = "On the go";
 
-                    	//if (!isPaused)
+						//if (!isPaused)
 						{
 							if (_lastLocation != null)
 							{
@@ -558,8 +549,8 @@ namespace goheja
 						}
 
 						if (pType == (int)RIDE_TYPE.bike)
-                        {
-                            _speedText.Text = (_currentLocation.Speed * 3.6f).ToString("0.00");
+						{
+							_speedText.Text = (_currentLocation.Speed * 3.6f).ToString("0.00");
 							btnLapDist.Text = "Lap distance : " + (dist % 5).ToString("0.00");
 							if (dist % 5 < 0.01)
 							{
@@ -569,10 +560,10 @@ namespace goheja
 									vibrate(1000);
 								}
 							}
-                        }
+						}
 						if (pType == (int)RIDE_TYPE.run)
-                        {
-                            _speedText.Text = (16.6666 / (_currentLocation.Speed)).ToString("0.00");
+						{
+							_speedText.Text = (16.6666 / (_currentLocation.Speed)).ToString("0.00");
 							btnLapDist.Text = "Lap distance : " + (dist % 1).ToString("0.00");
 							if (dist % 1 < 0.01)
 							{
@@ -582,17 +573,17 @@ namespace goheja
 									vibrate(1000);
 								}
 							}
-                        }
-                        if (_currentLocation.Speed < 0.1)
-                        {
-                            _speedText.Text = "0.00";
-                        }
+						}
+						if (_currentLocation.Speed < 0.1)
+						{
+							_speedText.Text = "0.00";
+						}
 
-                        _altitudeText.Text = gainAlt.ToString("0.00");
-                        _distance.Text = (dist).ToString("0.00");
+						_altitudeText.Text = gainAlt.ToString("0.00");
+						_distance.Text = (dist).ToString("0.00");
 
-                        //if (!isPaused)
-                        {
+						//if (!isPaused)
+						{
 							var name = MemberModel.firstname + " " + MemberModel.lastname;
 							DateTime dt = DateTime.Now;
 							float speed = float.Parse(_currentLocation.Speed.ToString()) * 3.6f;
@@ -603,24 +594,24 @@ namespace goheja
 
 							//mMapView.AnimateCamera(CameraUpdateFactory.NewCameraPosition(new CameraPosition(new LatLng(_currentLocation.Latitude, _currentLocation.Longitude), Constants.MAP_ZOOM_LEVEL, 45f, _currentLocation.Bearing)));
 							SetMapPosition(new LatLng(_currentLocation.Latitude, _currentLocation.Longitude), _currentLocation.Bearing);
-                        }
+						}
 
-                        _lastLocation = _currentLocation;
-                        contextPrefEdit.PutFloat("lastAlt", float.Parse(_currentLocation.Altitude.ToString())).Commit();
-                        contextPrefEdit.PutFloat("dist", dist).Commit();
-                        if (fFlag == 1 || status == "backFromOffline")
-                        {
-                            status = "online";
-                        }
-                        fFlag = 0;
-                    }
-                });
-            }
-            catch (Exception err)
-            {
+						_lastLocation = _currentLocation;
+						contextPrefEdit.PutFloat("lastAlt", float.Parse(_currentLocation.Altitude.ToString())).Commit();
+						contextPrefEdit.PutFloat("dist", dist).Commit();
+						if (fFlag == 1 || status == "backFromOffline")
+						{
+							status = "online";
+						}
+						fFlag = 0;
+					}
+				});
+			}
+			catch (Exception err)
+			{
 				//Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
-            }
-        }
+			}
+		}
 		#endregion
 
 		void SetMapPosition(LatLng location, float bearing = -1)
@@ -662,6 +653,6 @@ namespace goheja
 
 			return base.OnKeyDown(keyCode, e);
 		}
-    }
+	}
 }
 

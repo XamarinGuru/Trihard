@@ -181,23 +181,19 @@ namespace goheja
 
 						result = RegisterUser(txtFirstname.Text, txtLastname.Text, deviceUDID, txtUsername.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
 
+						HideLoadingView();
+
 						if (result == "user added")
 							GoToMainPage(deviceUDID);
 						else
-						{
-							HideLoadingView();
-
 							ShowMessageBox(null, result);
-						}
 					});
 				}
                 
             }
-            catch (Exception err)
+            catch (Exception ex)
             {
-				HideLoadingView();
-				ShowMessageBox(null, err.Message);
-				return;
+				ShowTrackMessageBox(ex.Message);
             }
         }
 		private void ActionTerms(object sender, EventArgs eventArgs)

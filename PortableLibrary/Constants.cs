@@ -23,9 +23,23 @@ namespace PortableLibrary
 		public const string URL_CALENDAR = "http://go-heja.com/nitro/mobda.php?userNickName={0}&userId={1}";
 		public const string URL_WATCH = "http://go-heja.com:8080/gh/mob/sync.php?userId={0}&mog={1}&url=uurrll";
 		public const string URL_GAUGE = "http://go-heja.com:8080/innovi/mobGraph/totalGauge.php?userId={0}";
+
 		public const string URL_GOOGLE = "www.google.com";
 
+
 		public static double[] LOCATION_ISURAEL = { 31.0461, 34.8516 };
+
+		public const string MSG_TRACK_ERROR = 
+			"MOB error reported\n " +
+			"Date time: {0}\n " +
+			"User id: {1}\n " +
+			"Device model: {2}\n " +
+			"Spec group: {3}\n " +
+			"Error: {4}";
+
+		public const string MSG_TRACK_ERROR_DETAIL = "{0} in {1} line {2} ({3}).";
+
+		public const string MSG_COMMON = "Oops, something went wrong.";
 
 		public const string MSG_LOGIN = "Login...";
 		public const string MSG_LOGIN_FAIL = "Login failed.";
@@ -38,7 +52,7 @@ namespace PortableLibrary
 		public const string MSG_TYPE_COMMENT = "Type your comment...";
 		public const string MSG_SAVE_COMMENT = "Saving your comment...";
 		public const string MSG_ADJUST_TRAINING = "Adjusting Trainning...";
-		public const string MSG_NO_INTERNET = "No internet connection!";
+		public const string MSG_NO_INTERNET = "No internet connection, please  try again latter.";
 		public const string MSG_CHANGE_PASSWORD = "Requesting change password...";
 		public const string MSG_CHANGE_PW_SUC = "Password updated successfully";
 		public const string MSG_CHANGE_PW_FAIL = "Passwords don’t match";
@@ -48,6 +62,7 @@ namespace PortableLibrary
 		public const string MSG_FORGOT_PW_EMAIL_FAIL = "Email do not exists in the system , please try again or signup.";
 		public const string MSG_GPS_DISABLED = "GPS settings disabled.";
 		public const string MSG_COMFIRM_STOP_SPORT_COMP = "You sure you want to stop practice?";
+		public const string MSG_TRAKING_ERROR = "Tracking error into server...";
 
 		//TYPES
 		public const string TOTALS_ES_TIME = "Elapsed time";

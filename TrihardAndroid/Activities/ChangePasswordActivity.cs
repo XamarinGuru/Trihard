@@ -93,7 +93,7 @@ namespace goheja
 
 					if (isSuccess == 1)
 					{
-						ShowMessageBox(null, Constants.MSG_CHANGE_PW_SUC, "Cancel", new[] { "OK" }, () => base.OnBackPressed());
+						ShowMessageBox(null, Constants.MSG_CHANGE_PW_SUC, "OK", "Cancel", () => base.OnBackPressed());
 					}
 					else if (isSuccess == 2)
 					{

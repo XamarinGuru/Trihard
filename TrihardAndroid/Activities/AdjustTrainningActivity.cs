@@ -88,9 +88,9 @@ namespace goheja
 				SetupAdjustPicker(lblDistance, seekDistance, 250);
 				SetupAdjustPicker(lblTSS, seekTSS, 400);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 		void SetPType()
@@ -156,9 +156,9 @@ namespace goheja
 				seekDistance.Progress = (int)float.Parse(strTd);
 				seekTSS.Progress = (int)float.Parse(strTss);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 

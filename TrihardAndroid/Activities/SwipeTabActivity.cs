@@ -17,7 +17,7 @@ namespace goheja
 {
     [Activity(Label = "Trihard" , Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait, LaunchMode = LaunchMode.SingleInstance)]
 	public class SwipeTabActivity : BaseActivity
-    {
+	{
 		string[] PermissionsCalendar =
 		{
 			Manifest.Permission.ReadCalendar,
@@ -29,23 +29,23 @@ namespace goheja
 
 		RelativeLayout tabCalendar, tabAnalytics, tabProfile;
 
-        NonSwipeableViewPager _pager;
+		NonSwipeableViewPager _pager;
 
 		Android.Graphics.Color cTabEnable = new Android.Graphics.Color(146, 146, 146);
 		Android.Graphics.Color cTabDisable = new Android.Graphics.Color(69, 69, 69);
 
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
+		protected override void OnCreate(Bundle savedInstanceState)
+		{
+			base.OnCreate(savedInstanceState);
 
-            SetContentView(Resource.Layout.SwipeTabActivity);
+			SetContentView(Resource.Layout.SwipeTabActivity);
 
 			LicenseManager.Key = License.Key;
 
-            InitUISettings();
-           
+			InitUISettings();
+
 			CheckCalendarPermission();
-        }
+		}
 
 		public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
 		{
@@ -65,60 +65,60 @@ namespace goheja
 			return base.OnKeyDown(keyCode, e);
 		}
 
-        private void InitUISettings()
-        {
-            tabCalendar = FindViewById<RelativeLayout>(Resource.Id.tabCalendar);
-            tabAnalytics = FindViewById<RelativeLayout>(Resource.Id.tabAnalytics);
-            tabProfile = FindViewById<RelativeLayout>(Resource.Id.tabProfile);
+		private void InitUISettings()
+		{
+			tabCalendar = FindViewById<RelativeLayout>(Resource.Id.tabCalendar);
+			tabAnalytics = FindViewById<RelativeLayout>(Resource.Id.tabAnalytics);
+			tabProfile = FindViewById<RelativeLayout>(Resource.Id.tabProfile);
 
-            TabViewAdapter _adaptor = new TabViewAdapter(SupportFragmentManager, this);
+			TabViewAdapter _adaptor = new TabViewAdapter(SupportFragmentManager, this);
 			_pager = FindViewById<NonSwipeableViewPager>(Resource.Id.pager);
 			_pager.SetPagingEnabled(false);
 			_pager.OffscreenPageLimit = 2;
-            _pager.Adapter = _adaptor;
-            _pager.PageSelected += PagerOnPageSelected;
+			_pager.Adapter = _adaptor;
+			_pager.PageSelected += PagerOnPageSelected;
 
 			FindViewById<RelativeLayout>(Resource.Id.tabCalendar).Click += (sender, args) => { SetPage(0); };
-            FindViewById<RelativeLayout>(Resource.Id.tabAnalytics).Click += (sender, args) => { SetPage(1); };
-            FindViewById<RelativeLayout>(Resource.Id.tabProfile).Click += (sender, args) => { SetPage(2); };
-        }
+			FindViewById<RelativeLayout>(Resource.Id.tabAnalytics).Click += (sender, args) => { SetPage(1); };
+			FindViewById<RelativeLayout>(Resource.Id.tabProfile).Click += (sender, args) => { SetPage(2); };
+		}
 
 		public void SetPage(int position)
-        {
-            _pager.SetCurrentItem(position, true);
-        }
+		{
+			_pager.SetCurrentItem(position, true);
+		}
 
-        private void PagerOnPageSelected(object sender, ViewPager.PageSelectedEventArgs e)
-        {
-            SetSelect(e.Position);
-        }
+		private void PagerOnPageSelected(object sender, ViewPager.PageSelectedEventArgs e)
+		{
+			SetSelect(e.Position);
+		}
 
-        private void SetSelect(int position)
-        {
-            switch (position)
-            {
-                case 0:
+		private void SetSelect(int position)
+		{
+			switch (position)
+			{
+				case 0:
 					tabCalendar.SetBackgroundColor(cTabEnable);
 					tabAnalytics.SetBackgroundColor(cTabDisable);
 					tabProfile.SetBackgroundColor(cTabDisable);
-                    break;
-                case 1:
-                    tabCalendar.SetBackgroundColor(cTabDisable);
+					break;
+				case 1:
+					tabCalendar.SetBackgroundColor(cTabDisable);
 					tabAnalytics.SetBackgroundColor(cTabEnable);
 					tabProfile.SetBackgroundColor(cTabDisable);
-                    break;
-                case 2:
-                    tabCalendar.SetBackgroundColor(cTabDisable);
+					break;
+				case 2:
+					tabCalendar.SetBackgroundColor(cTabDisable);
 					tabAnalytics.SetBackgroundColor(cTabDisable);
 					tabProfile.SetBackgroundColor(cTabEnable);
-                    break;
+					break;
 				case 3:
 					tabCalendar.SetBackgroundColor(cTabDisable);
 					tabAnalytics.SetBackgroundColor(cTabDisable);
 					tabProfile.SetBackgroundColor(cTabEnable);
 					break;
-            }
-        }
+			}
+		}
 
 		#region grant calendar access permission
 		private void CheckCalendarPermission()
@@ -144,7 +144,7 @@ namespace goheja
 
 			if (ShouldShowRequestPermissionRationale(rdPermission) || ShouldShowRequestPermissionRationale(wrPermission))
 			{
-				ShowMessageBox(null, "Calendar access is required to show your events on your device calendar.", "Cancel", new[] { "OK" }, SendingPermissionRequest);
+				ShowMessageBox(null, "Calendar access is required to show your events on your device calendar.", "OK", "Cancel", SendingPermissionRequest);
 				return;
 			}
 
@@ -174,7 +174,7 @@ namespace goheja
 			}
 		}
 		#endregion
-    }
+	}
 
 	public class NonSwipeableViewPager : ViewPager
 	{

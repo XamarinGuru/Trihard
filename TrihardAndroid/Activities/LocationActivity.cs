@@ -151,9 +151,9 @@ namespace goheja
 							mMapView.MoveCamera(CameraUpdateFactory.NewLatLngBounds(mapBounds.Build(), 50));
 						}
 					}
-					catch (Exception err)
+					catch (Exception ex)
 					{
-						Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+						ShowTrackMessageBox(ex.Message);
 					}
 				});
 			});
@@ -179,9 +179,9 @@ namespace goheja
 					pointIDs.Add(marker.Id);
 				});
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -200,9 +200,9 @@ namespace goheja
 				PointInfoDialog myDiag = PointInfoDialog.newInstance(selectedPoint);
 				myDiag.Show(FragmentManager, "Diag");
 			}
-			catch
+			catch(Exception ex)
 			{
-				return true;
+				ShowTrackMessageBox(ex.Message);
 			}
 
 			return true;

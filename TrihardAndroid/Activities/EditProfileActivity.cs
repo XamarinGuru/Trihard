@@ -272,9 +272,9 @@ namespace goheja
 				SetupPicker(txtSFTPace, Constants.PICKER_PACE, Constants.UNIT_SWIM);
 				SetupPicker(txtRFTPace, Constants.PICKER_PACE, Constants.UNIT_RUN);
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -382,9 +382,9 @@ namespace goheja
 				this.SetBinding(() => MemberModel.bFTPower, () => txtBFTPower.Text, BindingMode.TwoWay);
 				#endregion
 			}
-			catch (Exception err)
+			catch (Exception ex)
 			{
-				Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+				ShowTrackMessageBox(ex.Message);
 			}
 		}
 
@@ -395,7 +395,7 @@ namespace goheja
 
 			var result = UpdateUserDataJson(MemberModel.rootMember);
 
-			ShowMessageBox(null, result, "Cancel", new[] { "OK" }, ActionBackCancel);
+			ShowMessageBox(null, result, "OK", "Cancel", ActionBackCancel);
 		}
 		#endregion
 
