@@ -17,15 +17,13 @@ namespace PortableLibrary
 		public const string GOHEJA_BASEPATH = "http://go-heja.com/Service1.svc?wsdl";
 
 		//URLs
-		public const string URL_TERMS = "http://go-heja.com/nitro/terms.php/";
+		public const string URL_TERMS = "http://go-heja.com/general/terms.html";
 		public const string URL_EVENT_MAP = "http://go-heja.com/nitro/calenPage.php?name={0}&startdate={1}&user={2}";
 		public const string URL_ANALYTICS_MAP = "http://go-heja.com:8080/nitro/mobongoing.php?txt={0}";
 		public const string URL_CALENDAR = "http://go-heja.com/nitro/mobda.php?userNickName={0}&userId={1}";
 		public const string URL_WATCH = "http://go-heja.com:8080/gh/mob/sync.php?userId={0}&mog={1}&url=uurrll";
 		public const string URL_GAUGE = "http://go-heja.com:8080/innovi/mobGraph/totalGauge.php?userId={0}";
-
 		public const string URL_GOOGLE = "www.google.com";
-
 
 		public static double[] LOCATION_ISURAEL = { 31.0461, 34.8516 };
 
