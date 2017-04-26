@@ -290,20 +290,21 @@
     <AndroidResource Include="Resources\drawable\bg_performance.png" />
     <AndroidResource Include="Resources\values\attr.xml" />
     <AndroidResource Include="Resources\drawable\icon_home.png" />
+    <AndroidResource Include="Resources\drawable\timer_new.png" />
+    <AndroidResource Include="Resources\drawable\icon_check2.png" />
+    <AndroidResource Include="Resources\drawable\icon_clock.png" />
+    <AndroidResource Include="Resources\drawable\icon_.png" />
     <None Include="Web References\trackSvc\Service1.xsd" />
     <None Include="Web References\trackSvc\Service10.xsd" />
     <None Include="Web References\trackSvc\Service11.xsd" />
     <None Include="Web References\trackSvc\Service12.xsd" />
     <None Include="Web References\trackSvc\Service13.xsd" />
+    <None Include="Web References\trackSvc\Service1.disco" />
     <None Include="Web References\trackSvc\Service1.wsdl" />
     <None Include="Web References\trackSvc\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <AndroidResource Include="Resources\drawable\timer_new.png" />
-    <AndroidResource Include="Resources\drawable\icon_check2.png" />
-    <AndroidResource Include="Resources\drawable\icon_clock.png" />
-    <AndroidResource Include="Resources\drawable\icon_.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -352,10 +353,10 @@
     <WebReferences Include="Web References" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://go-heja.com/Service1.svc?wsdl">
+    <WebReferenceUrl Include="http://go-heja.com/Service1.svc">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\trackSvc</RelPath>
-      <UpdateFromURL>http://go-heja.com/Service1.svc?wsdl</UpdateFromURL>
+      <UpdateFromURL>http://go-heja.com/Service1.svc</UpdateFromURL>
     </WebReferenceUrl>
   </ItemGroup>
   <Import Project="..\packages\Xamarin.GooglePlayServices.Basement.29.0.0.2\build\Xamarin.GooglePlayServices.Basement.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Basement.29.0.0.2\build\Xamarin.GooglePlayServices.Basement.targets')" />

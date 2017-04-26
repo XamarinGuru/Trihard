@@ -151,17 +151,17 @@ namespace goheja
 
 				layout.AddView(tv);
 
-				if (_events != null && _events.Count != 0)
+			if (_events != null && _events.Count != 0)
+			{
+				for (int i = 0; i < _events.Count; i++)
 				{
-					for (int i = 0; i < _events.Count; i++)
+					var startDate = _events[i].StartDateTime();
+					if (startDate.Date == currentDateTime.Date)
 					{
-						var startDate = _events[i].StartDateTime();
-						if (startDate.Date == currentDateTime.Date)
-						{
-							tv.SetBackgroundColor(Android.Graphics.Color.Orange);
-						}
+						tv.SetBackgroundColor(GROUP_COLOR);
 					}
 				}
+			}
 
 				e.DaySlot = layout;
 			}

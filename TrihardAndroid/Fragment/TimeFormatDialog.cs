@@ -211,8 +211,8 @@ namespace goheja
 				}
 				else
 				{
-					textView.Text = numPicker.Value.ToString();
-					seekBar.Progress = (int)float.Parse(textView.Text);
+					//textView.Text = numPicker.Value.ToString();
+					seekBar.Progress = numPicker.Value * 10;
 				}
 				
 				Dismiss();

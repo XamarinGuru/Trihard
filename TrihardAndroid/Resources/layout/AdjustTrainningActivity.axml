@@ -160,7 +160,7 @@
                     android:layout_weight="5"
                     android:thumbTint="#AD3290"
                     android:progress="0"
-                    android:max="360"
+                    android:max="3600"
                     android:progressTint="#ffe5a109"
                     android:progressBackgroundTint="#ff40403e" />
             </LinearLayout>
@@ -200,8 +200,7 @@
                     android:textColor="#ff000000"
                     android:singleLine="true"
                     android:textSize="15dp"
-                    android:layout_weight="1"
-                    android:inputType="number" />
+                    android:layout_weight="1" />
                 <SeekBar
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -209,7 +208,7 @@
                     android:layout_weight="5"
                     android:thumbTint="#AD3290"
                     android:progress="0"
-                    android:max="250"
+                    android:max="2500"
                     android:progressTint="#ffe5a109"
                     android:progressBackgroundTint="#ff40403e" />
             </LinearLayout>
@@ -249,8 +248,7 @@
                     android:textColor="#ff000000"
                     android:singleLine="true"
                     android:textSize="15dp"
-                    android:layout_weight="1"
-                    android:inputType="number" />
+                    android:layout_weight="1" />
                 <SeekBar
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -258,7 +256,7 @@
                     android:layout_weight="5"
                     android:thumbTint="#AD3290"
                     android:progress="0"
-                    android:max="400"
+                    android:max="4000"
                     android:progressTint="#ffe5a109"
                     android:progressBackgroundTint="#ff40403e" />
             </LinearLayout>

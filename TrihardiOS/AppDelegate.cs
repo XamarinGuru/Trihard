@@ -10,7 +10,7 @@ using Google.Maps;
 
 namespace location2
 {
-	[Register("AppDelegate")]
+	[Register ("AppDelegate")]
 	public class AppDelegate : UIApplicationDelegate
 	{
 		public static LocationHelper MyLocationHelper = new LocationHelper();
@@ -27,18 +27,18 @@ namespace location2
 			set;
 		}
 
-		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+		public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
 		{
-#if ENABLE_TEST_CLOUD
+			#if ENABLE_TEST_CLOUD
 			Xamarin.Calabash.Start();
-#endif
+			#endif
 
 			MapServices.ProvideAPIKey(PortableLibrary.Constants.GOOGLE_MAP_API_KEY);
 
 			return true;
 		}
 
-		public override void OnResignActivation(UIApplication application)
+		public override void OnResignActivation (UIApplication application)
 		{
 			// Invoked when the application is about to move from active to inactive state.
 			// This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) 
@@ -208,7 +208,7 @@ namespace location2
 				var strDuration = durHrs.ToString() + ":" + durMin.ToString("D2");
 
 				newEvent.Notes += Environment.NewLine + "Planned HB : " + goHejaEvent.hb + Environment.NewLine +
-								"Planned TSS : " + goHejaEvent.tss + Environment.NewLine +
+								"Planned Load : " + goHejaEvent.tss + Environment.NewLine +
 								"Planned distance : " + formattedDistance + "KM" + Environment.NewLine +
 								"Duration : " + strDuration + Environment.NewLine;
 

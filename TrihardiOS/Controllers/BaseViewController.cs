@@ -557,10 +557,13 @@ namespace location2
 						List<TPoint> tPoints = new List<TPoint>();
 						foreach (var tPoint in points)
 						{
-							if (lapNo == tPoint.lapNo && !Equals(tPoint.Latitude, 0d) && !Equals(tPoint.Longitude, 0d))
-								tPoints.Add(tPoint);
+							if (lapNo == tPoint.lapNo)
+								if(!Equals(tPoint.Latitude, 0d) && !Equals(tPoint.Longitude, 0d))
+									tPoints.Add(tPoint);
 						}
-						returnTPoints.Add(tPoints);
+
+						if (tPoints.Count != 0)
+							returnTPoints.Add(tPoints);
 					}
 				}
 

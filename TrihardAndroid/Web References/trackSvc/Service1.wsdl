@@ -7,10 +7,14 @@
       <xsd:import schemaLocation="http://go-heja.com/Service1.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
       <xsd:import schemaLocation="http://go-heja.com/Service1.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/tracker_srv" />
       <xsd:import schemaLocation="http://go-heja.com/Service1.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/MongoDB.Bson" />
-      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
-      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="IService1_decodeFitFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:decodeFitFile" />
+  </wsdl:message>
+  <wsdl:message name="IService1_decodeFitFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:decodeFitFileResponse" />
+  </wsdl:message>
   <wsdl:message name="IService1_updateMomgoData_InputMessage">
     <wsdl:part name="parameters" element="tns:updateMomgoData" />
   </wsdl:message>
@@ -88,6 +92,18 @@
   </wsdl:message>
   <wsdl:message name="IService1_resetEventTime_OutputMessage">
     <wsdl:part name="parameters" element="tns:resetEventTimeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_attendanceList_InputMessage">
+    <wsdl:part name="parameters" element="tns:attendanceList" />
+  </wsdl:message>
+  <wsdl:message name="IService1_attendanceList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:attendanceListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_coachUpdateAttendance_InputMessage">
+    <wsdl:part name="parameters" element="tns:coachUpdateAttendance" />
+  </wsdl:message>
+  <wsdl:message name="IService1_coachUpdateAttendance_OutputMessage">
+    <wsdl:part name="parameters" element="tns:coachUpdateAttendanceResponse" />
   </wsdl:message>
   <wsdl:message name="IService1_updateMarker_InputMessage">
     <wsdl:part name="parameters" element="tns:updateMarker" />
@@ -389,6 +405,24 @@
   <wsdl:message name="IService1_getStartMarkerPosition_OutputMessage">
     <wsdl:part name="parameters" element="tns:getStartMarkerPositionResponse" />
   </wsdl:message>
+  <wsdl:message name="IService1_sendAttendanceMail_InputMessage">
+    <wsdl:part name="parameters" element="tns:sendAttendanceMail" />
+  </wsdl:message>
+  <wsdl:message name="IService1_sendAttendanceMail_OutputMessage">
+    <wsdl:part name="parameters" element="tns:sendAttendanceMailResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_specLog_InputMessage">
+    <wsdl:part name="parameters" element="tns:specLog" />
+  </wsdl:message>
+  <wsdl:message name="IService1_specLog_OutputMessage">
+    <wsdl:part name="parameters" element="tns:specLogResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_IsAuth_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsAuth" />
+  </wsdl:message>
+  <wsdl:message name="IService1_IsAuth_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsAuthResponse" />
+  </wsdl:message>
   <wsdl:message name="IService1_getEventDateNameId_InputMessage">
     <wsdl:part name="parameters" element="tns:getEventDateNameId" />
   </wsdl:message>
@@ -406,6 +440,12 @@
   </wsdl:message>
   <wsdl:message name="IService1_getPerformanceFordate_OutputMessage">
     <wsdl:part name="parameters" element="tns:getPerformanceFordateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_sendNotificationExceeding_InputMessage">
+    <wsdl:part name="parameters" element="tns:sendNotificationExceeding" />
+  </wsdl:message>
+  <wsdl:message name="IService1_sendNotificationExceeding_OutputMessage">
+    <wsdl:part name="parameters" element="tns:sendNotificationExceedingResponse" />
   </wsdl:message>
   <wsdl:message name="IService1_getMyTrailForEventMongo_InputMessage">
     <wsdl:part name="parameters" element="tns:getMyTrailForEventMongo" />
@@ -641,6 +681,12 @@
   <wsdl:message name="IService1_validatSync_OutputMessage">
     <wsdl:part name="parameters" element="tns:validatSyncResponse" />
   </wsdl:message>
+  <wsdl:message name="IService1_sisma_InputMessage">
+    <wsdl:part name="parameters" element="tns:sisma" />
+  </wsdl:message>
+  <wsdl:message name="IService1_sisma_OutputMessage">
+    <wsdl:part name="parameters" element="tns:sismaResponse" />
+  </wsdl:message>
   <wsdl:message name="IService1_getUsrGroup_InputMessage">
     <wsdl:part name="parameters" element="tns:getUsrGroup" />
   </wsdl:message>
@@ -654,6 +700,10 @@
     <wsdl:part name="parameters" element="tns:updateAthPersonalDataResponse" />
   </wsdl:message>
   <wsdl:portType name="IService1">
+    <wsdl:operation name="decodeFitFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/decodeFitFile" message="tns:IService1_decodeFitFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/decodeFitFileResponse" message="tns:IService1_decodeFitFile_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="updateMomgoData">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/updateMomgoData" message="tns:IService1_updateMomgoData_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/updateMomgoDataResponse" message="tns:IService1_updateMomgoData_OutputMessage" />
@@ -705,6 +755,14 @@
     <wsdl:operation name="resetEventTime">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/resetEventTime" message="tns:IService1_resetEventTime_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/resetEventTimeResponse" message="tns:IService1_resetEventTime_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="attendanceList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/attendanceList" message="tns:IService1_attendanceList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/attendanceListResponse" message="tns:IService1_attendanceList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="coachUpdateAttendance">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/coachUpdateAttendance" message="tns:IService1_coachUpdateAttendance_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/coachUpdateAttendanceResponse" message="tns:IService1_coachUpdateAttendance_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="updateMarker">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/updateMarker" message="tns:IService1_updateMarker_InputMessage" />
@@ -906,6 +964,18 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getStartMarkerPosition" message="tns:IService1_getStartMarkerPosition_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/getStartMarkerPositionResponse" message="tns:IService1_getStartMarkerPosition_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="sendAttendanceMail">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/sendAttendanceMail" message="tns:IService1_sendAttendanceMail_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/sendAttendanceMailResponse" message="tns:IService1_sendAttendanceMail_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="specLog">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/specLog" message="tns:IService1_specLog_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/specLogResponse" message="tns:IService1_specLog_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsAuth">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/IsAuth" message="tns:IService1_IsAuth_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/IsAuthResponse" message="tns:IService1_IsAuth_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="getEventDateNameId">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getEventDateNameId" message="tns:IService1_getEventDateNameId_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/getEventDateNameIdResponse" message="tns:IService1_getEventDateNameId_OutputMessage" />
@@ -917,6 +987,10 @@
     <wsdl:operation name="getPerformanceFordate">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getPerformanceFordate" message="tns:IService1_getPerformanceFordate_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/getPerformanceFordateResponse" message="tns:IService1_getPerformanceFordate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="sendNotificationExceeding">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/sendNotificationExceeding" message="tns:IService1_sendNotificationExceeding_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/sendNotificationExceedingResponse" message="tns:IService1_sendNotificationExceeding_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="getMyTrailForEventMongo">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getMyTrailForEventMongo" message="tns:IService1_getMyTrailForEventMongo_InputMessage" />
@@ -1074,6 +1148,10 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/validatSync" message="tns:IService1_validatSync_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/validatSyncResponse" message="tns:IService1_validatSync_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="sisma">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/sisma" message="tns:IService1_sisma_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/sismaResponse" message="tns:IService1_sisma_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="getUsrGroup">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getUsrGroup" message="tns:IService1_getUsrGroup_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/getUsrGroupResponse" message="tns:IService1_getUsrGroup_OutputMessage" />
@@ -1085,6 +1163,15 @@
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="decodeFitFile">
+      <soap:operation soapAction="http://tempuri.org/IService1/decodeFitFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="updateMomgoData">
       <soap:operation soapAction="http://tempuri.org/IService1/updateMomgoData" style="document" />
       <wsdl:input>
@@ -1195,6 +1282,24 @@
     </wsdl:operation>
     <wsdl:operation name="resetEventTime">
       <soap:operation soapAction="http://tempuri.org/IService1/resetEventTime" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="attendanceList">
+      <soap:operation soapAction="http://tempuri.org/IService1/attendanceList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="coachUpdateAttendance">
+      <soap:operation soapAction="http://tempuri.org/IService1/coachUpdateAttendance" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1652,6 +1757,33 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="sendAttendanceMail">
+      <soap:operation soapAction="http://tempuri.org/IService1/sendAttendanceMail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="specLog">
+      <soap:operation soapAction="http://tempuri.org/IService1/specLog" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsAuth">
+      <soap:operation soapAction="http://tempuri.org/IService1/IsAuth" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getEventDateNameId">
       <soap:operation soapAction="http://tempuri.org/IService1/getEventDateNameId" style="document" />
       <wsdl:input>
@@ -1672,6 +1804,15 @@
     </wsdl:operation>
     <wsdl:operation name="getPerformanceFordate">
       <soap:operation soapAction="http://tempuri.org/IService1/getPerformanceFordate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sendNotificationExceeding">
+      <soap:operation soapAction="http://tempuri.org/IService1/sendNotificationExceeding" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -2023,6 +2164,15 @@
     </wsdl:operation>
     <wsdl:operation name="validatSync">
       <soap:operation soapAction="http://tempuri.org/IService1/validatSync" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sisma">
+      <soap:operation soapAction="http://tempuri.org/IService1/sisma" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -28,7 +28,14 @@ namespace location2
 			lblTitle.Text = strTitle;
 			lblEventTime.Text = strTime;
 
-			if (goHejaEvent.attended == "0" && goHejaEvent.StartDateTime().DayOfYear <= DateTime.Now.DayOfYear)
+			var eventStart = goHejaEvent.StartDateTime();
+			var dateNow = DateTime.Now;
+			var durMin = goHejaEvent.durMin == "" ? 0 : int.Parse(goHejaEvent.durMin);
+			var durHrs = goHejaEvent.durHrs == "" ? 0 : int.Parse(goHejaEvent.durHrs);
+			var durSec = durHrs * 3600 + durMin * 60;
+
+			//if (goHejaEvent.attended == "0" && goHejaEvent.StartDateTime().DayOfYear <= DateTime.Now.DayOfYear)
+			if (goHejaEvent.attended == "0" && DateTime.Compare(eventStart, dateNow.AddSeconds(durSec)) < 0)
 			{
 				var attrTitle = new NSAttributedString(lblTitle.Text, strikethroughStyle: NSUnderlineStyle.Single);
 				var attrTime = new NSAttributedString(lblEventTime.Text, strikethroughStyle: NSUnderlineStyle.Single);

@@ -41,6 +41,8 @@ namespace goheja
 		{
 			try
 			{
+				var goHejaEvent = _events[position];
+
 				if (convertView == null)
 				{
 					convertView = LayoutInflater.From(mSuperActivity).Inflate(Resource.Layout.item_NitroEvent, null);
@@ -49,15 +51,15 @@ namespace goheja
 				convertView.FindViewById(Resource.Id.ActionEventDetail).Tag = position;
 
 				var txtTitle = convertView.FindViewById(Resource.Id.txtTitle) as TextView;
-				txtTitle.Text = _events[position].title;
+				txtTitle.Text = goHejaEvent.title;
 
-				var eventDate = _events[position].StartDateTime();
+				var eventDate = goHejaEvent.StartDateTime();
 
 				var txtTime = convertView.FindViewById(Resource.Id.txtTime) as TextView;
 				txtTime.Text = String.Format("{0:t}", eventDate);
 
 				var imgType = convertView.FindViewById<ImageView>(Resource.Id.imgType);
-				switch (_events[position].type)
+				switch (goHejaEvent.type)
 				{
 					case "0":
 						imgType.SetImageResource(Resource.Drawable.icon_triathlon);
@@ -79,7 +81,14 @@ namespace goheja
 						break;
 				}
 
-				if (_events[position].attended == "0" && _events[position].StartDateTime().DayOfYear <= DateTime.Now.DayOfYear)
+				var eventStart = goHejaEvent.StartDateTime();
+				var dateNow = DateTime.Now;
+				var durMin = goHejaEvent.durMin == "" ? 0 : int.Parse(goHejaEvent.durMin);
+				var durHrs = goHejaEvent.durHrs == "" ? 0 : int.Parse(goHejaEvent.durHrs);
+				var durSec = durHrs * 3600 + durMin * 60;
+
+				//if (_events[position].attended == "0" && _events[position].StartDateTime().DayOfYear <= DateTime.Now.DayOfYear)
+				if (goHejaEvent.attended == "0" && DateTime.Compare(eventStart, dateNow.AddSeconds(durSec)) < 0)
 				{
 					txtTitle.PaintFlags = txtTitle.PaintFlags | Android.Graphics.PaintFlags.StrikeThruText;
 					txtTitle.SetTextColor(Android.Graphics.Color.Rgb(112, 112, 112));

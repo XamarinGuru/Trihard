@@ -24,7 +24,7 @@ namespace PortableLibrary
 		public string eventId { get; set;}
 		public string userId { get; set; }
 		public string eventSourceId { get; set;}
-		public int eventCompId { get; set;}
+		//public int eventCompId { get; set;}
 		public List<TPoint> TrackPoints { get; set; }
 	}
 }
