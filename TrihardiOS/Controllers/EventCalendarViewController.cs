@@ -2,9 +2,9 @@ using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
-using Softweb.Xamarin.Controls.iOS;
 using PortableLibrary;
 using System.Collections.Generic;
+using Xuni.iOS.Calendar;
 
 namespace location2
 {
@@ -13,44 +13,58 @@ namespace location2
 		UIColor COLOR_PAST = new UIColor(229 / 255f, 161 / 255f, 9 / 255f, 1.0f);
 		UIColor COLOR_FUTURE = new UIColor(63 / 255f, 187 / 255f, 190 / 255f, 1.0f);
 
-		Calendar _calendar;
-		List<GoHejaEvent> _events;
+		List<GoHejaEvent> _events = new List<GoHejaEvent>();
 
         public EventCalendarViewController (IntPtr handle) : base (handle)
         {
-			_events = new List<GoHejaEvent>();
         }
 
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
+			ReloadEvents();
+
+			InitUISettings();
+		}
+
+		void InitUISettings()
+		{
+			#region xuni calendar
+			calendar.Orientation = XuniCalendarOrientation.Vertical;
+			calendar.MaxSelectionCount = 1;
+			calendar.BackgroundColor = UIColor.FromRGB(29 / 255f, 29 / 255f, 29 / 255f);
+
+			calendar.CalendarFont = UIFont.BoldSystemFontOfSize (14);
+			calendar.TodayFont = UIFont.BoldSystemFontOfSize (14);
+
+			calendar.TodayTextColor = UIColor.Red;
+			calendar.AdjacentDayTextColor = UIColor.Gray;
+			calendar.TextColor = UIColor.White;
+			calendar.SelectionBackgroundColor = GROUP_COLOR;
+
+			calendar.DaySlotLoading += CalendarDaySlotLoading;
+			calendar.SelectionChanged += CalendarSelectionChanged;
+			#endregion
+
 			NavigationItem.HidesBackButton = true;
 
-			var leftButton = new UIButton(new CGRect(0, 0, 20, 20));
-			leftButton.SetImage(UIImage.FromFile("icon_left.png"), UIControlState.Normal);
+			var leftButton = NavLeftButton();
 			leftButton.TouchUpInside += (sender, e) => NavigationController.PopViewController(true);
 			NavigationItem.LeftBarButtonItem = new UIBarButtonItem(leftButton);
 
 			var rightButton = new UIButton(new CGRect(0, 0, 70, 20));
 			rightButton.SetTitle("Reload", UIControlState.Normal);
-			rightButton.TouchUpInside += (sender, e) => ResetCalendarView();
+			rightButton.TouchUpInside += (sender, e) => ReloadEvents();
 
 			var rightButton1 = new UIButton(new CGRect(100, 0, 70, 20));
 			rightButton1.SetTitle("Today", UIControlState.Normal);
-			rightButton1.TouchUpInside += (sender, e) => _calendar.CurrentDate = (NSDate)DateTime.Now;
+			rightButton1.TouchUpInside += (sender, e) => GotoToday();
 
 			UIBarButtonItem[] rightButtons = { new UIBarButtonItem(rightButton), new UIBarButtonItem(rightButton1) };
 
 			NavigationItem.RightBarButtonItems = rightButtons;
 
-			InitUISettings();
-
-			if (!IsNetEnable()) return;
-		}
-
-		void InitUISettings()
-		{
 			lblTSB.TextColor = GROUP_COLOR;
 			lblCTL.TextColor = GROUP_COLOR;
 			lblATL.TextColor = GROUP_COLOR;
@@ -58,51 +72,40 @@ namespace location2
 			lblNoEvents.TextColor = GROUP_COLOR;
 		}
 
-		public override void ViewWillAppear(bool animated)
+		void CalendarSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			base.ViewWillAppear(animated);
-			ResetCalendarView();
+			var filterDate = (sender as XuniCalendar).SelectedDate;
+			FilterEventsByDate(filterDate);
 		}
 
-		void ResetCalendarView()
+		CalendarDaySlotBase CalendarDaySlotLoading(XuniCalendar sender, NSDate date, bool isAdjacentDay, CalendarDaySlotBase daySlot)
 		{
-			this.View.LayoutIfNeeded();
+			CGRect rect = daySlot.Frame;
+			CGSize size = rect.Size;
 
-			_calendar = new Calendar();
-			_calendar.CurrentDate = (NSDate)DateTime.Now;
+			CalendarImageDaySlot imageDaySlot = new CalendarImageDaySlot(sender, rect);
 
-			var menuView = new CalendarMenuView { Frame = new CGRect(0, 0, viewDate.Frame.Size.Width, viewDate.Frame.Size.Height) };
-			var contentView = new CalendarContentView { Frame = new CGRect(0, 0, viewCalendar.Frame.Size.Width, viewCalendar.Frame.Size.Height) };
+			try
+			{
+				if (_events != null && _events.Count != 0)
+				{
+					for (int i = 0; i<_events.Count; i++)
+					{
+						var startDate = _events[i].StartDateTime();
+						if (startDate.Date == NSDateToDateTime(date))
+						{
+							imageDaySlot.ImageRect = new CGRect(size.Width / 2 - 6 / 2, size.Height / 6 * 5, 5, 5);
+							imageDaySlot.ImageSource = UIImage.FromFile("slider-default-handle-disabled.png");
+						}
+					}
+				}
 
-			var appearance = _calendar.CalendarAppearance;
-			appearance.GetNSCalendar().FirstWeekDay = (nuint)2;
-			appearance.DayDotColor = appearance.DayCircleColorSelected = GROUP_COLOR;
-			appearance.DayTextColorOtherMonth = appearance.DayDotColorOtherMonth = UIColor.Gray;
-			appearance.DayTextColor = appearance.MenuMonthTextColor = UIColor.White;
-			appearance.DayCircleColorToday = UIColor.Red;
-			appearance.DayCircleRatio = (9f / 10f);
-			appearance.WeekDayFormat = CalendarWeekDayFormat.Single;
-
-			appearance.SetMonthLabelTextCallback((NSDate date, Calendar cal) => new NSString(((DateTime)date).ToString("MMMM yyyy")));
-
-			//Link the views to the calendar
-			_calendar.MenuMonthsView = menuView;
-			_calendar.ContentView = contentView;
-
-			_calendar.DateSelected += DateSelected;
-			_calendar.NextPageLoaded += DidLoadNextPage;
-			_calendar.PreviousPageLoaded += DidLoadPreviousPage;
-
-			foreach (var view in viewDate.Subviews)
-				view.RemoveFromSuperview();
-
-			foreach (var view in viewCalendar.Subviews)
-				view.RemoveFromSuperview();
-			
-			viewDate.Add(menuView);
-			viewCalendar.Add(contentView);
-
-			ReloadEvents();
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+			return imageDaySlot;
 		}
 
 		void ReloadEvents()
@@ -124,31 +127,18 @@ namespace location2
 
 				InvokeOnMainThread(() =>
 				{
-					AddEventsToCustomCalendar();
-					FilterEventsByDate(DateTime.Now);
-					_calendar.ReloadData();
+					calendar.Refresh();
+                    FilterEventsByDate(DateTime.Now);
+					calendar.SelectedDate = DateTime.Now;
 
 					HideLoadingView();
 				});
 			});
 		}
 
-		void AddEventsToCustomCalendar()
+		void GotoToday()
 		{
-			EventDetails[] eventDetails = new EventDetails[_events.Count];
-			for (var i = 0; i < _events.Count; i ++)
-			{
-				var goHejaEvent = _events[i];
-
-				var startDate = goHejaEvent.StartDateTime();
-				var endDate = goHejaEvent.EndDateTime();
-
-				var eventDetail = new EventDetails((NSDate)(ConvertUTCToLocalTimeZone(startDate)), (NSDate)(ConvertUTCToLocalTimeZone(endDate)), goHejaEvent.title);
-				eventDetails[i] = eventDetail;
-			}
-
-			_calendar.EventSchedule = eventDetails;
-
+			calendar.ChangeViewModeAsync(XuniCalendarViewMode.Month, (NSDate)DateTime.Now);
 		}
 
 		void FilterEventsByDate(DateTime filterDate)
@@ -182,6 +172,7 @@ namespace location2
 				InitPerformanceData(filterDate);
 			});
 		}
+
 		void InitPerformanceData(DateTime date)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem(delegate
@@ -220,21 +211,6 @@ namespace location2
 			lblCTL.TextColor = color;
 			lblATL.TextColor = color;
 			lblLoad.TextColor = color;
-		}
-		public void DateSelected(object sender, DateSelectedEventArgs args)
-		{
-			Console.WriteLine(String.Format("Selected date is {0}", ((DateTime)args.Date).ToLocalTime().ToString("dd-MMM-yyyy")));
-			FilterEventsByDate(((DateTime)args.Date).ToLocalTime());
-		}
-
-		public void DidLoadPreviousPage(object sender, EventArgs args)
-		{
-			Console.WriteLine("loaded previous page");
-		}
-
-		public void DidLoadNextPage(object sender, EventArgs args)
-		{
-			Console.WriteLine("loaded next page");
 		}
 
 		#region GoHejaEventTableViewSource

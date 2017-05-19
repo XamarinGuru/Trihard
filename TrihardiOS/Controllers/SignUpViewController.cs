@@ -179,7 +179,47 @@ namespace location2
 		#endregion
 
 		#region event handler
-		async partial void ActionSignUp(UIButton sender)
+		//async partial void ActionSignUp(UIButton sender)
+		//{
+		//	if (!IsNetEnable()) return;
+
+		//	if (Validate())
+		//	{
+		//		try
+		//		{
+		//			string deviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+
+		//			var result = "";
+
+		//			ShowLoadingView(Constants.MSG_SIGNUP);
+		//			await Task.Run(() =>
+		//			{
+		//				InvokeOnMainThread(() => { result = RegisterUser(txtFirstName.Text, txtLastName.Text, deviceUDID, txtNickName.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text)); });
+		//			});
+
+		//			if (result == "user added")
+		//				GoToMainPage(deviceUDID);
+		//			else
+		//			{
+		//				await Task.Run(() =>
+		//				{
+		//					HideLoadingView();
+		//				});
+
+		//				ShowMessageBox(null, result);
+		//			}
+		//		}
+		//		catch (Exception err)
+		//		{
+		//			await Task.Run(() =>
+		//			{
+		//				HideLoadingView();
+		//			});
+		//			ShowMessageBox(null, err.Message.ToString());
+		//		}
+		//	}
+		//}
+		partial void ActionSignUp(UIButton sender)
 		{
 			if (!IsNetEnable()) return;
 
@@ -189,33 +229,55 @@ namespace location2
 				{
 					string deviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
 
-					var result = "";
-
-					ShowLoadingView(Constants.MSG_SIGNUP);
-					await Task.Run(() =>
+					System.Threading.ThreadPool.QueueUserWorkItem(delegate
 					{
-						InvokeOnMainThread(() => { result = RegisterUser(txtFirstName.Text, txtLastName.Text, deviceUDID, txtNickName.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text)); });
-					});
+						ShowLoadingView(Constants.MSG_SIGNUP);
 
-					if (result == "user added")
-						GoToMainPage(deviceUDID);
-					else
-					{
-						await Task.Run(() =>
+						InvokeOnMainThread(() =>
 						{
-							HideLoadingView();
-						});
+							var result = RegisterUser(txtFirstName.Text, txtLastName.Text, deviceUDID, txtNickName.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
 
-						ShowMessageBox(null, result);
-					}
-				}
-				catch (Exception err)
-				{
-					await Task.Run(() =>
-					{
-						HideLoadingView();
+							if (result == "user added")
+							{
+								var loginUser = LoginUser(txtEmail.Text, txtPassword.Text);
+
+								HideLoadingView();
+
+								if (loginUser.userId == null)
+								{
+									ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
+								}
+								else
+								{
+									AppSettings.CurrentUser = loginUser;
+									AppSettings.DeviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+
+									UIViewController nextVC;
+									if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+									{
+										nextVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
+									}
+									else
+									{
+										var tabVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
+										nextVC = new UINavigationController(tabVC);
+										//nextVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
+									}
+									this.PresentViewController(nextVC, true, null);
+								}
+							}
+							else
+							{
+								HideLoadingView();
+								ShowMessageBox(null, result);
+							}
+						});
 					});
-					ShowMessageBox(null, err.Message.ToString());
+				}
+				catch (Exception ex)
+				{
+					HideLoadingView();
+					ShowMessageBox(null, ex.Message.ToString());
 				}
 			}
 		}
@@ -243,60 +305,5 @@ namespace location2
 		}
 
 		#endregion
-
-		async private void GoToMainPage(string deviceUDID)
-		{
-			AppSettings.Email = txtEmail.Text;
-			AppSettings.Password = txtPassword.Text;
-			AppSettings.Username = txtNickName.Text;
-			AppSettings.DeviceUDID = deviceUDID;
-
-			string userID = "0";
-			await Task.Run(() =>
-			{
-				InvokeOnMainThread(() => { userID = GetUserID(); });
-				HideLoadingView();
-			});
-
-			if (userID == "0")//if the user not registered yet, go to register screen
-			{
-				ShowMessageBox(null, Constants.MSG_SIGNUP_FAIL);
-			}
-			else//if the user already registered, go to main screen
-			{
-				MainPageViewController mainVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
-				this.PresentViewController(mainVC, false, null);
-			}
-			//ThreadPool.QueueUserWorkItem(delegate
-			//{
-			//	BeginInvokeOnMainThread(delegate
-			//	{
-			//		//register device id to keychain
-			//		var s = new SecRecord(SecKind.GenericPassword)
-			//		{
-			//			Label = "Item Label",
-			//			Description = "Item description",
-			//			Account = "Account",
-			//			Service = "Service",
-			//			Comment = "Your comment here",
-			//			ValueData = deviceID,
-			//			Generic = NSData.FromString("foo")
-			//		};
-
-
-			//		var err = SecKeyChain.Add(s);
-
-			//		if (err != SecStatusCode.Success && err != SecStatusCode.DuplicateItem)
-			//			ShowMessageBox(null, "Can't save device id to keychain");
-
-			//		//NSUserDefaults.StandardUserDefaults.SetString(deviceID, "deviceId");
-			//		NSUserDefaults.StandardUserDefaults.SetString(txtEmail.Text, "email");
-			//		NSUserDefaults.StandardUserDefaults.SetString(txtPassword.Text, "password");
-
-			//		MainPageViewController mainVC = this.Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
-			//		this.PresentViewController(mainVC, false, null);
-			//	});
-			//});
-		}
 	}
 }

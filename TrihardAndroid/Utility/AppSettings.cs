@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Android.App;
 using Android.Content;
+using Newtonsoft.Json;
 using PortableLibrary;
 
 namespace goheja
@@ -14,37 +14,33 @@ namespace goheja
 
 		public static List<GoHejaEvent> currentEventsList;
 		public static EventTotal currentEventTotal;
-
 		public static GoHejaEvent selectedEvent;
 
-		public static string currentEmail;
+		public static List<AthleteInSubGroup> selectedAthletesInSubGroup;
 
-		private const string userIDKey = "userID";
-		public static string UserID
+		public static bool isFakeUser;
+        public static string fakeUserName;
+
+		private const string userKey = "userKey";
+		public static LoginUser CurrentUser
 		{
 			get
 			{
-				return _appSettings.GetString(userIDKey, null);
+				try
+				{
+					var strCurrentUser = _appSettings.GetString(userKey, "");
+					return JsonConvert.DeserializeObject<LoginUser>(strCurrentUser);
+				}
+				catch
+				{
+					return null;
+				}
 			}
 			set
 			{
+				var strUser = JsonConvert.SerializeObject(value);
 				ISharedPreferencesEditor editor = _appSettings.Edit();
-				editor.PutString(userIDKey, value);
-				editor.Apply();
-			}
-		}
-
-		private const string deviceIDKey = "deviceID";
-		public static string DeviceID
-		{
-			get
-			{
-				return _appSettings.GetString(deviceIDKey, null);
-			}
-			set
-			{
-				ISharedPreferencesEditor editor = _appSettings.Edit();
-				editor.PutString(deviceIDKey, value);
+				editor.PutString(userKey, strUser);
 				editor.Apply();
 			}
 		}
@@ -60,51 +56,6 @@ namespace goheja
 			{
 				ISharedPreferencesEditor editor = _appSettings.Edit();
 				editor.PutString(deviceUDIDKey, value);
-				editor.Apply();
-			}
-		}
-
-		private const string emailKey = "email";
-		public static string Email
-		{
-			get
-			{
-				return _appSettings.GetString(emailKey, null);
-			}
-			set
-			{
-				ISharedPreferencesEditor editor = _appSettings.Edit();
-				editor.PutString(emailKey, value);
-				editor.Apply();
-			}
-		}
-
-		private const string passwordKey = "password";
-		public static string Password
-		{
-			get
-			{
-				return _appSettings.GetString(passwordKey, null);
-			}
-			set
-			{
-				ISharedPreferencesEditor editor = _appSettings.Edit();
-				editor.PutString(passwordKey, value);
-				editor.Apply();
-			}
-		}
-
-		private const string usernameKey = "usernameKey";
-		public static string Username
-		{
-			get
-			{
-				return _appSettings.GetString(usernameKey, null);
-			}
-			set
-			{
-				ISharedPreferencesEditor editor = _appSettings.Edit();
-				editor.PutString(usernameKey, value);
 				editor.Apply();
 			}
 		}

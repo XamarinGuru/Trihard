@@ -18,9 +18,9 @@ using System.Collections.Generic;
 
 namespace goheja
 {
-    [Activity(Label = "Trihard", Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait)]
+	[Activity(Label = "Go-Heja", Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait)]
 	public class AnalyticsActivity : BaseActivity, ILocationListener, IOnMapReadyCallback, ActivityCompat.IOnRequestPermissionsResultCallback, GoogleMap.IOnMarkerClickListener
-    {
+	{
 		readonly string[] PermissionsLocation =
 		{
 		  Manifest.Permission.AccessCoarseLocation,
@@ -113,8 +113,6 @@ namespace goheja
 			filePrefEdit.Commit();
 
 			InitUISettings();
-
-			//CheckLocationPermission();
 		}
 
 		void InitUISettings()
@@ -209,8 +207,9 @@ namespace goheja
 			{
 				ShowLoadingView(Constants.MSG_LOADING_ALL_MARKERS);
 
-				mEventMarker = GetNearestEventMarkers(AppSettings.UserID);
-				//mEventMarker = GetAllMarkers("58aafae816528b16d898a1f3");
+				var userId = GetUserID();
+
+				mEventMarker = GetNearestEventMarkers(userId);
 
 				HideLoadingView();
 
@@ -326,7 +325,9 @@ namespace goheja
 					dist = contextPref.GetFloat("dist", 0f);
 					var country = MemberModel.country;
 
-					svc.updateMomgoData(name, loc, dt, true, AppSettings.DeviceUDID, 0f, true, AppSettings.UserID, country, dist, true, gainAlt, true, _currentLocation.Bearing, true, 1, true, pType.ToString(), Constants.SPEC_GROUP_TYPE);
+					var userId = GetUserID();
+
+					svc.updateMomgoData(name, loc, dt, true, AppSettings.DeviceUDID, 0f, true, userId, country, dist, true, gainAlt, true, _currentLocation.Bearing, true, 1, true, pType.ToString(), Constants.SPEC_GROUP_TYPE);
 				}
 				catch (Exception err)
 				{
@@ -395,15 +396,16 @@ namespace goheja
 		{
 			_title.Text = "Go-Heja Live is ready...";
 
-			try //there might be times where user will exit with params bot initiated
+			try
 			{
 				var name = MemberModel.firstname + " " + MemberModel.lastname;
 				var loc = String.Format("{0},{1}", _currentLocation.Latitude, _currentLocation.Longitude);
 				DateTime dt = DateTime.Now;
 				dist = contextPref.GetFloat("dist", 0f);
 				var country = MemberModel.country;
+				var userId = GetUserID();
 
-				svc.updateMomgoData(name, loc, dt, true, AppSettings.DeviceUDID, 0f, true, AppSettings.UserID, country, dist, true, gainAlt, true, _currentLocation.Bearing, true, 2, true, pType.ToString(), Constants.SPEC_GROUP_TYPE);
+				svc.updateMomgoData(name, loc, dt, true, AppSettings.DeviceUDID, 0f, true, userId, country, dist, true, gainAlt, true, _currentLocation.Bearing, true, 2, true, pType.ToString(), Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception err)
 			{
@@ -588,7 +590,9 @@ namespace goheja
 							DateTime dt = DateTime.Now;
 							float speed = float.Parse(_currentLocation.Speed.ToString()) * 3.6f;
 							var country = MemberModel.country;
-							record merecord = new record(name, _currentLocation.Latitude, _currentLocation.Longitude, dt, AppSettings.DeviceUDID, AppSettings.UserID, country, dist, speed, gainAlt, _currentLocation.Bearing, 0, pType.ToString());
+							var userId = GetUserID();
+
+							record merecord = new record(name, _currentLocation.Latitude, _currentLocation.Longitude, dt, AppSettings.DeviceUDID, userId, country, dist, speed, gainAlt, _currentLocation.Bearing, 0, pType.ToString());
 							handleRecord updateRecord = new handleRecord();
 							status = updateRecord.updaterecord(merecord, IsNetEnable());//the record and is there internet connection
 

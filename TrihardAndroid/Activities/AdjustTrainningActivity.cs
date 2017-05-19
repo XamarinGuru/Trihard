@@ -39,8 +39,6 @@ namespace goheja
 
 				HideLoadingView();
 			});
-
-			//InitBindingEventTotal();
 		}
 
 		protected override void OnResume()
@@ -51,8 +49,6 @@ namespace goheja
 
 		void InitUISettings()
 		{
-			//SetPType();
-
 			FindViewById<LinearLayout>(Resource.Id.bgType).SetBackgroundColor(GROUP_COLOR);
 
 			attended = FindViewById<CheckBox>(Resource.Id.checkAttended);
@@ -171,11 +167,9 @@ namespace goheja
 				var strTss = eventTotal.GetValue(Constants.TOTALS_LOAD);
 
 				lblTime.Text = strEt.ToString();
-				//lblDistance.Text = float.Parse(strTd).ToString("F1");
 				lblTSS.Text = float.Parse(strTss).ToString("F1");
 
 				seekTime.Progress = strEt * 10;
-				//seekDistance.Progress = (int)(float.Parse(strTd) * 10);
 				seekTSS.Progress = (int)(float.Parse(strTss) * 10);
 
 				var valDistance = float.Parse(strTd);
@@ -197,8 +191,6 @@ namespace goheja
 					lblDistance.Text = valDistance.ToString("F1");
 					seekDistance.Progress = int.Parse((valDistance * 10).ToString("F0"));
 				}
-
-
 			}
 			catch (Exception ex)
 			{
@@ -214,7 +206,9 @@ namespace goheja
 			{
 				ShowLoadingView(Constants.MSG_ADJUST_TRAINING);
 
-				UpdateMemberNotes(txtComment.Text, AppSettings.UserID, AppSettings.selectedEvent._id, MemberModel.username, attended.Checked ? "1" : "0", lblTime.Text, lblDistance.Text, lblTSS.Text, AppSettings.selectedEvent.type);
+				var authorID = AppSettings.CurrentUser.userId;
+
+				UpdateMemberNotes(txtComment.Text, authorID, AppSettings.selectedEvent._id, MemberModel.username, attended.Checked ? "1" : "0", lblTime.Text, lblDistance.Text, lblTSS.Text, AppSettings.selectedEvent.type);
 
 				HideLoadingView();
 

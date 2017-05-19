@@ -66,6 +66,10 @@ namespace location2
 			lblCycleStressTitle.TextColor = GROUP_COLOR;
 			lblRunStressTitle.TextColor = GROUP_COLOR;
 			lblSwimStressTitle.TextColor = GROUP_COLOR;
+
+			lblFakeUserName.Hidden = !AppSettings.isFakeUser;
+			lblFakeUserName.Text = string.Format(Constants.MSG_FAKE_USER_VIEW, AppSettings.fakeUserName);
+			//btnBack.Hidden = AppSettings.CurrentUser.userType == (int)Constants.USER_TYPE.COACH ? false : true;
 		}
 
 		public override void ViewDidAppear(bool animated)
@@ -298,6 +302,7 @@ namespace location2
 			var posX = rSlider.LowerValue * pData.dataProvider.Count;
 			mPChart.AxisX.ScrollTo(posX, XuniAxisScrollPosition.Max);
 		}
+
 		#endregion
 
 		class MyMarkerView : XuniChartMarkerBaseView

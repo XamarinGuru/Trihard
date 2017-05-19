@@ -22,8 +22,7 @@ namespace location2
 			var tap = new UITapGestureRecognizer(() => { View.EndEditing(true); });
 			View.AddGestureRecognizer(tap);
 
-			var leftButton = new UIButton(new CGRect(0, 0, 20, 20));
-			leftButton.SetImage(UIImage.FromFile("icon_left.png"), UIControlState.Normal);
+			var leftButton = NavLeftButton();
 			leftButton.TouchUpInside += (sender, e) => NavigationController.PopViewController(true);
 			NavigationItem.LeftBarButtonItem = new UIBarButtonItem(leftButton);
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.Provider;
-using Android.Widget;
 using Java.Util;
 using PortableLibrary;
 
@@ -25,7 +24,7 @@ namespace goheja
 		{
 			base.OnStart(intent, startId);
 
-			if (AppSettings.UserID == null || AppSettings.baseVC == null)
+			if (AppSettings.CurrentUser == null || AppSettings.baseVC == null)
 				return;
 
 			baseVC = AppSettings.baseVC;
@@ -116,9 +115,9 @@ namespace goheja
 
 		public void UpdateGoHejaEvents()
 		{
-			var pastEvents = baseVC.GetPastEvents();
-			var todayEvents = baseVC.GetTodayEvents();
-			var futureEvents = baseVC.GetFutureEvents();
+			var pastEvents = baseVC.GetPastEvents(true);
+			var todayEvents = baseVC.GetTodayEvents(true);
+			var futureEvents = baseVC.GetFutureEvents(true);
 
 			AddEventsToGoHejaCalendar(pastEvents);
 			AddEventsToGoHejaCalendar(todayEvents);
@@ -151,8 +150,8 @@ namespace goheja
 				{
 					do
 					{
-						long id = calCursor.GetLong(0);
-						String displayName = calCursor.GetString(1);
+						//long id = calCursor.GetLong(0);
+						//String displayName = calCursor.GetString(1);
 						long eventId = calCursor.GetLong(calCursor.GetColumnIndex("_id"));
 						RemoveEvent(eventId);
 					} while (calCursor.MoveToNext());
@@ -196,7 +195,6 @@ namespace goheja
 						note += arryEventDes[i] + Environment.NewLine;
 					}
 
-
 					var strDistance = goHejaEvent.distance;
 					float floatDistance = strDistance == "" ? 0 : float.Parse(strDistance);
 					var b = Math.Truncate(floatDistance * 100);
@@ -211,10 +209,10 @@ namespace goheja
 
 					var strDuration = durHrs.ToString() + ":" + durMin.ToString("D2");
 
-					note += System.Environment.NewLine + "Planned HB : " + goHejaEvent.hb + Environment.NewLine +
-								  "Planned Load : " + goHejaEvent.tss + Environment.NewLine +
-									"Planned distance : " + formattedDistance + "KM" + Environment.NewLine +
-									"Duration : " + strDuration + Environment.NewLine;
+					note += Environment.NewLine + "Planned HB : " + goHejaEvent.hb + Environment.NewLine +
+							"Planned Load : " + goHejaEvent.tss + Environment.NewLine +
+							"Planned distance : " + formattedDistance + "KM" + Environment.NewLine +
+							"Duration : " + strDuration + Environment.NewLine;
 
 					#region create event
 					ContentValues eventValues = new ContentValues();
@@ -229,7 +227,6 @@ namespace goheja
 
 					var eventURI = ContentResolver.Insert(CalendarContract.Events.ContentUri, eventValues);
 					var eventID = long.Parse(eventURI.LastPathSegment);
-
 
 					var deltaMin = (startDate - DateTime.Now).TotalMinutes;
 					if (deltaMin > 45)
@@ -283,7 +280,5 @@ namespace goheja
 
 			return c.TimeInMillis;
 		}
-
-
 	}
 }

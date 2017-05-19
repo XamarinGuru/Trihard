@@ -29,8 +29,6 @@ namespace goheja
 		ImageView btnCycle, btnRun, btnSwim;
 		LinearLayout viewCycle, viewRun, viewSwim;
 
-		ReportGraphData pData;
-
 		public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
 			rootActivity = this.Activity as SwipeTabActivity;
@@ -116,7 +114,11 @@ namespace goheja
 			CollepseAnimation(viewCycle);
 			CollepseAnimation(viewRun);
 			CollepseAnimation(viewSwim);
-			#endregion
+            #endregion
+
+            var txtFakeUserName = mView.FindViewById<TextView>(Resource.Id.txtFakeUserName);
+            txtFakeUserName.Visibility = AppSettings.isFakeUser ? ViewStates.Visible : ViewStates.Gone;
+            txtFakeUserName.Text = string.Format(Constants.MSG_FAKE_USER_VIEW, AppSettings.fakeUserName);
 
 			#region Actions
 			mView.FindViewById<RelativeLayout>(Resource.Id.collapsCycle).Click += ActionCollepse;
@@ -137,8 +139,6 @@ namespace goheja
 
 		void InitPerformanceGraph(ReportGraphData pData)
 		{
-			this.pData = pData;
-
 			mView.FindViewById<ScrollView>(Resource.Id.scrollView).ScrollTo(0, 0);
 			if (pData == null) return;
 
@@ -286,7 +286,6 @@ namespace goheja
 
 			try
 			{
-
 				lblCycleDuration.Text = rootActivity.FormatNumber(gaugeData.Bike[0].value) + "%";
 				lblRunDuration.Text = rootActivity.FormatNumber(gaugeData.Run[0].value) + "%";
 				lblSwimDuration.Text = rootActivity.FormatNumber(gaugeData.Swim[0].value) + "%";
@@ -384,7 +383,7 @@ namespace goheja
 		#endregion
 	}
 
-#region custom tooltip
+	#region custom tooltip
 	public class MyTooltip : BaseChartTooltipView
 	{
 		FragmentCalendar mContext;
@@ -398,12 +397,12 @@ namespace goheja
 			mAnnoFocused = annoFocused;
 			mData = data;
 		}
-		public override void Render(SuperChartDataPoint point)
+		public override void Render(SuperChartDataPoint p0)
 		{
 			try
 			{
-				var data = mData.dataProvider[point.PointIndex];
-				mAnnoFocused.PointIndex = point.PointIndex;
+				var data = mData.dataProvider[p0.PointIndex];
+				mAnnoFocused.PointIndex = p0.PointIndex;
 				mAnnoFocused.Text = String.Format("Date: {0}", data.date);
 				mAnnoFocused.Visible = true;
 
@@ -418,5 +417,5 @@ namespace goheja
 			}
 		}
 	}
-#endregion
+	#endregion
 }

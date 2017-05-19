@@ -4,7 +4,6 @@ using Android.Content;
 using Android.OS;
 using Android.Locations;
 
-
 namespace goheja.Services
 {
 	[Service]

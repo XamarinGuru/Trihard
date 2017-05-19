@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
@@ -44,7 +43,6 @@ namespace goheja
 			calendar.Orientation = CalendarOrientation.Vertical;
 			calendar.MaxSelectionCount = 1;
 
-			// change appearance
 			calendar.DayOfWeekBackgroundColor = System.Drawing.Color.Transparent.ToArgb();
 			calendar.DayOfWeekTextColor = System.Drawing.Color.LightGray.ToArgb();
 			calendar.TodayTextColor = System.Drawing.Color.Red.ToArgb();

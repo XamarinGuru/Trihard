@@ -17,11 +17,15 @@ namespace goheja
 		ImageView invalidPassword, invalidPwConfirm;
 		LinearLayout errorPassword, errorPwConfirm;
 
+		string _currentEmail;
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
 
 			SetContentView(Resource.Layout.ChangePasswordActivity);
+
+			_currentEmail = Intent.GetStringExtra("CURRENT_EMAIL");
 
 			InitUI();
 		}
@@ -87,7 +91,7 @@ namespace goheja
 				{
 					ShowLoadingView(Constants.MSG_CHANGE_PASSWORD);
 
-					int isSuccess = ResetPassword(AppSettings.currentEmail, txtPassword.Text);
+					int isSuccess = ResetPassword(_currentEmail, txtPassword.Text);
 
 					HideLoadingView();
 

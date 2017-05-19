@@ -73,22 +73,33 @@ namespace location2
 				{
 					ShowLoadingView(Constants.MSG_LOGIN);
 
-					bool isSuccess = false;
-
 					InvokeOnMainThread(() =>
 					{
-						isSuccess = LoginUser(txtEmail.Text, txtPassword.Text);
+						var loginUser = LoginUser(txtEmail.Text, txtPassword.Text);
 
 						HideLoadingView();
 
-						if (isSuccess)
+						if (loginUser.userId == null)
 						{
-							MainPageViewController mainVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
-							this.PresentViewController(mainVC, true, null);
+                            ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
 						}
 						else
 						{
-							ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
+							AppSettings.CurrentUser = loginUser;
+							AppSettings.DeviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+
+							UIViewController nextVC;
+							if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+							{
+								nextVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
+							}
+							else
+							{
+								var tabVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
+								nextVC = new UINavigationController(tabVC);
+								//nextVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
+							}
+							this.PresentViewController(nextVC, true, null);
 						}
 					});
 				});

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CoreGraphics;
+using PortableLibrary;
 using UIKit;
 
 namespace location2
@@ -32,17 +34,34 @@ namespace location2
 			btnCalendar.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 			btnHome.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 			btnProfile.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+
+			constraintTabBarHeight.Constant = AppSettings.isFakeUser ? 0 : 45;
+			btnCalendar.Hidden = AppSettings.isFakeUser ? true : false;
+			btnHome.Hidden = AppSettings.isFakeUser ? true : false;
+			btnProfile.Hidden = AppSettings.isFakeUser ? true : false;
 		}
 
 		void AddSubController(string vcIdentifier)
 		{
 			var tabVC = (BaseViewController)this.Storyboard.InstantiateViewController(vcIdentifier);
+			tabVC.rootVC = this;
 			var tabNavVC = new UINavigationController(tabVC);
 
 			tabNavVC.NavigationBar.SetBackgroundImage(new UIImage(), UIBarMetrics.Default);
 			tabNavVC.View.BackgroundColor = UIColor.Clear;
 			tabNavVC.NavigationBar.BackgroundColor = UIColor.Clear;
 			tabNavVC.NavigationBar.ShadowImage = new UIImage();
+
+            if (AppSettings.CurrentUser.userType == (int)Constants.USER_TYPE.COACH && vcIdentifier == "CalendarHomeViewController")
+            {
+                var leftButton = NavLeftButton();
+                leftButton.TouchUpInside += (sender, e) => NavigationController.PopViewController(true);
+                tabVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(leftButton);
+            }
+            else
+            {
+                tabVC.NavigationItem.LeftBarButtonItem = null;
+            }
 
 			subControllers.Add(tabNavVC);
 

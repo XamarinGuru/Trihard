@@ -24,8 +24,7 @@ namespace location2
 
 			NavigationItem.HidesBackButton = true;
 
-			var leftButton = new UIButton(new CGRect(0, 0, 20, 20));
-			leftButton.SetImage(UIImage.FromFile("icon_left.png"), UIControlState.Normal);
+			var leftButton = NavLeftButton();
 			leftButton.TouchUpInside += (sender, e) => NavigationController.PopViewController(true);
 			NavigationItem.LeftBarButtonItem = new UIBarButtonItem(leftButton);
 
@@ -208,7 +207,9 @@ namespace location2
 
 				InvokeOnMainThread(() =>
 				{
-					UpdateMemberNotes(txtComment.Text, AppSettings.UserID, selectedEvent._id, MemberModel.username, attended.On ? "1" : "0", txtTime.Text, txtDistance.Text, txtTss.Text, selectedEvent.type);
+					var authorID = AppSettings.CurrentUser.userId;
+
+					UpdateMemberNotes(txtComment.Text, authorID, selectedEvent._id, MemberModel.username, attended.On ? "1" : "0", txtTime.Text, txtDistance.Text, txtTss.Text, selectedEvent.type);
 
 					HideLoadingView();
 					NavigationController.PopViewController(true);

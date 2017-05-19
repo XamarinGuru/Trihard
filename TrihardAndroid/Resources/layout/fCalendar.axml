@@ -38,6 +38,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtFakeUserName"
+                android:text="Coach, you are viewing Amit David"
+                android:textColor="#ffffffff"
+                android:textSize="15dp"
+                android:gravity="center" />
             <LinearLayout
                 android:orientation="vertical"
                 android:minWidth="25px"

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Android.App;
 using Android.Content;
 using Android.Views;
 using Android.Widget;
@@ -87,7 +86,6 @@ namespace goheja
 				var durHrs = goHejaEvent.durHrs == "" ? 0 : int.Parse(goHejaEvent.durHrs);
 				var durSec = durHrs * 3600 + durMin * 60;
 
-				//if (_events[position].attended == "0" && _events[position].StartDateTime().DayOfYear <= DateTime.Now.DayOfYear)
 				if (goHejaEvent.attended == "0" && DateTime.Compare(eventStart, dateNow.AddSeconds(durSec)) < 0)
 				{
 					txtTitle.PaintFlags = txtTitle.PaintFlags | Android.Graphics.PaintFlags.StrikeThruText;

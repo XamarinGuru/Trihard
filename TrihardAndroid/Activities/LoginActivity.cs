@@ -19,11 +19,15 @@ namespace goheja
 
 		LinearLayout errorEmail, errorPassword;
 
+		string requestCode;
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
 
 			SetContentView(Resource.Layout.LoginActivity);
+
+			requestCode = Intent.GetStringExtra("requestCode");
 
 			InitUI();
 		}
@@ -90,19 +94,31 @@ namespace goheja
 				{
 					ShowLoadingView(Constants.MSG_LOGIN);
 
-					bool isSuccess = LoginUser(txtEmail.Text, txtPassword.Text);
+					var loginUser = LoginUser(txtEmail.Text, txtPassword.Text);
 
 					HideLoadingView();
 
-					if (isSuccess)
+					if (loginUser.userId == null)
 					{
-						var activity = new Intent(this, typeof(SwipeTabActivity));
-						StartActivityForResult(activity, 1);
-						Finish();
+                        ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
 					}
 					else
 					{
-						ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
+						AppSettings.CurrentUser = loginUser;
+						AppSettings.DeviceUDID = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
+
+						Intent nextIntent;
+						if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+						{
+							nextIntent = new Intent(this, typeof(SwipeTabActivity));
+						}
+						else
+						{
+							nextIntent = new Intent(this, typeof(CoachHomeActivity));
+						}
+
+						StartActivityForResult(nextIntent, 0);
+						Finish();
 					}
 				});
 			}
@@ -116,7 +132,33 @@ namespace goheja
 
 		void ActionBack(object sender, EventArgs e)
 		{
-			ActionBackCancel();
+			if (requestCode == "init")
+			{
+				ActionBackCancel();
+			}
+			else
+			{
+				var activity = new Intent(this, typeof(InitActivity));
+				StartActivityForResult(activity, 1);
+			}
+		}
+
+		public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+		{
+			if (keyCode == Keycode.Back)
+			{
+				if (requestCode == "init")
+				{
+					ActionBackCancel();
+				}
+				else
+				{
+					var activity = new Intent(this, typeof(InitActivity));
+					StartActivityForResult(activity, 1);
+				}
+			}
+
+			return base.OnKeyDown(keyCode, e);
 		}
 	}
 }

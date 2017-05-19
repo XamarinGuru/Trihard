@@ -33,6 +33,7 @@ namespace goheja
 		void ActionSignIn(object sender, EventArgs e)
 		{
 			var activity = new Intent(this, typeof(LoginActivity));
+			activity.PutExtra("requestCode", "init");
 			StartActivityForResult(activity, 1);
 		}
 

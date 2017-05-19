@@ -129,8 +129,8 @@ namespace location2
 
 				MemberModel.rootMember = GetUserObject();
 
-				mEventMarker = GetNearestEventMarkers(AppSettings.UserID);
-				//mEventMarker = GetAllMarkers("58aafae816528b16d898a1f3");
+				var userId = GetUserID();
+				mEventMarker = GetNearestEventMarkers(userId);
 
 				HideLoadingView();
 
@@ -271,9 +271,10 @@ namespace location2
 				var loc = location.Coordinate.Latitude.ToString() + "," + location.Coordinate.Longitude.ToString();
 				var country = MemberModel.country;
 
+				var userId = GetUserID();
 				System.Threading.ThreadPool.QueueUserWorkItem(delegate
 				{
-					meServ.updateMomgoData(name, loc, _dt, true, AppSettings.DeviceUDID, currspeed, true, AppSettings.UserID, country, currdistance, true, currAlt, true, course, true, 0, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
+					meServ.updateMomgoData(name, loc, _dt, true, AppSettings.DeviceUDID, currspeed, true, userId, country, currdistance, true, currAlt, true, course, true, 0, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
 					Console.Write("location update !!! " + name + "===" + loc + "===" + _dt.ToString() + "\n");
 				});
 
@@ -348,9 +349,10 @@ namespace location2
 					var alt = float.Parse(NSUserDefaults.StandardUserDefaults.DoubleForKey("lastAltitude").ToString());
 					var bearing = float.Parse(_lastLocation.Course.ToString());
 
+					var userId = GetUserID();
 					System.Threading.ThreadPool.QueueUserWorkItem(delegate
 					{
-						meServ.updateMomgoData(name, location, _dt, true, AppSettings.DeviceUDID, speed, true, AppSettings.UserID, MemberModel.country, currdistance, true, alt, true, bearing, true, 1, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
+						meServ.updateMomgoData(name, location, _dt, true, AppSettings.DeviceUDID, speed, true, userId, MemberModel.country, currdistance, true, alt, true, bearing, true, 1, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
 					});
 				}
 				catch
@@ -393,9 +395,10 @@ namespace location2
 				var alt = float.Parse(NSUserDefaults.StandardUserDefaults.DoubleForKey("lastAltitude").ToString());
 				var bearing = float.Parse(_lastLocation.Course.ToString());
 
+				var userId = GetUserID();
 				System.Threading.ThreadPool.QueueUserWorkItem(delegate
 				{
-					meServ.updateMomgoData(name, location, _dt, true, AppSettings.DeviceUDID, speed, true, AppSettings.UserID, MemberModel.country, currdistance, true, alt, true, bearing, true, 2, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
+					meServ.updateMomgoData(name, location, _dt, true, AppSettings.DeviceUDID, speed, true, userId, MemberModel.country, currdistance, true, alt, true, bearing, true, 2, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
 				});
 			}
 			catch

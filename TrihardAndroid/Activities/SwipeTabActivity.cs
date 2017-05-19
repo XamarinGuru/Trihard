@@ -15,7 +15,7 @@ using Com.GrapeCity.Xuni.Core;
 
 namespace goheja
 {
-    [Activity(Label = "Trihard" , Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait, LaunchMode = LaunchMode.SingleInstance)]
+	[Activity(Label = "Go-Heja", Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait, LaunchMode = LaunchMode.SingleInstance)]
 	public class SwipeTabActivity : BaseActivity
 	{
 		string[] PermissionsCalendar =
@@ -56,10 +56,13 @@ namespace goheja
 					SetPage(0);
 					return true;
 				}
-				else
+				else if(AppSettings.CurrentUser.userType == (int)Constants.USER_TYPE.COACH)
 				{
-					return false;
+					AppSettings.isFakeUser = false;
+					return base.OnKeyDown(keyCode, e);
 				}
+
+				return false;
 			}
 
 			return base.OnKeyDown(keyCode, e);
@@ -81,6 +84,8 @@ namespace goheja
 			FindViewById<RelativeLayout>(Resource.Id.tabCalendar).Click += (sender, args) => { SetPage(0); };
 			FindViewById<RelativeLayout>(Resource.Id.tabAnalytics).Click += (sender, args) => { SetPage(1); };
 			FindViewById<RelativeLayout>(Resource.Id.tabProfile).Click += (sender, args) => { SetPage(2); };
+
+			FindViewById<RelativeLayout>(Resource.Id.ActionBarMain).Visibility = AppSettings.isFakeUser ? ViewStates.Gone : ViewStates.Visible;
 		}
 
 		public void SetPage(int position)

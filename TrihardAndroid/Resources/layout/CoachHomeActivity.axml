@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff000000">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/linearLayout4"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:gravity="center_vertical">
+        <ImageView
+            android:src="@drawable/icon_search"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/imageView1" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/txtSearch"
+            android:textColor="#ffffffff"
+            android:textSize="15dp"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/ActionShowByGroup"
+        android:background="#ff1e1e1e"
+        android:gravity="center_vertical">
+        <TextView
+            android:text="Show by group"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/textView2"
+            android:gravity="center_vertical"
+            android:textColor="#ffffffff"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1" />
+        <ImageView
+            android:src="@drawable/icon_right"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/imageView1"
+            android:layout_marginRight="10dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:id="@+id/usersList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>

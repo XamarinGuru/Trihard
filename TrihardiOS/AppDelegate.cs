@@ -48,7 +48,7 @@ namespace location2
 
 		public override void DidEnterBackground(UIApplication application)
 		{
-			if (AppSettings.UserID == null || baseVC == null)
+			if (AppSettings.CurrentUser == null || baseVC == null)
 				return;
 
 			App.Current.EventStore.RequestAccess(EKEntityType.Event,

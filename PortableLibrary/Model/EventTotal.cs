@@ -12,7 +12,20 @@ namespace PortableLibrary
 			foreach (var item in totals)
 			{
 				if (item.name == key)
-					return item.value;
+				{
+					if (item.value == "-")
+					{
+						return "0";
+					}
+					else if (item.value.Split(new char[] { ' ' }).Length == 2)
+					{
+						return item.value.Split(new char[] { ' ' })[0];
+					}
+					else
+					{
+						return item.value;
+					}
+				}
 			}
 			return null;
 		}

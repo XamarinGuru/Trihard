@@ -5,6 +5,7 @@ using Android.Support.V4.App;
 using Android.Text;
 using System.Threading.Tasks;
 using Android.Content.PM;
+using PortableLibrary;
 
 namespace goheja
 {
@@ -41,33 +42,39 @@ namespace goheja
             NotificationManager notificationManager = (NotificationManager)GetSystemService(Context.NotificationService);
             notificationManager.Notify(1, CreateNotification());
 
-			string userID = GetUserID();
+			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			{
+				var currentUser = AppSettings.CurrentUser;
 
-            if (userID == "0")//not registered yet
-            {
-				var initAC = new Intent(this, typeof(InitActivity));
-                StartActivity(initAC);
+				Intent nextIntent = new Intent(this, typeof(InitActivity));
+				if (currentUser != null)
+				{
+					if (currentUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+					{
+						nextIntent = new Intent(this, typeof(SwipeTabActivity));
+					}
+					else if (currentUser.userType == (int)Constants.USER_TYPE.COACH)
+					{
+						nextIntent = new Intent(this, typeof(CoachHomeActivity));
+					}
+				}
+
+				StartActivityForResult(nextIntent, 0);
 				Finish();
-            }
-            else//already registered
-            {
-                StartActivity(new Intent(this, typeof(SwipeTabActivity)));
-				Finish();
-            }
+			});
+
         }
 
         public Notification CreateNotification()
         {
-            var contentIntent = PendingIntent.GetActivity(this, 0, new Intent(this, typeof(SwipeTabActivity)), PendingIntentFlags.UpdateCurrent);
-            var builder = new NotificationCompat.Builder(this)
-               	.SetContentTitle("Trihard on the go")
-               	.SetSmallIcon(Resource.Drawable.icon_notification)
-               	.SetPriority(1)
-              	.SetContentIntent(contentIntent)
-               	.SetCategory("tst")
-              	.SetStyle(new NotificationCompat.BigTextStyle()
-          		.BigText(Html.FromHtml("Tap to Open")))
-               	.SetContentText(Html.FromHtml("Tap to Open"));
+			var contentIntent = PendingIntent.GetActivity(this, 0, new Intent(this, typeof(SplashActivity)), PendingIntentFlags.UpdateCurrent);
+			var builder = new NotificationCompat.Builder(this)
+			                                    .SetContentTitle(ApplicationInfo.LoadLabel(PackageManager) + " on the go")
+			                                    .SetSmallIcon(Resource.Drawable.icon_notification).SetPriority(1)
+			                                    .SetContentIntent(contentIntent)
+			                                    .SetCategory("tst")
+			                                    .SetStyle(new NotificationCompat.BigTextStyle().BigText(Html.FromHtml("Tap to Open")))
+			                                    .SetContentText(Html.FromHtml("Tap to Open"));
 			
             var clossIntent = new Intent(this, typeof(CloseApplicationActivity));
             clossIntent.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask | ActivityFlags.ClearTop);

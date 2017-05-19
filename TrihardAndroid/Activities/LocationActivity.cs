@@ -1,14 +1,12 @@
 ﻿
 using System.Collections.Generic;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.Graphics;
 using Android.OS;
 using Android.Views;
-using Android.Widget;
 using Java.Lang;
 using PortableLibrary;
 
@@ -103,19 +101,17 @@ namespace goheja
 									var tPoint = tPoints[j];
 									var tLocation = new LatLng(tPoint.Latitude, tPoint.Longitude);
 
-
 									if (j < tPoints.Count - 1)
 									{
 										var distance = DistanceAtoB(tPoint, tPoints[j + 1]);
 
-										if (PortableLibrary.Constants.AVAILABLE_DISTANCE_MAP > distance)
+										if (Constants.AVAILABLE_DISTANCE_MAP > distance)
 										{
 											var nPoint = tPoints[j + 1];
 											paths.Add(tLocation);
 										}
 										else
 										{
-
 											arrPath = new LatLng[paths.Count];
 											for (var k = 0; k < paths.Count; k++)
 												arrPath[k] = paths[k];

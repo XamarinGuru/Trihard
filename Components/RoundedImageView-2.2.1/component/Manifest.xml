@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component format="1" id="RoundedImageView">
+  <name>Rounded Image View</name>
+  <publisher>Xamarin Inc</publisher>
+  <publisher-url>http://xamarin.com/</publisher-url>
+  <src-url>https://github.com/vinc3m1/RoundedImageView</src-url>
+  <version>2.2.1</version>
+  <summary>A fast ImageView (and Drawable) that supports rounded corners (and ovals or circles).</summary>
+  <packages>
+    <package id="Square.Picasso" version="2.5.2.1" framework="android" />
+  </packages>
+  <samples>
+    <sample id="RoundedImageViewSample">
+      <name>Android Sample</name>
+      <summary>Android Sample</summary>
+    </sample>
+  </samples>
+</component>

@@ -18,7 +18,6 @@ namespace location2
 		public UIColor GROUP_COLOR;
 		UIColor[] PATH_COLORS = { UIColor.Red, new UIColor(38 / 255f, 127 / 255f, 0, 1.0f), UIColor.Blue };
 		UIColor COLOR_ORANGE = new UIColor(229 / 255f, 161 / 255f, 9 / 225f, 1.0f);
-		UIColor COLOR_RED = new UIColor(179 / 255f, 66 / 255f, 17 / 225f, 1.0f);
 		UIColor COLOR_BLUE = new UIColor(21 / 255f, 181 / 255f, 98 / 225f, 1.0f);
 
 		protected float scroll_amount = 0.0f;
@@ -49,6 +48,13 @@ namespace location2
 			var blue = Convert.ToInt32(Constants.GROUP_COLOR.Substring(4, 2), 16) / 255f;
 			GROUP_COLOR = UIColor.FromRGB(red, green, blue);
 		}
+
+        protected UIButton NavLeftButton()
+        {
+			var leftButton = new UIButton(new CGRect(0, 0, 30, 30));
+			leftButton.SetImage(UIImage.FromFile("icon_left.png"), UIControlState.Normal);
+            return leftButton;
+        }
 
 		protected void ShowLoadingView(string title)
 		{
@@ -154,7 +160,6 @@ namespace location2
 			HideLoadingView();
 
 			CloseApplication();
-			//ShowMessageBox(null, msg);
 		}
 
 		public string GetDeviceModel()
@@ -186,37 +191,101 @@ namespace location2
 			return result;
 		}
 
-		public bool LoginUser(string email, string password)
+		public LoginUser LoginUser(string email, string password)
 		{
-			string userID = "0";
+			var loginUser = new LoginUser();
 
 			try
 			{
-				userID = mTrackSvc.getListedDeviceId(email, password, Constants.SPEC_GROUP_TYPE);
+				var objUser = mTrackSvc.mobLogin(email, password, Constants.SPEC_GROUP_TYPE);
+				var jsonUser = FormatJsonType(objUser.ToString());
+				loginUser = JsonConvert.DeserializeObject<LoginUser>(jsonUser);
+				return loginUser;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		public void SignOutUser()
+		{
+			AppSettings.CurrentUser = null;
+			AppSettings.DeviceUDID = string.Empty;
+		}
+
+		public List<Athlete> GetAllUsers()
+		{
+			var result = new List<Athlete>();
+
+			try
+			{
+				var objAthletes = mTrackSvc.athGeneralListMob(string.Empty, Constants.SPEC_GROUP_TYPE);
+				var athletes = JsonConvert.DeserializeObject<Athletes>(objAthletes.ToString());
+				result = athletes.athlete;
 			}
 			catch (Exception ex)
 			{
 				ShowTrackMessageBox(ex.Message);
 			}
 
-			if (userID == "0")
-			{
-				return false;
-			}
-			else
-			{
-				AppSettings.UserID = userID;
-				return true;
-			}
+			return SortUsers(result);
 		}
 
-		public void SignOutUser()
+		public SubGroups GetSubGroups(string groupId)
 		{
-			AppSettings.UserID = string.Empty;
-			AppSettings.Email = string.Empty;
-			AppSettings.Password = string.Empty;
-			AppSettings.DeviceID = string.Empty;
-			AppSettings.DeviceUDID = string.Empty;
+			var result = new SubGroups();
+
+			try
+			{
+				var objAthletes = mTrackSvc.fieldAthletsAndEvenetsMob(string.Empty, groupId, Constants.SPEC_GROUP_TYPE);
+				result = JsonConvert.DeserializeObject<SubGroups>(objAthletes.ToString());
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
+		}
+
+		List<Athlete> SortUsers(List<Athlete> users)
+		{
+			try
+			{
+				var index = users.FindIndex(x => x._id == AppSettings.CurrentUser.userId);
+				var item = users[index];
+				users[index] = users[0];
+				item.name = "me";
+				users[0] = item;
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return users;
+		}
+		public List<AthleteInSubGroup> SortSubUsers(List<AthleteInSubGroup> users)
+		{
+			try
+			{
+				var index = users.FindIndex(x => x.athleteId == AppSettings.CurrentUser.userId);
+
+				if (index != -1)
+				{
+					var item = users[index];
+					users[index] = users[0];
+					item.athleteName = "me";
+					users[0] = item;
+				}
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return users;
 		}
 
 		public string GetCode(string email)
@@ -254,26 +323,16 @@ namespace location2
 
 		public string GetUserID()
 		{
-			var userID = AppSettings.UserID;
-			if (userID != null && userID != "0" && userID != string.Empty)
-				return userID;
-
-			if (AppSettings.Email == string.Empty || AppSettings.Password == string.Empty || AppSettings.Email == null || AppSettings.Password == null)
-				return "0";
-
-			try
+			var currentUser = AppSettings.CurrentUser;
+			if (currentUser != null)
 			{
-				userID = mTrackSvc.getListedDeviceId(AppSettings.Email, AppSettings.Password, Constants.SPEC_GROUP_TYPE);
-
-				if (userID != "0")
-					AppSettings.UserID = userID;
-			}
-			catch (Exception ex)
-			{
-				ShowTrackMessageBox(ex.Message);
+				if (!string.IsNullOrEmpty(currentUser.athleteId))
+					return currentUser.athleteId;
+				else if (!string.IsNullOrEmpty(currentUser.userId))
+					return currentUser.userId;
 			}
 
-			return userID;
+			return null;
 		}
 
 		public RootMember GetUserObject()
@@ -296,17 +355,17 @@ namespace location2
 			return result;
 		}
 
-		public string UpdateUserDataJson(RootMember updatedUserObject, string updatedById = null)
+		public string UpdateUserDataJson(RootMember updatedUserObject)
 		{
 			string result = "";
 
 			try
 			{
 				var userID = GetUserID();
+
 				var jsonUser = JsonConvert.SerializeObject(updatedUserObject);
 				Console.WriteLine(jsonUser);
-				updatedById = userID;
-				result = mTrackSvc.updateUserDataJson(userID, jsonUser, updatedById, Constants.SPEC_GROUP_TYPE);
+				result = mTrackSvc.updateUserDataJson(userID, jsonUser, userID, Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception ex)
 			{
@@ -378,13 +437,15 @@ namespace location2
 		#endregion
 
 		#region EVENT_MANAGEMENT
-		public List<GoHejaEvent> GetPastEvents()
+		public List<GoHejaEvent> GetPastEvents(bool isForDeviceCalendar = false)
 		{
 			List<GoHejaEvent> result = new List<GoHejaEvent>();
 
+			var userId = isForDeviceCalendar ? AppSettings.CurrentUser.userId : GetUserID();
+
 			try
 			{
-				var strPastEvents = mTrackSvc.getUserCalendarPast(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
+				var strPastEvents = mTrackSvc.getUserCalendarPast(userId, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strPastEvents));
 				result = CastGoHejaEvents(eventsData);
 			}
@@ -396,13 +457,15 @@ namespace location2
 			return result;
 		}
 
-		public List<GoHejaEvent> GetTodayEvents()
+		public List<GoHejaEvent> GetTodayEvents(bool isForDeviceCalendar = false)
 		{
 			List<GoHejaEvent> result = new List<GoHejaEvent>();
 
+			var userId = isForDeviceCalendar ? AppSettings.CurrentUser.userId : GetUserID();
+
 			try
 			{
-				var strTodayEvents = mTrackSvc.getUserCalendarToday(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
+				var strTodayEvents = mTrackSvc.getUserCalendarToday(userId, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strTodayEvents));
 				result = CastGoHejaEvents(eventsData);
 			}
@@ -414,13 +477,15 @@ namespace location2
 			return result;
 		}
 
-		public List<GoHejaEvent> GetFutureEvents()
+		public List<GoHejaEvent> GetFutureEvents(bool isForDeviceCalendar = false)
 		{
 			List<GoHejaEvent> result = new List<GoHejaEvent>();
 
+			var userId = isForDeviceCalendar ? AppSettings.CurrentUser.userId : GetUserID();
+
 			try
 			{
-				var strFutureEvents = mTrackSvc.getUserCalendarFuture(AppSettings.UserID, Constants.SPEC_GROUP_TYPE);
+				var strFutureEvents = mTrackSvc.getUserCalendarFuture(userId, Constants.SPEC_GROUP_TYPE);
 				var eventsData = JArray.Parse(FormatJsonType(strFutureEvents));
 				result = CastGoHejaEvents(eventsData);
 			}
@@ -893,7 +958,8 @@ namespace location2
 				var fileBytes = new Byte[imgData.Length];
 				System.Runtime.InteropServices.Marshal.Copy(imgData.Bytes, fileBytes, 0, Convert.ToInt32(imgData.Length));
 
-				var response = mTrackSvc.saveUserImage(AppSettings.UserID, fileBytes, Constants.SPEC_GROUP_TYPE);
+				var userId = GetUserID();
+				var response = mTrackSvc.saveUserImage(userId, fileBytes, Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception ex)
 			{

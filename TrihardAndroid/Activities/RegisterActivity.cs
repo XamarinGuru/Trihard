@@ -175,27 +175,54 @@ namespace goheja
 
 					System.Threading.ThreadPool.QueueUserWorkItem(delegate
 					{
-						var result = "";
-
 						ShowLoadingView(Constants.MSG_SIGNUP);
 
-						result = RegisterUser(txtFirstname.Text, txtLastname.Text, deviceUDID, txtUsername.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
-
-						HideLoadingView();
+						var result = RegisterUser(txtFirstname.Text, txtLastname.Text, deviceUDID, txtUsername.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
 
 						if (result == "user added")
-							GoToMainPage(deviceUDID);
+						{
+							var loginUser = LoginUser(txtEmail.Text, txtPassword.Text);
+
+							HideLoadingView();
+
+							if (loginUser.userId == null)
+							{
+								ShowMessageBox(null, Constants.MSG_SIGNUP_FAIL);
+							}
+							else
+							{
+								AppSettings.CurrentUser = loginUser;
+								AppSettings.DeviceUDID = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
+
+								Intent nextIntent;
+								if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+								{
+									nextIntent = new Intent(this, typeof(SwipeTabActivity));
+								}
+								else
+								{
+									nextIntent = new Intent(this, typeof(CoachHomeActivity));
+								}
+
+								StartActivityForResult(nextIntent, 0);
+								Finish();
+							}
+						}
 						else
+						{
+                            HideLoadingView();
 							ShowMessageBox(null, result);
+						}
 					});
 				}
-                
             }
             catch (Exception ex)
             {
-				ShowTrackMessageBox(ex.Message);
+                HideLoadingView();
+				ShowMessageBox(null, ex.Message.ToString());
             }
         }
+
 		private void ActionTerms(object sender, EventArgs eventArgs)
 		{
 			if (!IsNetEnable()) return;
@@ -203,29 +230,6 @@ namespace goheja
 			var uri = Android.Net.Uri.Parse(Constants.URL_TERMS);
 			var intent = new Intent(Intent.ActionView, uri);
 			StartActivity(intent);
-		}
-
-		private void GoToMainPage(string deviceUDID)
-		{
-			AppSettings.Email = txtEmail.Text;
-			AppSettings.Password = txtPassword.Text;
-			AppSettings.Username = txtUsername.Text;
-			AppSettings.DeviceUDID = deviceUDID;
-
-			string userID = GetUserID();
-
-			HideLoadingView();
-
-			if (userID == "0")//if the user not registered yet, go to register screen
-			{
-				ShowMessageBox(null, Constants.MSG_SIGNUP_FAIL);
-			}
-			else//if the user already registered, go to main screen
-			{
-				var activity = new Intent(this, typeof(SwipeTabActivity));
-				StartActivityForResult(activity, 1);
-				Finish();
-			}
 		}
 
         protected override void OnDestroy()

@@ -20,14 +20,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <MtouchArch>i386</MtouchArch>
+    <MtouchArch>i386, x86_64</MtouchArch>
     <MtouchDebug>true</MtouchDebug>
-    <CodesignKey>iPhone Distribution: sagiv daniel (ACS2X6ERDY)</CodesignKey>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <AssemblyName>location2</AssemblyName>
     <MtouchLink>SdkOnly</MtouchLink>
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchFastDev>false</MtouchFastDev>
-    <CodesignProvision>d437d8c0-2803-48c7-8cb4-7355d5773353</CodesignProvision>
+    <CodesignProvision></CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <Optimize>true</Optimize>
@@ -43,14 +43,14 @@
     <AssemblyName>Nitro</AssemblyName>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchFloat32>true</MtouchFloat32>
-    <CodesignProvision>d437d8c0-2803-48c7-8cb4-7355d5773353</CodesignProvision>
+    <CodesignProvision>Wild-pro</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <MtouchArch>i386</MtouchArch>
+    <MtouchArch>i386, x86_64</MtouchArch>
     <ConsolePause>false</ConsolePause>
     <MtouchLink>Full</MtouchLink>
     <MtouchDebug>true</MtouchDebug>
@@ -69,14 +69,14 @@
     <ConsolePause>false</ConsolePause>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignKey>iPhone Developer: sagiv daniel (VXWT9CF4J3)</CodesignKey>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <IpaPackageName>
     </IpaPackageName>
     <AssemblyName>Nitro</AssemblyName>
     <MtouchFloat32>true</MtouchFloat32>
     <DeviceSpecificBuild>false</DeviceSpecificBuild>
-    <CodesignProvision>7e6ad78e-f342-4417-8966-9042a1ee62af</CodesignProvision>
+    <CodesignProvision></CodesignProvision>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -158,6 +158,9 @@
     </Reference>
     <Reference Include="XCalendar">
       <HintPath>..\Components\XCalendar-1.1\lib\ios-unified\XCalendar.dll</HintPath>
+    </Reference>
+    <Reference Include="SDWebImage">
+      <HintPath>..\packages\Xamarin.SDWebImage.3.7.5\lib\Xamarin.iOS\SDWebImage.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -282,6 +285,30 @@
     </Compile>
     <Compile Include="ViewModel\RangeSlider.cs" />
     <Compile Include="Helper\DeviceHardware.cs" />
+    <Compile Include="Controllers\CoachHomeViewController.cs" />
+    <Compile Include="Controllers\CoachHomeViewController.designer.cs">
+      <DependentUpon>CoachHomeViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\CoachGroupsViewController.cs" />
+    <Compile Include="Controllers\CoachGroupsViewController.designer.cs">
+      <DependentUpon>CoachGroupsViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\CoachSubGroupViewController.cs" />
+    <Compile Include="Controllers\CoachSubGroupViewController.designer.cs">
+      <DependentUpon>CoachSubGroupViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\CoachAthletesBySubGroupViewController.cs" />
+    <Compile Include="Controllers\CoachAthletesBySubGroupViewController.designer.cs">
+      <DependentUpon>CoachAthletesBySubGroupViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\UserCell.cs" />
+    <Compile Include="ViewModel\UserCell.designer.cs">
+      <DependentUpon>UserCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\UserSubGroupCell.cs" />
+    <Compile Include="ViewModel\UserSubGroupCell.designer.cs">
+      <DependentUpon>UserSubGroupCell.cs</DependentUpon>
+    </Compile>
     <Compile Include="Web References\trackSvc\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
@@ -423,6 +450,12 @@
     <BundleResource Include="Resources\icon_seek_thumb_dis.png" />
     <BundleResource Include="Resources\icon_home.png" />
     <BundleResource Include="Resources\Icon.png" />
+    <BundleResource Include="Resources\icon_circle_blue.png" />
+    <BundleResource Include="Resources\icon_circle_empty.png" />
+    <BundleResource Include="Resources\icon_circle_green.png" />
+    <BundleResource Include="Resources\icon_circle_red.png" />
+    <BundleResource Include="Resources\icon_no_avatar.png" />
+    <BundleResource Include="Resources\icon_search.png" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References" />
@@ -450,6 +483,10 @@
     </XamarinComponentReference>
     <XamarinComponentReference Include="XCalendar">
       <Version>1.1</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="sdwebimage">
+      <Version>3.7.5</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>
   </ItemGroup>

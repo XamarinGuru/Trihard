@@ -122,7 +122,7 @@ namespace goheja
 			if (!rootActivity.IsNetEnable()) return;
 
 			var intent = new Intent(Activity, typeof(ChangePasswordActivity));
-			AppSettings.currentEmail = MemberModel.email;
+			intent.PutExtra("CURRENT_EMAIL", MemberModel.email);
 			StartActivityForResult(intent, 1);
 		}
 
@@ -131,7 +131,8 @@ namespace goheja
 			rootActivity.SignOutUser();
 
 			var activity = new Intent(this.Activity, typeof(LoginActivity));
-			StartActivity(activity);
+			activity.PutExtra("requestCode", "profile");
+			StartActivityForResult(activity, 1);
 			rootActivity.Finish();
 		}
 
@@ -166,7 +167,8 @@ namespace goheja
             try
             {
                 var sdCardPath = Android.OS.Environment.DataDirectory.AbsolutePath;
-				var filePath = System.IO.Path.Combine(sdCardPath, Constants.PATH_USER_IMAGE);
+				var pName = Application.Context.PackageName;
+				var filePath = System.IO.Path.Combine(sdCardPath, string.Format(Constants.PATH_USER_IMAGE, pName));
                 var stream = new FileStream(filePath, FileMode.Create);
 
                 bitmap.Compress(Bitmap.CompressFormat.Png, 100, stream);// Bitmap.CompressFormat.Png, 100, stream);
@@ -243,7 +245,8 @@ namespace goheja
 			try
 			{
 				var sdCardPath = Android.OS.Environment.DataDirectory.AbsolutePath;
-				var filePath = System.IO.Path.Combine(sdCardPath, Constants.PATH_USER_IMAGE);
+				var pName = Application.Context.PackageName;
+				var filePath = System.IO.Path.Combine(sdCardPath, string.Format(Constants.PATH_USER_IMAGE, pName));
 				var s2 = new FileStream(filePath, FileMode.Open);
 				Bitmap bitmap2 = BitmapFactory.DecodeFile(filePath);
 				imgProfile.SetImageBitmap(bitmap2);

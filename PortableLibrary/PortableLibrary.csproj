@@ -40,6 +40,8 @@
     <Compile Include="XuniLicense.cs" />
     <Compile Include="Model\ReportGraphData.cs" />
     <Compile Include="Model\PerformanceDataForDate.cs" />
+    <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\User.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentValidation">

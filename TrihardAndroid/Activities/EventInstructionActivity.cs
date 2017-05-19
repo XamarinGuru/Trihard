@@ -45,7 +45,6 @@ namespace goheja
 
 			try
 			{
-
 				System.Threading.ThreadPool.QueueUserWorkItem(delegate
 				{
 					ShowLoadingView(Constants.MSG_LOADING_EVENT_DETAIL);

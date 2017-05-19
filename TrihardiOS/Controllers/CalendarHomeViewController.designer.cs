@@ -1,6 +1,6 @@
 // WARNING
 //
-// This file has been generated automatically by Xamarin Studio from the outlets and
+// This file has been generated automatically by Visual Studio from the outlets and
 // actions declared in your storyboard file.
 // Manual changes to this file will not be maintained.
 //
@@ -81,6 +81,10 @@ namespace location2
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel lblCycleStressTitle { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblFakeUserName { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -279,6 +283,11 @@ namespace location2
             if (lblCycleStressTitle != null) {
                 lblCycleStressTitle.Dispose ();
                 lblCycleStressTitle = null;
+            }
+
+            if (lblFakeUserName != null) {
+                lblFakeUserName.Dispose ();
+                lblFakeUserName = null;
             }
 
             if (lblRunDistance != null) {
