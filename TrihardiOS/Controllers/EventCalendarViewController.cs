@@ -147,7 +147,7 @@ namespace location2
 			foreach (var goHejaEvent in _events)
 			{
 				var eventDate = goHejaEvent.StartDateTime();
-				if (filterDate.DayOfYear == eventDate.DayOfYear)
+				if (filterDate.Date == eventDate.Date)
 				{
 					eventsByDate.Add(goHejaEvent);
 				}

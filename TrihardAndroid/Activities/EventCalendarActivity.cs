@@ -88,7 +88,7 @@ namespace goheja
 					for (int i = 0; i < _events.Count; i++)
 					{
 						var startDate = _events[i].StartDateTime();
-						if (startDate.DayOfYear == filterDate.DayOfYear)
+						if (startDate.Date == filterDate.Date)
 						{
 							filteredEvents.Add(_events[i]);
 						}
