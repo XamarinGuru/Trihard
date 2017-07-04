@@ -1,8 +1,9 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
 using PortableLibrary;
+using System.Threading;
 
 namespace location2
 {
@@ -34,7 +35,7 @@ namespace location2
 		}
 
 
-		private bool Validate()
+		bool Validate()
 		{
 			btnValidEmail.Hidden = false;
 
@@ -59,7 +60,7 @@ namespace location2
 
 			if (Validate())
 			{
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
+				ThreadPool.QueueUserWorkItem(delegate
 				{
 					ShowLoadingView(Constants.MSG_FORGOT_PASSWORD);
 
@@ -85,18 +86,18 @@ namespace location2
 			InvokeOnMainThread(() =>
 			{
 				LoginViewController mainVC = Storyboard.InstantiateViewController("LoginViewController") as LoginViewController;
-				this.PresentViewController(mainVC, false, null);
+				PresentViewController(mainVC, false, null);
 			});
 		}
 
 		partial void ActionBack(UIButton sender)
 		{
 			LoginViewController mainVC = Storyboard.InstantiateViewController("LoginViewController") as LoginViewController;
-			this.PresentViewController(mainVC, false, null);
+			PresentViewController(mainVC, false, null);
 		}
 
 		#region keyboard process
-		private void KeyBoardUpNotification(NSNotification notification)
+		void KeyBoardUpNotification(NSNotification notification)
 		{
 			if (!txtEmail.IsEditing)
 				return;
@@ -115,11 +116,11 @@ namespace location2
 			}
 		}
 
-		private void KeyBoardDownNotification(NSNotification notification)
+		void KeyBoardDownNotification(NSNotification notification)
 		{
 			if (moveViewUp) { ScrollTheView(false); }
 		}
-		private void ScrollTheView(bool move)
+		void ScrollTheView(bool move)
 		{
 			UIView.BeginAnimations(string.Empty, IntPtr.Zero);
 			UIView.SetAnimationDuration(0.3);
@@ -134,7 +135,7 @@ namespace location2
 				frame.Y = 0;
 			}
 
-			this.View.Frame = frame;
+			View.Frame = frame;
 			UIView.CommitAnimations();
 		}
 		#endregion

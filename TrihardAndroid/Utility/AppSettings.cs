@@ -3,17 +3,18 @@ using Android.App;
 using Android.Content;
 using Newtonsoft.Json;
 using PortableLibrary;
+using PortableLibrary.Model;
 
 namespace goheja
 {
 	public static class AppSettings
 	{
-		private static ISharedPreferences _appSettings = Application.Context.GetSharedPreferences("App_settings", FileCreationMode.Private);
+		static ISharedPreferences _appSettings = Application.Context.GetSharedPreferences("App_settings", FileCreationMode.Private);
 
 		public static BaseActivity baseVC;
 
 		public static List<GoHejaEvent> currentEventsList;
-		public static EventTotal currentEventTotal;
+        public static ReportData currentEventReport;
 		public static GoHejaEvent selectedEvent;
 
 		public static List<AthleteInSubGroup> selectedAthletesInSubGroup;
@@ -41,21 +42,6 @@ namespace goheja
 				var strUser = JsonConvert.SerializeObject(value);
 				ISharedPreferencesEditor editor = _appSettings.Edit();
 				editor.PutString(userKey, strUser);
-				editor.Apply();
-			}
-		}
-
-		private const string deviceUDIDKey = "deviceUDID";
-		public static string DeviceUDID
-		{
-			get
-			{
-				return _appSettings.GetString(deviceUDIDKey, null);
-			}
-			set
-			{
-				ISharedPreferencesEditor editor = _appSettings.Edit();
-				editor.PutString(deviceUDIDKey, value);
 				editor.Apply();
 			}
 		}

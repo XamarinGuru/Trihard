@@ -6,6 +6,7 @@ using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using PortableLibrary;
 
 namespace goheja
 {
@@ -31,21 +32,25 @@ namespace goheja
 			FindViewById<LinearLayout>(Resource.Id.stateTriathlon).SetBackgroundColor(COLOR_DISABLE);
 			FindViewById<LinearLayout>(Resource.Id.stateOther).SetBackgroundColor(COLOR_DISABLE);
 
-			switch (AppSettings.selectedEvent.type)
+            var pType = (Constants.EVENT_TYPE)Enum.ToObject(typeof(Constants.EVENT_TYPE), int.Parse(AppSettings.selectedEvent.type));
+			switch (pType)
 			{
-				case "1":
+				case Constants.EVENT_TYPE.OTHER:
+					FindViewById<LinearLayout>(Resource.Id.stateOther).SetBackgroundColor(GROUP_COLOR);
+					break;
+				case Constants.EVENT_TYPE.BIKE:
 					FindViewById<LinearLayout>(Resource.Id.stateCycling).SetBackgroundColor(GROUP_COLOR);
 					break;
-				case "2":
+				case Constants.EVENT_TYPE.RUN:
 					FindViewById<LinearLayout>(Resource.Id.stateRunning).SetBackgroundColor(GROUP_COLOR);
 					break;
-				case "3":
+				case Constants.EVENT_TYPE.SWIM:
 					FindViewById<LinearLayout>(Resource.Id.stateSwimming).SetBackgroundColor(GROUP_COLOR);
 					break;
-				case "4":
+				case Constants.EVENT_TYPE.TRIATHLON:
 					FindViewById<LinearLayout>(Resource.Id.stateTriathlon).SetBackgroundColor(GROUP_COLOR);
 					break;
-				case "5":
+				case Constants.EVENT_TYPE.ANOTHER:
 					FindViewById<LinearLayout>(Resource.Id.stateOther).SetBackgroundColor(GROUP_COLOR);
 					break;
 			}

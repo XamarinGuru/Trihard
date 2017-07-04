@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
@@ -134,8 +135,8 @@ namespace goheja
 				layout.SetVerticalGravity(GravityFlags.Center);
 				layout.Orientation = Orientation.Vertical;
 				layout.SetPadding(5, 5, 5, 5);
-				LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
-				layout.LayoutParameters = linearLayoutParams;
+				//ViewGroup.LayoutParams linearLayoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+				//layout.LayoutParameters = linearLayoutParams;
 
 				TextView tv = new TextView(ApplicationContext);
 				tv.Gravity = GravityFlags.Center;
@@ -175,7 +176,7 @@ namespace goheja
 
 			_events = new List<GoHejaEvent>();
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_EVENTS);
 
@@ -211,7 +212,7 @@ namespace goheja
 		{
 			try
 			{
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
+				ThreadPool.QueueUserWorkItem(delegate
 				{
 					ShowLoadingView(Constants.MSG_LOADING_EVENTS);
 
@@ -258,7 +259,7 @@ namespace goheja
 		{
 			if (keyCode == Keycode.Back)
 			{
-				ActionBackCancel();
+                ActionBackCancel();
 			}
 
 			return base.OnKeyDown(keyCode, e);

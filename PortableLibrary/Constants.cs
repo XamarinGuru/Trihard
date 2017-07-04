@@ -3,6 +3,9 @@ namespace PortableLibrary
 {
 	public static class Constants
 	{
+        public const string FCM_SERVER_KEY = "AAAA0Z_Eixo:APA91bEAyWYyQkQ1YtXhZJKnLCcfMoAqRwfu1EMHdE6NcJrm48SKJC9Ipp0z1rbSl62KHnJRsUALFvVqyZg-QPAw7p6g1Z3-uw-6NvCcfL-kpjdPdNLfBjD9wFwdxs7FNbtahM3pmFGM";
+        public const string URL_FBDB_BASE = "https://trihard-c9203.firebaseio.com/";
+
 		public const string GOOGLE_MAP_API_KEY = "AIzaSyAiBwRUm_KZDv_sp3eI7F8hxkePqDTvY20";
 		public const int MAP_ZOOM_LEVEL = 15;
 
@@ -16,6 +19,7 @@ namespace PortableLibrary
 		public const string GOHEJA_BASEPATH = "http://go-heja.com/Service1.svc?wsdl";
 
 		//URLs
+        public const string URL_FCM_BASE = "https://fcm.googleapis.com/fcm/send";
 		public const string URL_TERMS = "http://go-heja.com/general/terms.html";
 		public const string URL_EVENT_MAP = "http://go-heja.com/nitro/calenPage.php?name={0}&startdate={1}&user={2}";
 		public const string URL_ANALYTICS_MAP = "http://go-heja.com:8080/nitro/mobongoing.php?txt={0}";
@@ -27,6 +31,8 @@ namespace PortableLibrary
 		public const string PATH_USER_IMAGE = "data/{0}/files/me.png";
 
 		public static double[] LOCATION_ISURAEL = { 31.0461, 34.8516 };
+
+        public const string COLOR_NEW_NOTIFICATION = "83DF13";
 
 		public const string MSG_TRACK_ERROR = 
 			"MOB error reported\n " +
@@ -64,6 +70,7 @@ namespace PortableLibrary
 		public const string MSG_COMFIRM_STOP_SPORT_COMP = "You sure you want to stop practice?";
 		public const string MSG_TRAKING_ERROR = "Tracking error into server...";
         public const string MSG_FAKE_USER_VIEW = "Coach, you are viewing {0}";
+        public const string STR_STATUS_SUCCESS = "Registered successfully to FCM user list.";
 
 		//TYPES
 		public const string TOTALS_ES_TIME = "Elapsed time";
@@ -121,6 +128,30 @@ namespace PortableLibrary
 		public const int TAG_EDIT_RUN = 1006;
 		public const int TAG_EDIT_BIKE = 1007;
 
+		public enum EVENT_TYPE
+		{
+			OTHER,
+			BIKE,
+            RUN,
+            SWIM,
+            TRIATHLON,
+            ANOTHER
+		}
+
+		public enum PLAYING_STATE
+		{
+			READY,
+			PLAYING,
+			PAUSE
+		}
+
+        public enum RECORDING_STATE
+        {
+            RECORDING,
+            START,
+            END
+        }
+
 		public enum USER_TYPE
 		{
 			COACH,
@@ -132,6 +163,12 @@ namespace PortableLibrary
 			TIME,
 			DATE
 		}
+
+        public enum OS_TYPE
+        {
+            iOS,
+            Android
+        }
 
 		public const int AVAILABLE_DISTANCE_MAP = 200;
 	}

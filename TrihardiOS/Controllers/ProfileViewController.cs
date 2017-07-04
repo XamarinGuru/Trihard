@@ -1,7 +1,6 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
-using EventKit;
 using GalaSoft.MvvmLight.Helpers;
 using PortableLibrary;
 using System.Threading.Tasks;
@@ -32,10 +31,10 @@ namespace location2
 
 		void InitUISettings()
 		{
-
+            btnNotificationSetting.Selected = AppSettings.CurrentUser.isFcmOn;
 		}
 
-		async public override void ViewWillAppear(bool animated)
+        async public override void ViewWillAppear(bool animated)
 		{
 			base.ViewWillAppear(animated);
 
@@ -108,13 +107,38 @@ namespace location2
 			UIApplication.SharedApplication.OpenUrl(new NSUrl(string.Format(Constants.URL_WATCH, userID, Constants.SPEC_GROUP_TYPE)));
 		}
 
-		partial void ActionSignOut(UIButton sender)
-		{
-			SignOutUser();
+        partial void ActionNotificationSetting(UIButton sender)
+        {
+			btnNotificationSetting.Selected = !btnNotificationSetting.Selected;
 
-			LoginViewController loginVC = Storyboard.InstantiateViewController("LoginViewController") as LoginViewController;
-			this.PresentViewController(loginVC, false, null);
+            var currentUser = AppSettings.CurrentUser;
+            currentUser.isFcmOn = btnNotificationSetting.Selected;
+            AppSettings.CurrentUser = currentUser;
+
+			InvokeOnMainThread(async () =>
+					{
+						ShowLoadingView(Constants.MSG_LOADING_DATA);
+
+						await FirebaseService.RegisterFCMUser(currentUser, true);
+
+						HideLoadingView();
+					});
 		}
+
+        partial void ActionSignOut(UIButton sender)
+        {
+            InvokeOnMainThread(async () =>
+                    {
+                        ShowLoadingView(Constants.MSG_LOADING_DATA);
+
+                        await SignOutUser();
+
+                        HideLoadingView();
+
+                        LoginViewController loginVC = Storyboard.InstantiateViewController("LoginViewController") as LoginViewController;
+                        this.PresentViewController(loginVC, false, null);
+                    });
+        }
 
 		#endregion
 
@@ -130,7 +154,8 @@ namespace location2
 			}
 			imagePicker.DismissViewControllerAsync(true);
 		}
-		void Handle_Canceled(object sender, EventArgs e)
+
+        void Handle_Canceled(object sender, EventArgs e)
 		{
 			imagePicker.DismissViewControllerAsync(true);
 		}

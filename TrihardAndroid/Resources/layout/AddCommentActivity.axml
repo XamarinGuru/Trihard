@@ -33,6 +33,22 @@
             android:minWidth="25px"
             android:minHeight="25px"
             android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:id="@+id/linearLayout1"
+            android:gravity="right">
+            <ImageView
+                android:src="@drawable/icon_send_comment"
+                android:layout_width="50dp"
+                android:layout_height="45dp"
+                android:id="@+id/ActionAddComment"
+                android:scaleType="fitXY"
+                android:layout_marginRight="20dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:id="@+id/linearLayout8"
             android:layout_weight="1">
@@ -43,7 +59,6 @@
                 android:id="@+id/txtComment"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="020dp"
-                android:layout_marginTop="50dp"
                 android:layout_marginBottom="50dp"
                 android:gravity="top"
                 android:background="#ffeaeaea"
@@ -52,21 +67,6 @@
                 android:textColorHint="#ffaeaeae"
                 android:textSize="15dp"
                 android:textColor="#ff000000" />
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:id="@+id/linearLayout7">
-            <Button
-                android:text="SAVE"
-                android:id="@+id/ActionAddComment"
-                android:textColor="#ffffff"
-                android:background="#ffe5a109"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textSize="17dp"
-                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

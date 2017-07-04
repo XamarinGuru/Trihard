@@ -354,7 +354,7 @@
                     android:id="@+id/btnStartPause"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:background="@drawable/go_button"
+                    android:background="@drawable/icon_play"
                     android:textColor="#000000"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true"
@@ -367,7 +367,7 @@
                     android:textColor="#000000"
                     android:layout_x="270dp"
                     android:layout_y="90dp"
-                    android:background="@drawable/stop_active"
+                    android:background="@drawable/icon_stop"
                     android:layout_alignParentRight="true"
                     android:layout_above="@+id/btnStartPause"
                     android:layout_marginBottom="15dp"
@@ -380,19 +380,6 @@
                     android:layout_y="5dp"
                     android:background="@drawable/bikeRound_new"
                     android:layout_centerHorizontal="true" />
-                <Button
-                    android:text="Lap distnace : 0:00"
-                    android:layout_width="146.0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btnLD"
-                    android:layout_marginRight="33.0dp"
-                    android:textColor="#ff100c0c"
-                    android:layout_x="6dp"
-                    android:layout_y="260dp"
-                    android:textSize="15dp"
-                    android:layout_alignParentBottom="true"
-                    android:shadowColor="#ffffff"
-                    android:layout_marginLeft="70dp" />
                 <Button
                     android:layout_width="60dp"
                     android:layout_height="60dp"

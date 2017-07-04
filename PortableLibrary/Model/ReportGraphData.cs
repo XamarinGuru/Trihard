@@ -7,7 +7,7 @@ namespace PortableLibrary
 	{
 		public bool useGraphSettings { get; set; }
 	}
-	public class ReportData
+	public class GReportData
 	{
 		public string date { get; set; }
 		public double tsb { get; set; }
@@ -74,7 +74,7 @@ namespace PortableLibrary
 		public string type { get; set; }
 		public string theme { get; set; }
 		public Legend legend { get; set; }
-		public List<ReportData> dataProvider { get; set; }
+		public List<GReportData> dataProvider { get; set; }
 		public bool synchronizeGrid { get; set; }
 		public List<ReportAxis> valueAxes { get; set; }
 		public List<ReportRegend> graphs { get; set; }
@@ -82,7 +82,7 @@ namespace PortableLibrary
 		public CategoryAxis categoryAxis { get; set; }
 		public Export export { get; set; }
 
-		public IList<object> GetSalesDataList()
+		public IList<object> GetDataList()
 		{
 			var list = new List<object>();
 			for (int i = 0; i < dataProvider.Count; i++)

@@ -16,6 +16,14 @@ namespace location2
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView imgNewSymbol { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIImageView imgPhoto { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel lblAuthor { get; set; }
 
         [Outlet]
@@ -32,6 +40,16 @@ namespace location2
 
         void ReleaseDesignerOutlets ()
         {
+            if (imgNewSymbol != null) {
+                imgNewSymbol.Dispose ();
+                imgNewSymbol = null;
+            }
+
+            if (imgPhoto != null) {
+                imgPhoto.Dispose ();
+                imgPhoto = null;
+            }
+
             if (lblAuthor != null) {
                 lblAuthor.Dispose ();
                 lblAuthor = null;

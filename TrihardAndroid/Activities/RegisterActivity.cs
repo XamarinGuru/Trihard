@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -163,7 +164,7 @@ namespace goheja
 			return isValid;
 		}
 
-        private void ActionSignUp(object sender, EventArgs eventArgs)
+        void ActionSignUp(object sender, EventArgs eventArgs)
         {
 			if (!IsNetEnable()) return;
 
@@ -171,13 +172,11 @@ namespace goheja
             {
 				if (Validate())
 				{
-					string deviceUDID = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
-
-					System.Threading.ThreadPool.QueueUserWorkItem(delegate
+					ThreadPool.QueueUserWorkItem(delegate
 					{
 						ShowLoadingView(Constants.MSG_SIGNUP);
 
-						var result = RegisterUser(txtFirstname.Text, txtLastname.Text, deviceUDID, txtUsername.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
+						var result = RegisterUser(txtFirstname.Text, txtLastname.Text, txtUsername.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
 
 						if (result == "user added")
 						{
@@ -185,17 +184,14 @@ namespace goheja
 
 							HideLoadingView();
 
-							if (loginUser.userId == null)
+							if (loginUser == null)
 							{
 								ShowMessageBox(null, Constants.MSG_SIGNUP_FAIL);
 							}
 							else
 							{
-								AppSettings.CurrentUser = loginUser;
-								AppSettings.DeviceUDID = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
-
 								Intent nextIntent;
-								if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+								if (loginUser.userType == Constants.USER_TYPE.ATHLETE)
 								{
 									nextIntent = new Intent(this, typeof(SwipeTabActivity));
 								}
@@ -219,7 +215,7 @@ namespace goheja
             catch (Exception ex)
             {
                 HideLoadingView();
-				ShowMessageBox(null, ex.Message.ToString());
+				ShowMessageBox(null, ex.Message);
             }
         }
 

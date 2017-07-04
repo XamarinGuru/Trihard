@@ -30,18 +30,5 @@ namespace location2
 				NSUserDefaults.StandardUserDefaults.SetString(strUser, userKey);
 			}
 		}
-
-		private const string deviceUDIDKey = "deviceUDID";
-		public static string DeviceUDID
-		{
-			get
-			{
-				return NSUserDefaults.StandardUserDefaults.StringForKey(deviceUDIDKey);
-			}
-			set
-			{
-				NSUserDefaults.StandardUserDefaults.SetString(value, deviceUDIDKey);
-			}
-		}
 	}
 }

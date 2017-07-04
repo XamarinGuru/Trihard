@@ -1,9 +1,9 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Android.Animation;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
@@ -47,7 +47,7 @@ namespace goheja
 
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_USER_DATA);
 

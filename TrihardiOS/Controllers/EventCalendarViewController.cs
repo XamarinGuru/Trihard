@@ -1,10 +1,11 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
 using PortableLibrary;
 using System.Collections.Generic;
 using Xuni.iOS.Calendar;
+using System.Threading;
 
 namespace location2
 {
@@ -113,7 +114,7 @@ namespace location2
 			if (!IsNetEnable()) return;
 
 			_events = new List<GoHejaEvent>();
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_EVENTS);
 
@@ -163,7 +164,7 @@ namespace location2
 				lblNoEvents.Hidden = true;
 			
 			var tblDataSource = new GoHejaEventTableViewSource(eventsByDate, this);
-			this.InvokeOnMainThread(delegate
+			InvokeOnMainThread(delegate
 			{
 				tableView.Source = tblDataSource;
 				tableView.ReloadData();
@@ -175,14 +176,13 @@ namespace location2
 
 		void InitPerformanceData(DateTime date)
 		{
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_EVENTS);
 
 				var performanceData = GetPerformanceForDate(date);
 
 				HideLoadingView();
-
 
 				InvokeOnMainThread(() =>
 				{
@@ -254,7 +254,8 @@ namespace location2
 				var selectedEvent = goHejaEvents[indexPath.Row];
 				UIStoryboard sb = UIStoryboard.FromName("Main", null);
 				EventInstructionController eventInstructionVC = sb.InstantiateViewController("EventInstructionController") as EventInstructionController;
-				eventInstructionVC.selectedEvent = selectedEvent;
+                eventInstructionVC.eventID = selectedEvent._id;
+                eventInstructionVC.isNotification = false;
 				eventCalendarVC.NavigationController.PushViewController(eventInstructionVC, true);
 			}
 		}

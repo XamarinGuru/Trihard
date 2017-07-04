@@ -10,6 +10,7 @@ using PortableLibrary;
 using EventArgs = System.EventArgs;
 using Com.GrapeCity.Xuni.ChartCore;
 using Android.Graphics;
+using System.Threading;
 
 namespace goheja
 {
@@ -43,13 +44,8 @@ namespace goheja
 			SetUISettings();
 
 			if (!rootActivity.IsNetEnable()) return;
-		}
 
-		public override void OnResume()
-		{
-			base.OnResume();
-
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				rootActivity.ShowLoadingView("Loading data...");
 
@@ -266,13 +262,13 @@ namespace goheja
 				mPChart.Annotations.Add(annoFocused);
 				#endregion
 
-				mPChart.ItemsSource = pData.GetSalesDataList();
+				mPChart.ItemsSource = pData.GetDataList();
 
 				#region custom tooltip
 				mPChart.Tooltip.Content = new MyTooltip(mPChart, this, pData, annoFocused);
 				#endregion
 				mPChart.ZoomMode = ZoomMode.X;
-				mPChart.AxisX.Scale = 1;
+                mPChart.AxisX.Scale = 1;
 			}
 			catch (Exception ex)
 			{
@@ -412,10 +408,10 @@ namespace goheja
 				mContext.mView.FindViewById<TextView>(Resource.Id.txtDailyTSS).Text = String.Format("Daily Load: {0}", data.dayliTss);
 				mContext.mView.FindViewById<TextView>(Resource.Id.txtDailyIF).Text = String.Format("Day Intencity: {0}", data.dayliIf);
 			}
-			catch (Exception err)
-			{
-			}
-		}
+            catch (Exception e)
+            {
+            }
+        }
 	}
 	#endregion
 }

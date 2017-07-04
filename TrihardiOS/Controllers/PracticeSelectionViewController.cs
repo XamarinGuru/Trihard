@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using PortableLibrary;
 using UIKit;
 
 namespace location2
@@ -24,7 +25,7 @@ namespace location2
 		partial void ActionSelectedType(UIButton sender)
 		{
 			AnalyticsViewController aVC = Storyboard.InstantiateViewController("AnalyticsViewController") as AnalyticsViewController;
-			aVC.pType = int.Parse(sender.Tag.ToString());
+			aVC.pType = (Constants.EVENT_TYPE)Enum.ToObject(typeof(Constants.EVENT_TYPE), int.Parse(sender.Tag.ToString()));
 			NavigationController.PushViewController(aVC, true);
 		}
 	}

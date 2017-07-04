@@ -107,13 +107,22 @@
                 android:id="@+id/linearLayout9"
                 android:layout_weight="2">
                 <CheckBox
-                    android:text="Performed / Performed without a device"
                     android:id="@+id/checkAttended"
                     android:textColor="#ffffffff"
                     android:textSize="15dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/item_checkbox"
+                    android:layout_marginRight="10dp"
+                    android:button="@null" />
+                <TextView
+                    android:text="Performed / Performed without a device"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:buttonTint="#ff40403e" />
+                    android:id="@+id/textView5"
+                    android:gravity="center_vertical"
+                    android:textSize="15dp"
+                    android:textColor="#ffffffff" />
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
@@ -259,45 +268,6 @@
                     android:max="4000"
                     android:progressTint="#ffe5a109"
                     android:progressBackgroundTint="#ff40403e" />
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:minWidth="25px"
-                android:minHeight="25px"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:id="@+id/linearLayout11"
-                android:layout_weight="1">
-                <TextView
-                    android:text="Comment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/textView5"
-                    android:gravity="bottom"
-                    android:textColor="#ffffffff"
-                    android:textSize="15dp" />
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:minWidth="25px"
-                android:minHeight="25px"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:id="@+id/linearLayout17"
-                android:layout_weight="3">
-                <EditText
-                    android:inputType="textMultiLine"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/txtComment"
-                    android:gravity="top"
-                    android:background="#ffeaeaea"
-                    android:hint="Type your comment..."
-                    android:padding="10dp"
-                    android:textColorHint="#ffaeaeae"
-                    android:textSize="15dp"
-                    android:textColor="#ff000000"
-                    android:layout_marginTop="5dp" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout

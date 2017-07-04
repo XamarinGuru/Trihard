@@ -1,41 +1,29 @@
-using System;
-using Foundation;
+﻿using System;
 using UIKit;
 using CoreLocation;
-using System.Threading.Tasks;
 using PortableLibrary;
 using Google.Maps;
 using System.Drawing;
 using CoreGraphics;
 using System.Collections.Generic;
+using System.Threading;
+
+using Constants = PortableLibrary.Constants;
+using System.Timers;
 
 namespace location2
 {
 	public partial class AnalyticsViewController : BaseViewController
 	{
-		enum RIDE_TYPE
-		{
-			bike = 0,
-			run = 1,
-			mountain = 2
-		};
-
-		enum PRACTICE_STATE
-		{
-			ready,
-			playing,
-			pause
-		}
-
-		public int pType;
-		PRACTICE_STATE pState = PRACTICE_STATE.ready;
+        public Constants.EVENT_TYPE pType;
+		Constants.PLAYING_STATE pState = Constants.PLAYING_STATE.READY;
 
 		MapView mMapView;
 		Marker markerMyLocation = null;
 
 		EventPoints mEventMarker = new EventPoints();
 
-		trackSvc.Service1 meServ = new trackSvc.Service1();
+        CLLocation _currentLocation, _lastLocation;
 
 		public AnalyticsViewController(IntPtr handle) : base(handle)
 		{
@@ -48,11 +36,11 @@ namespace location2
 
 			NavigationItem.HidesBackButton = true;
 
-			InitUISettings();
-
 			if (!IsNetEnable()) return;
+   
+            InitUISettings();
 
-			//MemberModel.rootMember = GetUserObject();
+            SetControlButtons();
 
 			InitMapView();
 		}
@@ -61,15 +49,15 @@ namespace location2
 		{
 			switch (pType)
 			{
-				case (int)RIDE_TYPE.bike:
+				case Constants.EVENT_TYPE.BIKE:
 					speedTypeLbl.Text = "km/h";
 					imgTypeIcon.Image = UIImage.FromBundle("bikeRound_new.png");
 					break;
-				case (int)RIDE_TYPE.run:
+				case Constants.EVENT_TYPE.RUN:
 					speedTypeLbl.Text = "min/km";
 					imgTypeIcon.Image = UIImage.FromBundle("runRound_new.png");
 					break;
-				case (int)RIDE_TYPE.mountain:
+				case Constants.EVENT_TYPE.OTHER:
 					speedTypeLbl.Text = "km/h";
 					imgTypeIcon.Image = UIImage.FromBundle("icon_06.png");
 					break;
@@ -90,7 +78,7 @@ namespace location2
 			var myLocation = LocationHelper.GetLocationResult();
 			var myLocation2D = new CLLocationCoordinate2D(myLocation.Latitude, myLocation.Longitude);
 
-			var camera = CameraPosition.FromCamera(myLocation2D, zoom: PortableLibrary.Constants.MAP_ZOOM_LEVEL);
+			var camera = CameraPosition.FromCamera(myLocation2D, Constants.MAP_ZOOM_LEVEL);
 			mMapView = MapView.FromCamera(RectangleF.Empty, camera);
 			mMapView.MyLocationEnabled = false;
 
@@ -123,9 +111,9 @@ namespace location2
 
 		void SetNearestEventMarkers()
 		{
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
-				ShowLoadingView(PortableLibrary.Constants.MSG_LOADING_ALL_MARKERS);
+				ShowLoadingView(Constants.MSG_LOADING_ALL_MARKERS);
 
 				MemberModel.rootMember = GetUserObject();
 
@@ -178,25 +166,7 @@ namespace location2
 			};
 		}
 
-		void SetMapPosition(CLLocation location, double bearing = -1)
-		{
-			try
-			{
-				if (mMapView == null) return;
-
-				if (bearing == -1)
-					mMapView.Animate(CameraPosition.FromCamera(location.Coordinate.Latitude, location.Coordinate.Longitude, zoom: PortableLibrary.Constants.MAP_ZOOM_LEVEL));
-				else
-					mMapView.Animate(CameraPosition.FromCamera(location.Coordinate.Latitude, location.Coordinate.Longitude, PortableLibrary.Constants.MAP_ZOOM_LEVEL, bearing, 0));
-
-				if (markerMyLocation != null)
-					markerMyLocation.Position = new CLLocationCoordinate2D(location.Coordinate.Latitude, location.Coordinate.Longitude);
-			}
-			catch (Exception ex)
-			{
-				ShowMessageBox(null, ex.Message);
-			}
-		}
+		
 
 		#region map pin click event
 		bool ClickedDropItem(MapView mapView, Marker marker)
@@ -215,203 +185,206 @@ namespace location2
 		}
 		#endregion
 
-
-
-		#region Public Methods
-		CLLocation _lastLocation = null;
-		double _currentDistance = 0;
-		Double _lastAltitude = 0;
-		DateTime _dt;
-		double _speed = 0;
-		float currdistance = 0;
-
-		int count = 0;
-
-		void LocationUpdated(object sender, EventArgs e)
-		{
-			count++;
-			Console.WriteLine("location===" + count + "\n");
-			CLLocationsUpdatedEventArgs locArgs = e as CLLocationsUpdatedEventArgs;
-			var location = locArgs.Locations[locArgs.Locations.Length - 1];
-
-			try
-			{
-				if (location != null & _lastLocation != null)
-				{
-					_currentDistance = _currentDistance + location.DistanceFrom(_lastLocation) / 1000;
-				}
-				_lastAltitude = NSUserDefaults.StandardUserDefaults.DoubleForKey("lastAltitude") + Calculate.difAlt(_lastAltitude, location.Altitude);
-			}
-			catch
-			{
-			}
-
-			_dt = DateTime.Now;
-
-			if (pType == (int)RIDE_TYPE.bike)
-			{
-				_speed = location.Speed * 3.6;
-			}
-			if (pType == (int)RIDE_TYPE.run)
-			{
-				if (location.Speed > 0)
-					_speed = 16.6666 / location.Speed;
-				else
-					_speed = 0;
-			}
-			float course = float.Parse(location.Course.ToString());
-
-			currdistance = float.Parse(_currentDistance.ToString());
-			float currAlt = float.Parse(_lastAltitude.ToString());
-			float currspeed = float.Parse(_speed.ToString());
-
-			try
-			{
-				var name = MemberModel.firstname + " " + MemberModel.lastname;
-				var loc = location.Coordinate.Latitude.ToString() + "," + location.Coordinate.Longitude.ToString();
-				var country = MemberModel.country;
-
-				var userId = GetUserID();
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
-				{
-					meServ.updateMomgoData(name, loc, _dt, true, AppSettings.DeviceUDID, currspeed, true, userId, country, currdistance, true, currAlt, true, course, true, 0, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
-					Console.Write("location update !!! " + name + "===" + loc + "===" + _dt.ToString() + "\n");
-				});
-
-				if (currspeed < 0)
-					currspeed = 0;
-				lblSpeed.Text = currspeed.ToString("0.00");
-				lblAlt.Text = currAlt.ToString("0.00");
-				lblDist.Text = _currentDistance.ToString("0.00");
-
-				SetMapPosition(location, course);
-
-				_lastLocation = location;
-				NSUserDefaults.StandardUserDefaults.SetDouble(_currentDistance, "lastDistance");
-				NSUserDefaults.StandardUserDefaults.SetDouble(currAlt, "lastAltitude");
-			}
-			catch
-			{
-			}
-		}
-
-
-		#endregion
-		private int _duration = 0;
-
-		async Task StartTimer()
-		{
-			_duration = 0;
-			while (true)
-			{
-				await Task.Delay(1000);
-				if (pState == PRACTICE_STATE.playing) _duration++;
-				NSUserDefaults.StandardUserDefaults.SetInt(_duration, "timer");
-				string s = TimeSpan.FromSeconds(_duration).ToString(@"hh\:mm\:ss");
-
-				lblTimer.Text = s;
-
-				Console.Write("duration===" + _duration + "\n");
-			}
-		}
-
-		partial void ActionBack(UIButton sender)
-		{
-			if (pState == PRACTICE_STATE.ready)
-			{
-				NavigationController.PopViewController(true);
-			}
-			else
-			{
-				ShowMessageBox(null, "You sure you want to stop practice?", "Cancel", new[] { "OK" }, StopPractice);
-			}
-		}
-
 		partial void ActionStartPause(UIButton sender)
 		{
-			if (pState == PRACTICE_STATE.ready)
+
+			switch (pState)
 			{
-				StartTimer();
-
-				btnStartPause.SetBackgroundImage(UIImage.FromFile("icon_pause.png"), UIControlState.Normal);
-				btnStop.Hidden = false;
-
-				LocationHelper.StartLocationManager();
-				LocationHelper.LocationUpdated += LocationUpdated;
-
-				pState = PRACTICE_STATE.playing;
-
-				try
-				{
-					var name = MemberModel.firstname + " " + MemberModel.lastname;
-					var location = _lastLocation.Coordinate.Latitude.ToString() + "," + _lastLocation.Coordinate.Longitude.ToString();
-					var speed = float.Parse(_lastLocation.Speed.ToString());
-					var alt = float.Parse(NSUserDefaults.StandardUserDefaults.DoubleForKey("lastAltitude").ToString());
-					var bearing = float.Parse(_lastLocation.Course.ToString());
-
-					var userId = GetUserID();
-					System.Threading.ThreadPool.QueueUserWorkItem(delegate
-					{
-						meServ.updateMomgoData(name, location, _dt, true, AppSettings.DeviceUDID, speed, true, userId, MemberModel.country, currdistance, true, alt, true, bearing, true, 1, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
-					});
-				}
-				catch
-				{
-				}
+				case Constants.PLAYING_STATE.READY:
+					pState = Constants.PLAYING_STATE.PLAYING;
+					StartTimer();
+					LocationHelper.StartLocationManager();
+                    LocationHelper.LocationUpdated -= LocationUpdated;
+					LocationHelper.LocationUpdated += LocationUpdated;
+					RecordPractice(Constants.RECORDING_STATE.START);
+					break;
+				case Constants.PLAYING_STATE.PLAYING:
+					pState = Constants.PLAYING_STATE.PAUSE;
+					LocationHelper.StopLocationManager();
+					break;
+				case Constants.PLAYING_STATE.PAUSE:
+					pState = Constants.PLAYING_STATE.PLAYING;
+					LocationHelper.StartLocationManager();
+                    LocationHelper.LocationUpdated -= LocationUpdated;
+					LocationHelper.LocationUpdated += LocationUpdated;
+					break;
 			}
-			else if (pState == PRACTICE_STATE.playing)
+
+			SetControlButtons();
+		}
+
+		void SetControlButtons()
+		{
+			switch (pState)
 			{
-				btnStartPause.SetBackgroundImage(UIImage.FromFile("icon_resume.png"), UIControlState.Normal);
-				btnStop.Hidden = false;
-
-				LocationHelper.StopLocationManager();
-
-				pState = PRACTICE_STATE.pause;
-			}
-			else if (pState == PRACTICE_STATE.pause)
-			{
-				btnStartPause.SetBackgroundImage(UIImage.FromFile("icon_pause.png"), UIControlState.Normal);
-				btnStop.Hidden = false;
-
-				LocationHelper.StartLocationManager();
-				LocationHelper.LocationUpdated += LocationUpdated;
-
-				pState = PRACTICE_STATE.playing;
+				case Constants.PLAYING_STATE.READY:
+                    btnBack.Hidden = false;
+                    btnStop.Hidden = true;
+					btnStartPause.SetBackgroundImage(UIImage.FromFile("icon_play.png"), UIControlState.Normal);
+					break;
+				case Constants.PLAYING_STATE.PLAYING:
+					btnBack.Hidden = true;
+					btnStop.Hidden = false;
+					btnStartPause.SetBackgroundImage(UIImage.FromFile("icon_pause.png"), UIControlState.Normal);
+					break;
+				case Constants.PLAYING_STATE.PAUSE:
+					btnBack.Hidden = true;
+					btnStop.Hidden = false;
+					btnStartPause.SetBackgroundImage(UIImage.FromFile("icon_play.png"), UIControlState.Normal);
+					break;
 			}
 		}
+
+        partial void ActionBack(UIButton sender)
+        {
+            NavigationController.PopViewController(true);
+        }
 
 		partial void ActionStop(UIButton sender)
 		{
-			StopPractice();
+			ShowMessageBox(null, Constants.MSG_COMFIRM_STOP_SPORT_COMP, "Cancel", new[] { "OK" }, StopPractice);
 		}
 
 		void StopPractice()
 		{
+            RecordPractice(Constants.RECORDING_STATE.END);
+
+            LocationHelper.StopLocationManager();
+
+			pState = Constants.PLAYING_STATE.READY;
+			SetControlButtons();
+
+            lblSpeed.Text = "0.0";
+            lblAlt.Text = "0.0";
+            lblDist.Text = "0.0";
+            lblTimer.Text = "00:00:00";
+
+            lastAlt = 0;
+            dist = 0;
+            gainedAlt = 0;
+
+            duration = 0;
+		}
+
+		#region Public Methods
+
+        float lastAlt, dist, gainedAlt;
+        int nUpdateCount = 0;
+
+        void LocationUpdated(object sender, EventArgs e)
+        {
+            CLLocationsUpdatedEventArgs locArgs = e as CLLocationsUpdatedEventArgs;
+
+            _currentLocation = locArgs.Locations[locArgs.Locations.Length - 1];
+
+            if (_currentLocation == null) return;
+
+            SetMapPosition(_currentLocation);
+
+            Console.WriteLine("Location Updated===" + nUpdateCount);
+
+            if (pState != Constants.PLAYING_STATE.PLAYING || (nUpdateCount++) % 2 != 0) return;
+
+            try
+            {
+                if (_lastLocation != null)
+                    dist += (float)_currentLocation.DistanceFrom(_lastLocation) / 1000;
+
+                if (pType == Constants.EVENT_TYPE.BIKE)
+                {
+					lblSpeed.Text = (_currentLocation.Speed * 3.6f).ToString("0.00");
+                }
+                if (pType == Constants.EVENT_TYPE.RUN)
+                {
+                    lblSpeed.Text = (16.6666 / (_currentLocation.Speed)).ToString("0.00");
+                }
+				if (_currentLocation.Speed < 0.1)
+				{
+					lblSpeed.Text = "0.00";
+				}
+
+				float dAlt = DifAlt(lastAlt, (float)_currentLocation.Altitude);
+				if (dAlt < 4) gainedAlt = gainedAlt + dAlt;
+
+				lblAlt.Text = gainedAlt.ToString("0.00");
+                lblDist.Text = dist.ToString("0.00");
+
+				_lastLocation = _currentLocation;
+				lastAlt = (float)_currentLocation.Altitude;
+
+                RecordPractice(Constants.RECORDING_STATE.RECORDING);
+            }
+            catch
+            {
+            }
+        }
+
+		void RecordPractice(Constants.RECORDING_STATE recordType)
+		{
+			var tRecord = new TRecord();
+
 			try
 			{
-				var name = MemberModel.firstname + " " + MemberModel.lastname;
-				var location = _lastLocation.Coordinate.Latitude.ToString() + "," + _lastLocation.Coordinate.Longitude.ToString();
-				var speed = float.Parse(_lastLocation.Speed.ToString());
-				var alt = float.Parse(NSUserDefaults.StandardUserDefaults.DoubleForKey("lastAltitude").ToString());
-				var bearing = float.Parse(_lastLocation.Course.ToString());
+				tRecord.fullName = MemberModel.firstname + " " + MemberModel.lastname; ;
+                tRecord.loc = String.Format("{0},{1}", _currentLocation.Coordinate.Latitude, _currentLocation.Coordinate.Longitude); ;
+				tRecord.date = DateTime.Now;
+				tRecord.deviceId = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+				tRecord.athid = GetUserID();
+				tRecord.country = MemberModel.country;
+				tRecord.distance = dist;
+				tRecord.speed = float.Parse(_currentLocation.Speed.ToString()) * 3.6f;
+				tRecord.gainedAlt = gainedAlt;
+				tRecord.bearinng = (float)_currentLocation.Course;
+				tRecord.recordType = recordType;
+				tRecord.sportType = pType;
 
-				var userId = GetUserID();
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
-				{
-					meServ.updateMomgoData(name, location, _dt, true, AppSettings.DeviceUDID, speed, true, userId, MemberModel.country, currdistance, true, alt, true, bearing, true, 2, true, pType.ToString(), PortableLibrary.Constants.SPEC_GROUP_TYPE);
-				});
+				RecordPracticeTrack(tRecord);
 			}
 			catch
 			{
 			}
+		}
 
-			LocationHelper.StopLocationManager();
+		#endregion
 
-			NSUserDefaults.StandardUserDefaults.SetInt(0, "timer");
-			NSUserDefaults.StandardUserDefaults.SetDouble(0, "lastDistance");
-			NSUserDefaults.StandardUserDefaults.SetDouble(0, "lastAltitude");
+		void SetMapPosition(CLLocation location)
+		{
+			try
+			{
+				if (mMapView == null) return;
 
-			NavigationController.PopViewController(true);
+                if (location.Course == -1)
+					mMapView.Animate(CameraPosition.FromCamera(location.Coordinate.Latitude, location.Coordinate.Longitude, Constants.MAP_ZOOM_LEVEL));
+				else
+					mMapView.Animate(CameraPosition.FromCamera(location.Coordinate.Latitude, location.Coordinate.Longitude, Constants.MAP_ZOOM_LEVEL, location.Course, 0));
+
+				if (markerMyLocation != null)
+					markerMyLocation.Position = new CLLocationCoordinate2D(location.Coordinate.Latitude, location.Coordinate.Longitude);
+			}
+			catch (Exception ex)
+			{
+				ShowMessageBox(null, ex.Message);
+			}
+		}
+
+		System.Timers.Timer _timer = new System.Timers.Timer();
+		int duration = 0;
+
+		void StartTimer()
+		{
+			_timer.Interval = 1000;
+			_timer.Elapsed -= OnTimedEvent;
+			_timer.Elapsed += OnTimedEvent;
+			_timer.Enabled = true;
+		}
+		private void OnTimedEvent(object sender, ElapsedEventArgs e)
+		{
+			if (pState == Constants.PLAYING_STATE.PLAYING) duration++;
+
+            InvokeOnMainThread(() =>
+            {
+                lblTimer.Text = TimeSpan.FromSeconds(duration).ToString(@"hh\:mm\:ss");
+            });
 		}
 	}
 }

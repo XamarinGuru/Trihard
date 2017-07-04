@@ -16,26 +16,6 @@ namespace location2
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIImageView img1 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIImageView img2 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIImageView img3 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIImageView img4 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIImageView img5 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIImageView imgPhoto { get; set; }
 
         [Outlet]
@@ -46,33 +26,12 @@ namespace location2
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel lblName { get; set; }
 
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIScrollView scrollView { get; set; }
+
         void ReleaseDesignerOutlets ()
         {
-            if (img1 != null) {
-                img1.Dispose ();
-                img1 = null;
-            }
-
-            if (img2 != null) {
-                img2.Dispose ();
-                img2 = null;
-            }
-
-            if (img3 != null) {
-                img3.Dispose ();
-                img3 = null;
-            }
-
-            if (img4 != null) {
-                img4.Dispose ();
-                img4 = null;
-            }
-
-            if (img5 != null) {
-                img5.Dispose ();
-                img5 = null;
-            }
-
             if (imgPhoto != null) {
                 imgPhoto.Dispose ();
                 imgPhoto = null;
@@ -86,6 +45,11 @@ namespace location2
             if (lblName != null) {
                 lblName.Dispose ();
                 lblName = null;
+            }
+
+            if (scrollView != null) {
+                scrollView.Dispose ();
+                scrollView = null;
             }
         }
     }

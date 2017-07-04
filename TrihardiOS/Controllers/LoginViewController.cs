@@ -1,8 +1,9 @@
-using Foundation;
+﻿﻿using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
 using PortableLibrary;
+using System.Threading;
 
 namespace location2
 {
@@ -69,27 +70,25 @@ namespace location2
 
 			if (Validate())
 			{
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
+                var strEmail = txtEmail.Text;
+                var strPassword = txtPassword.Text;
+
+                ThreadPool.QueueUserWorkItem(delegate
 				{
 					ShowLoadingView(Constants.MSG_LOGIN);
+					var loginUser = LoginUser(strEmail, strPassword);
+					HideLoadingView();
 
-					InvokeOnMainThread(() =>
-					{
-						var loginUser = LoginUser(txtEmail.Text, txtPassword.Text);
-
-						HideLoadingView();
-
-						if (loginUser.userId == null)
+                    InvokeOnMainThread(() =>
+                    {
+						if (loginUser == null)
 						{
                             ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
 						}
 						else
 						{
-							AppSettings.CurrentUser = loginUser;
-							AppSettings.DeviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
-
 							UIViewController nextVC;
-							if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+							if (loginUser.userType == Constants.USER_TYPE.ATHLETE)
 							{
 								nextVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
 							}
@@ -97,29 +96,30 @@ namespace location2
 							{
 								var tabVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
 								nextVC = new UINavigationController(tabVC);
-								//nextVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
+
+								AppDelegate myDelegate = UIApplication.SharedApplication.Delegate as AppDelegate;
+								myDelegate.navVC = nextVC as UINavigationController;
 							}
-							this.PresentViewController(nextVC, true, null);
+							PresentViewController(nextVC, true, null);
 						}
 					});
 				});
-
 			}
 		}
 		partial void ActionForgotPassword(UIButton sender)
 		{
 			ForgotPasswordViewController mainVC = Storyboard.InstantiateViewController("ForgotPasswordViewController") as ForgotPasswordViewController;
-			this.PresentViewController(mainVC, true, null);
+			PresentViewController(mainVC, true, null);
 		}
 
 		partial void ActionBack(UIButton sender)
 		{
 			InitViewController mainVC = Storyboard.InstantiateViewController("InitViewController") as InitViewController;
-			this.PresentViewController(mainVC, false, null);
+			PresentViewController(mainVC, false, null);
 		}
 
 		#region keyboard process
-		private void KeyBoardUpNotification(NSNotification notification)
+		void KeyBoardUpNotification(NSNotification notification)
 		{
 			if (!txtEmail.IsEditing && !txtPassword.IsEditing)
 				return;
@@ -137,11 +137,11 @@ namespace location2
 				moveViewUp = false;
 			}
 		}
-		private void KeyBoardDownNotification(NSNotification notification)
+		void KeyBoardDownNotification(NSNotification notification)
 		{
 			if (moveViewUp) { ScrollTheView(false); }
 		}
-		private void ScrollTheView(bool move)
+		void ScrollTheView(bool move)
 		{
 			UIView.BeginAnimations(string.Empty, System.IntPtr.Zero);
 			UIView.SetAnimationDuration(0.3);
@@ -156,7 +156,7 @@ namespace location2
 				frame.Y = 0;
 			}
 
-			this.View.Frame = frame;
+			View.Frame = frame;
 			UIView.CommitAnimations();
 		}
 		#endregion

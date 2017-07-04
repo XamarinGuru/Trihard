@@ -11,21 +11,44 @@
         android:layout_height="wrap_content"
         android:id="@+id/ActionEventDetail">
         <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:id="@+id/linearLayout7"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content">
+            <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imgProfile"
+                android:src="@drawable/icon_no_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:riv_corner_radius="15dip"
+                app:riv_border_width="2dip"
+                app:riv_border_color="#333333"
+                app:riv_mutate_background="true"
+                app:riv_tile_mode="repeat"
+                app:riv_oval="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp" />
+        </LinearLayout>
+        <LinearLayout
             android:orientation="vertical"
             android:minWidth="25px"
             android:minHeight="25px"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/linearLayout3"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:layout_marginRight="10dp">
             <LinearLayout
                 android:orientation="horizontal"
                 android:minWidth="25px"
                 android:minHeight="25px"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:id="@+id/linearLayout4"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:gravity="center_vertical">
                 <TextView
@@ -35,20 +58,34 @@
                     android:textSize="14dp"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:minWidth="25px"
+                    android:minHeight="25px"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/linearLayout6"
+                    android:layout_weight="1" />
+                <ImageView
+                    android:src="@drawable/icon_new_notification"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:id="@+id/imgNewSymbol"
+                    android:foregroundGravity="top" />
                 <TextView
                     android:text="2:34 pm | 8/8/2016"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/lblCommentDate"
-                    android:layout_weight="1"
                     android:gravity="right"
                     android:textSize="13dp"
-                    android:layout_marginRight="10dp"
-                    android:textColor="#ffffffff" />
+                    android:layout_marginRight="5dp"
+                    android:textColor="#ffffffff"
+                    android:layout_marginLeft="5dp" />
             </LinearLayout>
             <TextView
-                android:text="this is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/lblComment"
@@ -56,14 +93,17 @@
                 android:textSize="14dp"
                 android:textStyle="normal"
                 android:layout_marginBottom="10dp"
-                android:layout_marginRight="20dp" />
+                android:layout_marginRight="20dp"
+                android:text="this is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is commentthis is comment" />
             <LinearLayout
                 android:orientation="horizontal"
                 android:minWidth="25px"
                 android:minHeight="25px"
-                android:id="@+id/linearLayout5"
+                android:id="@+id/footerView"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:background="#ff1e1e1e" />
         </LinearLayout>
     </LinearLayout>

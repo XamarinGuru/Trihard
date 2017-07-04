@@ -1,8 +1,9 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
 using PortableLibrary;
+using System.Threading;
 
 namespace location2
 {
@@ -39,7 +40,7 @@ namespace location2
 			btnChangePW.BackgroundColor = GROUP_COLOR;
 		}
 
-		private bool Validate()
+		bool Validate()
 		{
 			btnValidPassword.Hidden = false;
 			btnValidPwConfirm.Hidden = false;
@@ -75,7 +76,7 @@ namespace location2
 
 			if (Validate())
 			{
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
+				ThreadPool.QueueUserWorkItem(delegate
 				{
 					ShowLoadingView(Constants.MSG_CHANGE_PASSWORD);
 
@@ -128,11 +129,11 @@ namespace location2
 			}
 		}
 
-		private void KeyBoardDownNotification(NSNotification notification)
+		void KeyBoardDownNotification(NSNotification notification)
 		{
 			if (moveViewUp) { ScrollTheView(false); }
 		}
-		private void ScrollTheView(bool move)
+		void ScrollTheView(bool move)
 		{
 			UIView.BeginAnimations(string.Empty, System.IntPtr.Zero);
 			UIView.SetAnimationDuration(0.3);

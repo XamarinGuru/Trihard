@@ -1,9 +1,9 @@
-using Foundation;
+﻿﻿using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
 using PortableLibrary;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace location2
 {
@@ -136,7 +136,7 @@ namespace location2
 		}
 
 		#region keyboard process
-		private void KeyBoardUpNotification(NSNotification notification)
+		void KeyBoardUpNotification(NSNotification notification)
 		{
 			if (!txtEmail.IsEditing && !txtPassword.IsEditing)
 				return;
@@ -154,16 +154,16 @@ namespace location2
 				moveViewUp = false;
 			}
 		}
-		private void KeyBoardDownNotification(NSNotification notification)
+		void KeyBoardDownNotification(NSNotification notification)
 		{
 			if (moveViewUp) { ScrollTheView(false); }
 		}
-		private void ScrollTheView(bool move)
+		void ScrollTheView(bool move)
 		{
 			UIView.BeginAnimations(string.Empty, System.IntPtr.Zero);
 			UIView.SetAnimationDuration(0.3);
 
-			CGRect frame = this.View.Frame;
+			CGRect frame = View.Frame;
 
 			if (move)
 			{
@@ -173,114 +173,77 @@ namespace location2
 				frame.Y = 0;
 			}
 
-			this.View.Frame = frame;
+			View.Frame = frame;
 			UIView.CommitAnimations();
 		}
-		#endregion
+        #endregion
 
-		#region event handler
-		//async partial void ActionSignUp(UIButton sender)
-		//{
-		//	if (!IsNetEnable()) return;
+        #region event handler
+        partial void ActionSignUp(UIButton sender)
+        {
+            if (!IsNetEnable()) return;
 
-		//	if (Validate())
-		//	{
-		//		try
-		//		{
-		//			string deviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+            if (Validate())
+            {
+                try
+                {
+					var strFName = txtFirstName.Text;
+					var strLName = txtLastName.Text;
+					var strNName = txtNickName.Text;
+					var strPW = txtPassword.Text;
+					var strEmail = txtEmail.Text;
+					var nAge = int.Parse(txtAge.Text);
 
-		//			var result = "";
-
-		//			ShowLoadingView(Constants.MSG_SIGNUP);
-		//			await Task.Run(() =>
-		//			{
-		//				InvokeOnMainThread(() => { result = RegisterUser(txtFirstName.Text, txtLastName.Text, deviceUDID, txtNickName.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text)); });
-		//			});
-
-		//			if (result == "user added")
-		//				GoToMainPage(deviceUDID);
-		//			else
-		//			{
-		//				await Task.Run(() =>
-		//				{
-		//					HideLoadingView();
-		//				});
-
-		//				ShowMessageBox(null, result);
-		//			}
-		//		}
-		//		catch (Exception err)
-		//		{
-		//			await Task.Run(() =>
-		//			{
-		//				HideLoadingView();
-		//			});
-		//			ShowMessageBox(null, err.Message.ToString());
-		//		}
-		//	}
-		//}
-		partial void ActionSignUp(UIButton sender)
-		{
-			if (!IsNetEnable()) return;
-
-			if (Validate())
-			{
-				try
-				{
-					string deviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
-
-					System.Threading.ThreadPool.QueueUserWorkItem(delegate
+					ThreadPool.QueueUserWorkItem(delegate
 					{
 						ShowLoadingView(Constants.MSG_SIGNUP);
+                        var result = RegisterUser(strFName, strLName, strNName, strPW, strEmail, nAge);
 
-						InvokeOnMainThread(() =>
-						{
-							var result = RegisterUser(txtFirstName.Text, txtLastName.Text, deviceUDID, txtNickName.Text, txtPassword.Text, txtEmail.Text, int.Parse(txtAge.Text));
+                        if (result == "user added")
+                        {
+                            var loginUser = LoginUser(strEmail, strPW);
 
-							if (result == "user added")
-							{
-								var loginUser = LoginUser(txtEmail.Text, txtPassword.Text);
+                            HideLoadingView();
 
-								HideLoadingView();
+                            InvokeOnMainThread(() =>
+	                        {
+	                            if (loginUser == null)
+	                            {
+	                                ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
+	                            }
+	                            else
+	                            {
+	                                UIViewController nextVC;
+	                                if (loginUser.userType == Constants.USER_TYPE.ATHLETE)
+	                                {
+	                                    nextVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
+	                                }
+	                                else
+	                                {
+	                                    var tabVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
+	                                    nextVC = new UINavigationController(tabVC);
 
-								if (loginUser.userId == null)
-								{
-									ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
-								}
-								else
-								{
-									AppSettings.CurrentUser = loginUser;
-									AppSettings.DeviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
-
-									UIViewController nextVC;
-									if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
-									{
-										nextVC = Storyboard.InstantiateViewController("MainPageViewController") as MainPageViewController;
-									}
-									else
-									{
-										var tabVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
-										nextVC = new UINavigationController(tabVC);
-										//nextVC = Storyboard.InstantiateViewController("CoachHomeViewController") as CoachHomeViewController;
-									}
-									this.PresentViewController(nextVC, true, null);
-								}
-							}
-							else
-							{
-								HideLoadingView();
-								ShowMessageBox(null, result);
-							}
-						});
-					});
-				}
-				catch (Exception ex)
-				{
-					HideLoadingView();
-					ShowMessageBox(null, ex.Message.ToString());
-				}
-			}
-		}
+	                                    AppDelegate myDelegate = UIApplication.SharedApplication.Delegate as AppDelegate;
+	                                    myDelegate.navVC = nextVC as UINavigationController;
+	                                }
+	                                PresentViewController(nextVC, true, null);
+	                            }
+	                        });
+                        }
+                        else
+                        {
+                            HideLoadingView();
+                            ShowMessageBox(null, result);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    HideLoadingView();
+                    ShowMessageBox(null, ex.Message.ToString());
+                }
+            }
+        }
 
 		partial void ActionAcceptTerms(UIButton sender)
 		{

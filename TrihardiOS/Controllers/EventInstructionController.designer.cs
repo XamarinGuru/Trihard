@@ -1,6 +1,6 @@
 // WARNING
 //
-// This file has been generated automatically by Xamarin Studio from the outlets and
+// This file has been generated automatically by Visual Studio from the outlets and
 // actions declared in your storyboard file.
 // Manual changes to this file will not be maintained.
 //
@@ -20,15 +20,47 @@ namespace location2
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIButton btnAddComment { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIButton btnAdjust { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton btnEdit { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton btnLaps { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton btnTotals { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIView contentComment { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.NSLayoutConstraint contentEditBtnHeight { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView contentLaps { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView contentTotals { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITextField editPerformedDistance { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITextField editPerformedDuration { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITextField editPerformedLoad { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -40,11 +72,27 @@ namespace location2
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.NSLayoutConstraint heightInstructions { get; set; }
+        UIKit.UIImageView imgEdit { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIImageView imgType { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView lapHeaderForBikeOrRun { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView lapHeaderForOther { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView lapHeaderForSwim { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView lapHeaderForTriathlon { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -56,19 +104,63 @@ namespace location2
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblPDistance { get; set; }
+        UIKit.UILabel lblPerformedAcent { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblPDuration { get; set; }
+        UIKit.UILabel lblPerformedAvgHR { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblPHB { get; set; }
+        UIKit.UILabel lblPerformedAvgPower { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblPLoad { get; set; }
+        UIKit.UILabel lblPerformedAvgSpeed { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPerformedCalories { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPerformedLeveledPower { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedAcent { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedAvgHr { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedAvgPower { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedAvgSpeed { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedCalories { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedDistance { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedDuration { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedLeveledPower { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel lblPlannedLoad { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -116,39 +208,19 @@ namespace location2
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue0 { get; set; }
+        UIKit.UIScrollView scrollView { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue1 { get; set; }
+        UIKit.UIView tabLapsBorder { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue2 { get; set; }
+        UIKit.UITableView tableView { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue3 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue4 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue5 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue6 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue7 { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel lblTotalValue8 { get; set; }
+        UIKit.UIView tabTotalsBorder { get; set; }
 
         [Action ("ActionAddComment:")]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -158,9 +230,17 @@ namespace location2
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void ActionAdjustTrainning (UIKit.UIButton sender);
 
+        [Action ("ActionEditPerformed:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        partial void ActionEditPerformed (UIKit.UIButton sender);
+
         [Action ("ActionLocation:")]
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void ActionLocation (UIKit.UIButton sender);
+
+        [Action ("ActionTab:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        partial void ActionTab (UIKit.UIButton sender);
 
         void ReleaseDesignerOutlets ()
         {
@@ -169,19 +249,59 @@ namespace location2
                 bgBtnAdjustTraning = null;
             }
 
-            if (btnAddComment != null) {
-                btnAddComment.Dispose ();
-                btnAddComment = null;
-            }
-
             if (btnAdjust != null) {
                 btnAdjust.Dispose ();
                 btnAdjust = null;
             }
 
+            if (btnEdit != null) {
+                btnEdit.Dispose ();
+                btnEdit = null;
+            }
+
+            if (btnLaps != null) {
+                btnLaps.Dispose ();
+                btnLaps = null;
+            }
+
+            if (btnTotals != null) {
+                btnTotals.Dispose ();
+                btnTotals = null;
+            }
+
             if (contentComment != null) {
                 contentComment.Dispose ();
                 contentComment = null;
+            }
+
+            if (contentEditBtnHeight != null) {
+                contentEditBtnHeight.Dispose ();
+                contentEditBtnHeight = null;
+            }
+
+            if (contentLaps != null) {
+                contentLaps.Dispose ();
+                contentLaps = null;
+            }
+
+            if (contentTotals != null) {
+                contentTotals.Dispose ();
+                contentTotals = null;
+            }
+
+            if (editPerformedDistance != null) {
+                editPerformedDistance.Dispose ();
+                editPerformedDistance = null;
+            }
+
+            if (editPerformedDuration != null) {
+                editPerformedDuration.Dispose ();
+                editPerformedDuration = null;
+            }
+
+            if (editPerformedLoad != null) {
+                editPerformedLoad.Dispose ();
+                editPerformedLoad = null;
             }
 
             if (heightAdjust != null) {
@@ -194,14 +314,34 @@ namespace location2
                 heightCommentContent = null;
             }
 
-            if (heightInstructions != null) {
-                heightInstructions.Dispose ();
-                heightInstructions = null;
+            if (imgEdit != null) {
+                imgEdit.Dispose ();
+                imgEdit = null;
             }
 
             if (imgType != null) {
                 imgType.Dispose ();
                 imgType = null;
+            }
+
+            if (lapHeaderForBikeOrRun != null) {
+                lapHeaderForBikeOrRun.Dispose ();
+                lapHeaderForBikeOrRun = null;
+            }
+
+            if (lapHeaderForOther != null) {
+                lapHeaderForOther.Dispose ();
+                lapHeaderForOther = null;
+            }
+
+            if (lapHeaderForSwim != null) {
+                lapHeaderForSwim.Dispose ();
+                lapHeaderForSwim = null;
+            }
+
+            if (lapHeaderForTriathlon != null) {
+                lapHeaderForTriathlon.Dispose ();
+                lapHeaderForTriathlon = null;
             }
 
             if (lblCommentTitle != null) {
@@ -214,24 +354,79 @@ namespace location2
                 lblData = null;
             }
 
-            if (lblPDistance != null) {
-                lblPDistance.Dispose ();
-                lblPDistance = null;
+            if (lblPerformedAcent != null) {
+                lblPerformedAcent.Dispose ();
+                lblPerformedAcent = null;
             }
 
-            if (lblPDuration != null) {
-                lblPDuration.Dispose ();
-                lblPDuration = null;
+            if (lblPerformedAvgHR != null) {
+                lblPerformedAvgHR.Dispose ();
+                lblPerformedAvgHR = null;
             }
 
-            if (lblPHB != null) {
-                lblPHB.Dispose ();
-                lblPHB = null;
+            if (lblPerformedAvgPower != null) {
+                lblPerformedAvgPower.Dispose ();
+                lblPerformedAvgPower = null;
             }
 
-            if (lblPLoad != null) {
-                lblPLoad.Dispose ();
-                lblPLoad = null;
+            if (lblPerformedAvgSpeed != null) {
+                lblPerformedAvgSpeed.Dispose ();
+                lblPerformedAvgSpeed = null;
+            }
+
+            if (lblPerformedCalories != null) {
+                lblPerformedCalories.Dispose ();
+                lblPerformedCalories = null;
+            }
+
+            if (lblPerformedLeveledPower != null) {
+                lblPerformedLeveledPower.Dispose ();
+                lblPerformedLeveledPower = null;
+            }
+
+            if (lblPlannedAcent != null) {
+                lblPlannedAcent.Dispose ();
+                lblPlannedAcent = null;
+            }
+
+            if (lblPlannedAvgHr != null) {
+                lblPlannedAvgHr.Dispose ();
+                lblPlannedAvgHr = null;
+            }
+
+            if (lblPlannedAvgPower != null) {
+                lblPlannedAvgPower.Dispose ();
+                lblPlannedAvgPower = null;
+            }
+
+            if (lblPlannedAvgSpeed != null) {
+                lblPlannedAvgSpeed.Dispose ();
+                lblPlannedAvgSpeed = null;
+            }
+
+            if (lblPlannedCalories != null) {
+                lblPlannedCalories.Dispose ();
+                lblPlannedCalories = null;
+            }
+
+            if (lblPlannedDistance != null) {
+                lblPlannedDistance.Dispose ();
+                lblPlannedDistance = null;
+            }
+
+            if (lblPlannedDuration != null) {
+                lblPlannedDuration.Dispose ();
+                lblPlannedDuration = null;
+            }
+
+            if (lblPlannedLeveledPower != null) {
+                lblPlannedLeveledPower.Dispose ();
+                lblPlannedLeveledPower = null;
+            }
+
+            if (lblPlannedLoad != null) {
+                lblPlannedLoad.Dispose ();
+                lblPlannedLoad = null;
             }
 
             if (lblStartDate != null) {
@@ -289,49 +484,24 @@ namespace location2
                 lblTotalName8 = null;
             }
 
-            if (lblTotalValue0 != null) {
-                lblTotalValue0.Dispose ();
-                lblTotalValue0 = null;
+            if (scrollView != null) {
+                scrollView.Dispose ();
+                scrollView = null;
             }
 
-            if (lblTotalValue1 != null) {
-                lblTotalValue1.Dispose ();
-                lblTotalValue1 = null;
+            if (tabLapsBorder != null) {
+                tabLapsBorder.Dispose ();
+                tabLapsBorder = null;
             }
 
-            if (lblTotalValue2 != null) {
-                lblTotalValue2.Dispose ();
-                lblTotalValue2 = null;
+            if (tableView != null) {
+                tableView.Dispose ();
+                tableView = null;
             }
 
-            if (lblTotalValue3 != null) {
-                lblTotalValue3.Dispose ();
-                lblTotalValue3 = null;
-            }
-
-            if (lblTotalValue4 != null) {
-                lblTotalValue4.Dispose ();
-                lblTotalValue4 = null;
-            }
-
-            if (lblTotalValue5 != null) {
-                lblTotalValue5.Dispose ();
-                lblTotalValue5 = null;
-            }
-
-            if (lblTotalValue6 != null) {
-                lblTotalValue6.Dispose ();
-                lblTotalValue6 = null;
-            }
-
-            if (lblTotalValue7 != null) {
-                lblTotalValue7.Dispose ();
-                lblTotalValue7 = null;
-            }
-
-            if (lblTotalValue8 != null) {
-                lblTotalValue8.Dispose ();
-                lblTotalValue8 = null;
+            if (tabTotalsBorder != null) {
+                tabTotalsBorder.Dispose ();
+                tabTotalsBorder = null;
             }
         }
     }

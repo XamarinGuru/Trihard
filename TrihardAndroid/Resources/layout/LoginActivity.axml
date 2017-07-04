@@ -36,7 +36,7 @@
             android:gravity="center">
             <ImageView
                 android:src="@drawable/icon_logo_new"
-                android:layout_width="150dp"
+                android:layout_width="200dp"
                 android:layout_height="match_parent"
                 android:id="@+id/imageView1" />
         </LinearLayout>
@@ -78,7 +78,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:textSize="15dp" />
+                        android:textSize="14dp" />
                     <ImageView xmlns:tools="http://schemas.android.com/tools"
                         android:src="@drawable/icon_cross"
                         android:layout_width="20dp"
@@ -147,7 +147,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:textSize="15dp" />
+                        android:textSize="14dp" />
                     <ImageView xmlns:tools="http://schemas.android.com/tools"
                         android:src="@drawable/icon_cross"
                         android:layout_width="20dp"

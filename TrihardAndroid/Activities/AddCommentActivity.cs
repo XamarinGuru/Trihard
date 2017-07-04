@@ -1,7 +1,7 @@
 ﻿
 using System;
+using System.Threading;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
@@ -19,7 +19,7 @@ namespace goheja
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
-			base.OnCreate(savedInstanceState);
+            base.OnCreate(savedInstanceState);
 
 			SetContentView(Resource.Layout.AddCommentActivity);
 
@@ -27,7 +27,7 @@ namespace goheja
 
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_DATA);
 
@@ -35,14 +35,12 @@ namespace goheja
 
 				HideLoadingView();
 			});
-
 		}
 
 		void InitUISettings()
 		{
 			txtComment = FindViewById<EditText>(Resource.Id.txtComment);
 			FindViewById(Resource.Id.ActionAddComment).Click += ActionAddComment;
-			FindViewById(Resource.Id.ActionAddComment).SetBackgroundColor(GROUP_COLOR);
 		}
 
 		void ActionAddComment(object sender, EventArgs e)
@@ -55,14 +53,11 @@ namespace goheja
 
 			if (!IsNetEnable()) return;
 
-			var author = MemberModel.firstname + " " + MemberModel.lastname;
-			var authorID = AppSettings.CurrentUser.userId;
-
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_SAVE_COMMENT);
 
-				var response = SetComment(string.Empty, authorID, txtComment.Text, AppSettings.selectedEvent._id);
+                var response = AddComment(txtComment.Text);
 
 				HideLoadingView();
 

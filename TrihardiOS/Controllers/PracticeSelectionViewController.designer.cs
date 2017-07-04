@@ -1,6 +1,6 @@
 // WARNING
 //
-// This file has been generated automatically by Xamarin Studio from the outlets and
+// This file has been generated automatically by Visual Studio from the outlets and
 // actions declared in your storyboard file.
 // Manual changes to this file will not be maintained.
 //
@@ -18,10 +18,6 @@ namespace location2
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIView mainframe { get; set; }
 
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIView viewSelectType { get; set; }
-
         [Action ("ActionSelectedType:")]
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void ActionSelectedType (UIKit.UIButton sender);
@@ -31,11 +27,6 @@ namespace location2
             if (mainframe != null) {
                 mainframe.Dispose ();
                 mainframe = null;
-            }
-
-            if (viewSelectType != null) {
-                viewSelectType.Dispose ();
-                viewSelectType = null;
             }
         }
     }

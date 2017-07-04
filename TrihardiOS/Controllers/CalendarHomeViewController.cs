@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UIKit;
 using PortableLibrary;
 using Xuni.iOS.Core;
@@ -69,12 +69,17 @@ namespace location2
 
 			lblFakeUserName.Hidden = !AppSettings.isFakeUser;
 			lblFakeUserName.Text = string.Format(Constants.MSG_FAKE_USER_VIEW, AppSettings.fakeUserName);
-			//btnBack.Hidden = AppSettings.CurrentUser.userType == (int)Constants.USER_TYPE.COACH ? false : true;
 		}
 
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
+
+			AppDelegate myDelegate = UIApplication.SharedApplication.Delegate as AppDelegate;
+			if (myDelegate._notiInfo != null)
+			{
+                myDelegate.GotoEventInstruction();
+			}
 
 			InitPerformanceGraph();
 			InitGaugeData();
@@ -100,7 +105,7 @@ namespace location2
 			mPChart.ChartType = ChartType.SplineArea;
 			mPChart.BindingX = pData.categoryField;
 			mPChart.IsAnimated = false;
-			mPChart.ItemsSource = pData.GetSalesDataList();
+			mPChart.ItemsSource = pData.GetDataList();
 			mPChart.SymbolSize = 3;
 
 			mPChart.Legend.Position = Position.None;
@@ -173,7 +178,7 @@ namespace location2
 
 				mPChart.Series.Add(cSeries);
 			}
-			mPChart.ItemsSource = pData.GetSalesDataList();
+			mPChart.ItemsSource = pData.GetDataList();
 			if (pData.TodayIndex() != -1)
 			{
 				var start = new XuniPoint(pData.TodayPosition() * mPChart.AxisX.ActualDataMax, mPChart.AxisY.ActualDataMax);
@@ -297,7 +302,7 @@ namespace location2
 		{
 			var rSlider = sender as RangeSliderControl;
 
-			var gZoomLevel = (rSlider.UpperValue - rSlider.LowerValue) / rSlider.MaximumValue;//.GetAbsoluteMaxValue();
+			var gZoomLevel = (rSlider.UpperValue - rSlider.LowerValue) / rSlider.MaximumValue;
 			mPChart.AxisX.Scale = gZoomLevel;
 			var posX = rSlider.LowerValue * pData.dataProvider.Count;
 			mPChart.AxisX.ScrollTo(posX, XuniAxisScrollPosition.Max);

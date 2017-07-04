@@ -75,6 +75,14 @@
                     android:layout_height="match_parent"
                     android:id="@+id/linearLayout6"
                     android:layout_weight="0.6">
+                    <HorizontalScrollView
+                        android:minWidth="25px"
+                        android:minHeight="25px"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:id="@+id/todayDoneScrollView"
+                        android:scrollbars="none"
+                        android:layout_weight="5" />
                     <LinearLayout
                         android:orientation="horizontal"
                         android:minWidth="25px"
@@ -82,7 +90,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:id="@+id/linearLayout7"
-                        android:layout_weight="1"
                         android:padding="5dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -96,7 +103,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:id="@+id/linearLayout8"
-                        android:layout_weight="1"
                         android:padding="5dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -110,7 +116,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:id="@+id/linearLayout9"
-                        android:layout_weight="1"
                         android:padding="5dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -124,7 +129,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:id="@+id/linearLayout10"
-                        android:layout_weight="1"
                         android:padding="5dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -138,7 +142,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:id="@+id/linearLayout11"
-                        android:layout_weight="1"
                         android:padding="5dp">
                         <ImageView
                             android:layout_width="match_parent"

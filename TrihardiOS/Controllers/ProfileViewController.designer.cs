@@ -1,6 +1,6 @@
 // WARNING
 //
-// This file has been generated automatically by Xamarin Studio from the outlets and
+// This file has been generated automatically by Visual Studio from the outlets and
 // actions declared in your storyboard file.
 // Manual changes to this file will not be maintained.
 //
@@ -14,6 +14,10 @@ namespace location2
     [Register ("ProfileViewController")]
     partial class ProfileViewController
     {
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton btnNotificationSetting { get; set; }
+
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIButton changePictureBtn { get; set; }
@@ -50,6 +54,10 @@ namespace location2
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void ActionEditProfile (UIKit.UIButton sender);
 
+        [Action ("ActionNotificationSetting:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        partial void ActionNotificationSetting (UIKit.UIButton sender);
+
         [Action ("ActionSignOut:")]
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void ActionSignOut (UIKit.UIButton sender);
@@ -64,6 +72,11 @@ namespace location2
 
         void ReleaseDesignerOutlets ()
         {
+            if (btnNotificationSetting != null) {
+                btnNotificationSetting.Dispose ();
+                btnNotificationSetting = null;
+            }
+
             if (changePictureBtn != null) {
                 changePictureBtn.Dispose ();
                 changePictureBtn = null;

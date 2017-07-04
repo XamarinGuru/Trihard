@@ -1,4 +1,4 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
 using ObjCRuntime;
@@ -86,9 +86,8 @@ namespace location2
 					effectView.Alpha = 0.8f;
 				}, delegate
 				{
-					if (null != popAnimationFinish)
-						popAnimationFinish();
-				});
+                    popAnimationFinish?.Invoke();
+                });
 			}
 			else {
 				effectView.Alpha = 0.8f;
@@ -107,12 +106,12 @@ namespace location2
 				{
 					this.RemoveFromSuperview();
 					effectView.RemoveFromSuperview();
-					if (null != PopWillClose) PopWillClose();
-				});
+                    PopWillClose?.Invoke();
+                });
 			}
 			else {
-				if (null != PopWillClose) PopWillClose();
-			}
+                PopWillClose?.Invoke();
+            }
 		}
 	}
 }

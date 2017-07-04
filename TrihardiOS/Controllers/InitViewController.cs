@@ -27,13 +27,13 @@ namespace location2
 		partial void ActionSignIn(UIButton sender)
 		{
 			LoginViewController mainVC = Storyboard.InstantiateViewController("LoginViewController") as LoginViewController;
-			this.PresentViewController(mainVC, true, null);
+			PresentViewController(mainVC, true, null);
 		}
 
 		partial void ActionSignUp(UIButton sender)
 		{
 			SignUpViewController mainVC = Storyboard.InstantiateViewController("SignUpViewController") as SignUpViewController;
-			this.PresentViewController(mainVC, true, null);
+			PresentViewController(mainVC, true, null);
 		}
 	}
 }

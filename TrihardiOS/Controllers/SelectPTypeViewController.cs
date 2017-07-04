@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using UIKit;
-using CoreGraphics;
 using PortableLibrary;
 
 namespace location2
@@ -44,21 +43,25 @@ namespace location2
 			stateTriathlon.BackgroundColor = COLOR_DISABLE;
 			stateOther.BackgroundColor = COLOR_DISABLE;
 
-			switch (selectedEvent.type)
+			var pType = (Constants.EVENT_TYPE)Enum.ToObject(typeof(Constants.EVENT_TYPE), int.Parse(selectedEvent.type));
+			switch (pType)
 			{
-				case "1":
+				case Constants.EVENT_TYPE.OTHER:
+					stateOther.BackgroundColor = GROUP_COLOR;
+					break;
+				case Constants.EVENT_TYPE.BIKE:
 					stateCycling.BackgroundColor = GROUP_COLOR;
 					break;
-				case "2":
+				case Constants.EVENT_TYPE.RUN:
 					stateRunning.BackgroundColor = GROUP_COLOR;
 					break;
-				case "3":
+				case Constants.EVENT_TYPE.SWIM:
 					stateSwimming.BackgroundColor = GROUP_COLOR;
 					break;
-				case "4":
+				case Constants.EVENT_TYPE.TRIATHLON:
 					stateTriathlon.BackgroundColor = GROUP_COLOR;
 					break;
-				case "5":
+				case Constants.EVENT_TYPE.ANOTHER:
 					stateOther.BackgroundColor = GROUP_COLOR;
 					break;
 			}

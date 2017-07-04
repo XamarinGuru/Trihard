@@ -1,5 +1,4 @@
-﻿using System;
-namespace PortableLibrary
+﻿namespace PortableLibrary
 {
 	public class PerformanceDataForDate
 	{

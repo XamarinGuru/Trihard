@@ -6,6 +6,7 @@ namespace PortableLibrary
 	{
 		public string _id { get; set;}
 		public string title { get; set; }
+        public string eventId { get; set; }
 		public string eventSysId { get; set; }
 		public string userId { get; set; }
 		public string ParentGroupName { get; set; }

@@ -15,7 +15,7 @@ using Com.GrapeCity.Xuni.Core;
 
 namespace goheja
 {
-	[Activity(Label = "Go-Heja", Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait, LaunchMode = LaunchMode.SingleInstance)]
+	[Activity(Label = "Go-Heja", Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait)]
 	public class SwipeTabActivity : BaseActivity
 	{
 		string[] PermissionsCalendar =
@@ -44,7 +44,8 @@ namespace goheja
 
 			InitUISettings();
 
-			CheckCalendarPermission();
+			if (!AppSettings.isFakeUser)
+				CheckCalendarPermission();
 		}
 
 		public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
@@ -59,13 +60,30 @@ namespace goheja
 				else if(AppSettings.CurrentUser.userType == (int)Constants.USER_TYPE.COACH)
 				{
 					AppSettings.isFakeUser = false;
-					return base.OnKeyDown(keyCode, e);
+                    BackAction();
 				}
 
 				return false;
 			}
 
 			return base.OnKeyDown(keyCode, e);
+		}
+
+		void BackAction()
+		{
+			var fromWhere = Intent.GetStringExtra("FromWhere");
+
+			if (!string.IsNullOrEmpty(fromWhere) && fromWhere.Equals("CoachList"))
+			{
+                var nextIntent = new Intent(this, typeof(CoachHomeActivity));
+				nextIntent.PutExtra("FromWhere", "CoachList");
+				StartActivityForResult(nextIntent, 0);
+				Finish();
+			}
+			else
+			{
+				ActionBackCancel();
+			}
 		}
 
 		private void InitUISettings()

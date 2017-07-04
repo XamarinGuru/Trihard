@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Threading;
 using Android.App;
 using Android.Content.PM;
 using Android.Gms.Maps;
@@ -50,7 +51,7 @@ namespace goheja
 		#endregion
 		void GetMarkersAndPoints()
 		{
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_ALL_MARKERS);
 

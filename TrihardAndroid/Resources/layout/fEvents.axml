@@ -65,14 +65,14 @@
                         android:layout_height="100dp"
                         android:src="@drawable/icon_01"
                         android:layout_marginRight="20dp"
-                        android:tag="0" />
+                        android:tag="1" />
                     <ImageView
                         android:id="@+id/ActionType1"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:src="@drawable/icon_02"
-                        android:tag="1" />
+                        android:tag="2" />
                     <ImageView
                         android:id="@+id/ActionType2"
                         android:layout_weight="1"
@@ -80,7 +80,7 @@
                         android:layout_height="100dp"
                         android:src="@drawable/icon_06"
                         android:layout_marginLeft="20dp"
-                        android:tag="2" />
+                        android:tag="0" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -98,14 +98,14 @@
                         android:layout_height="100dp"
                         android:src="@drawable/icon_04_inactive"
                         android:layout_marginRight="20dp"
-                        android:tag="3" />
+                        android:tag="0" />
                     <ImageView
                         android:id="@+id/ActionType4"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:src="@drawable/icon_05_inactive"
-                        android:tag="4" />
+                        android:tag="0" />
                     <ImageView
                         android:id="@+id/ActionType5"
                         android:layout_weight="1"
@@ -113,7 +113,7 @@
                         android:layout_height="100dp"
                         android:src="@drawable/icon_03_inactive"
                         android:layout_marginLeft="20dp"
-                        android:tag="5" />
+                        android:tag="0" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -130,7 +130,7 @@
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:src="@drawable/icon_07"
-                        android:tag="6" />
+                        android:tag="0" />
                 </LinearLayout>
             </LinearLayout>
         </FrameLayout>

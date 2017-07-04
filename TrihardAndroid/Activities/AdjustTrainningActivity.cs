@@ -1,10 +1,10 @@
 ﻿
 using System;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Text;
 using Android.Views;
 using Android.Widget;
 using PortableLibrary;
@@ -16,8 +16,9 @@ namespace goheja
 	{
 		RootMemberModel MemberModel = new RootMemberModel();
 
+        Constants.EVENT_TYPE _pType;
+
 		TextView lblTime, lblDistance, lblTSS;
-		EditText txtComment;
 		SeekBar seekTime, seekDistance, seekTSS;
 		CheckBox attended;
 
@@ -31,7 +32,7 @@ namespace goheja
 
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_EVENT_DETAIL);
 
@@ -56,7 +57,6 @@ namespace goheja
 			lblTime = FindViewById<TextView>(Resource.Id.lblTime);
 			lblDistance = FindViewById<TextView>(Resource.Id.lblDistance);
 			lblTSS = FindViewById<TextView>(Resource.Id.lblTSS);
-			txtComment = FindViewById<EditText>(Resource.Id.txtComment);
 
 			seekTime = FindViewById<SeekBar>(Resource.Id.ActionTimeChanged);
 			seekDistance = FindViewById<SeekBar>(Resource.Id.ActionDistanceChanged);
@@ -97,24 +97,26 @@ namespace goheja
 
 			strType.Text = Constants.PRACTICE_TYPES[int.Parse(AppSettings.selectedEvent.type) - 1];
 
-			switch (AppSettings.selectedEvent.type)
+			_pType = (Constants.EVENT_TYPE)Enum.ToObject(typeof(Constants.EVENT_TYPE), int.Parse(AppSettings.selectedEvent.type));
+
+			switch (_pType)
 			{
-				case "0":
-					imgType.SetImageResource(Resource.Drawable.icon_triathlon);
+				case Constants.EVENT_TYPE.OTHER:
+					imgType.SetImageResource(Resource.Drawable.icon_other);
 					break;
-				case "1":
+				case Constants.EVENT_TYPE.BIKE:
 					imgType.SetImageResource(Resource.Drawable.icon_bike);
 					break;
-				case "2":
+				case Constants.EVENT_TYPE.RUN:
 					imgType.SetImageResource(Resource.Drawable.icon_run);
 					break;
-				case "3":
+				case Constants.EVENT_TYPE.SWIM:
 					imgType.SetImageResource(Resource.Drawable.icon_swim);
 					break;
-				case "4":
+				case Constants.EVENT_TYPE.TRIATHLON:
 					imgType.SetImageResource(Resource.Drawable.icon_triathlon);
 					break;
-				case "5":
+				case Constants.EVENT_TYPE.ANOTHER:
 					imgType.SetImageResource(Resource.Drawable.icon_other);
 					break;
 			}
@@ -143,7 +145,7 @@ namespace goheja
 		{
 			if (e.Event.Action == MotionEventActions.Down)
 			{
-				AdjustDialog myDiag = AdjustDialog.newInstance((TextView)sender, seekDistance, AppSettings.selectedEvent.type == "3" ? 10 : 250);
+                AdjustDialog myDiag = AdjustDialog.newInstance((TextView)sender, seekDistance, _pType == Constants.EVENT_TYPE.SWIM ? 10 : 250);
 				myDiag.Show(FragmentManager, "Diag");
 			}
 		}
@@ -152,19 +154,19 @@ namespace goheja
 		{
 			try
 			{
-				var eventTotal = AppSettings.currentEventTotal;
+                var reportData = AppSettings.currentEventReport;
 
-				SetupDistanceAdjustPicker(lblDistance, seekDistance, AppSettings.selectedEvent.type == "3" ? 10 : 250);
+				SetupDistanceAdjustPicker(lblDistance, seekDistance, _pType == Constants.EVENT_TYPE.SWIM ? 10 : 250);
 
 				attended.Checked = AppSettings.selectedEvent.attended == "1" ? true : false;
 
-				seekDistance.Max = AppSettings.selectedEvent.type == "3" ? 100 : 2500;
+				seekDistance.Max = _pType == Constants.EVENT_TYPE.SWIM ? 100 : 2500;
 
-				if (eventTotal == null || eventTotal.totals == null) return;
+                if (reportData == null || reportData.data == null) return;
 
-				var strEt = GetFormatedDurationAsMin(eventTotal.GetValue(Constants.TOTALS_ES_TIME));
-				var strTd = eventTotal.GetValue(Constants.TOTALS_DISTANCE);
-				var strTss = eventTotal.GetValue(Constants.TOTALS_LOAD);
+                var strEt = GetFormatedDurationAsMin(reportData.GetTotalValue(Constants.TOTALS_ES_TIME));
+				var strTd = reportData.GetTotalValue(Constants.TOTALS_DISTANCE);
+				var strTss = reportData.GetTotalValue(Constants.TOTALS_LOAD);
 
 				lblTime.Text = strEt.ToString();
 				lblTSS.Text = float.Parse(strTss).ToString("F1");
@@ -173,7 +175,7 @@ namespace goheja
 				seekTSS.Progress = (int)(float.Parse(strTss) * 10);
 
 				var valDistance = float.Parse(strTd);
-				if (AppSettings.selectedEvent.type == "3")
+				if (_pType == Constants.EVENT_TYPE.SWIM)
 				{
 					if (valDistance > 10)
 					{
@@ -202,13 +204,13 @@ namespace goheja
 		{
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_ADJUST_TRAINING);
 
 				var authorID = AppSettings.CurrentUser.userId;
 
-				UpdateMemberNotes(txtComment.Text, authorID, AppSettings.selectedEvent._id, MemberModel.username, attended.Checked ? "1" : "0", lblTime.Text, lblDistance.Text, lblTSS.Text, AppSettings.selectedEvent.type);
+                UpdateMemberNotes(string.Empty, authorID, AppSettings.selectedEvent._id, MemberModel.username, attended.Checked ? "1" : "0", lblTime.Text, lblDistance.Text, lblTSS.Text, AppSettings.selectedEvent.type);
 
 				HideLoadingView();
 

@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using UIKit;
-using CoreGraphics;
 using PortableLibrary;
+using System.Threading;
 
 namespace location2
 {
@@ -29,11 +29,9 @@ namespace location2
 			var g = new UITapGestureRecognizer(() => View.EndEditing(true));
 			View.AddGestureRecognizer(g);
 
-			InitUISettings();
-
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_DATA);
 
@@ -41,11 +39,6 @@ namespace location2
 
 				HideLoadingView();
 			});
-		}
-
-		void InitUISettings()
-		{
-			btnAddComment.BackgroundColor = GROUP_COLOR;
 		}
 
 		partial void ActionAddComment(UIButton sender)
@@ -61,13 +54,13 @@ namespace location2
 			var author = MemberModel.firstname + " " + MemberModel.lastname;
 			var authorID = AppSettings.CurrentUser.userId;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_SAVE_COMMENT);
 
 				InvokeOnMainThread(() =>
 				{
-					var response = SetComment(author, authorID, txtComment.Text, selectedEvent._id);
+					var response = AddComment(txtComment.Text, selectedEvent);
 
 					HideLoadingView();
 					NavigationController.PopViewController(true);

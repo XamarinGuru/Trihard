@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using UIKit;
 using BigTed;
 using Foundation;
@@ -10,6 +10,10 @@ using System.Collections.Generic;
 using CoreLocation;
 using CoreGraphics;
 using System.Runtime.CompilerServices;
+using PortableLibrary.Model;
+using Firebase.InstanceID;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace location2
 {
@@ -56,18 +60,33 @@ namespace location2
             return leftButton;
         }
 
-		protected void ShowLoadingView(string title)
+		public void ShowLoadingView(string title)
 		{
 			InvokeOnMainThread(() => { BTProgressHUD.Show(title, -1, ProgressHUD.MaskType.Black); });
 		}
 
-		protected void HideLoadingView()
+		public void HideLoadingView()
 		{
 			InvokeOnMainThread(() => { BTProgressHUD.Dismiss(); });
 		}
 
 		// Show the alert view
-		protected void ShowMessageBox(string title, string message, string cancelButton, string[] otherButtons, Action successHandler)
+		public void ShowMessageBox(string title, string message, bool isFinish = false)
+		{
+			InvokeOnMainThread(() =>
+			{
+				var alertView = new UIAlertView(title, message, null, "Ok", null);
+				alertView.Clicked += (sender, e) =>
+				{
+					if (isFinish)
+						CloseApplication();
+				};
+				alertView.Show();
+				//ShowMessageBox(title, message, "Ok", null, null); 
+			});
+		}
+
+		public void ShowMessageBox(string title, string message, string cancelButton, string[] otherButtons, Action successHandler)
 		{
 			var alertView = new UIAlertView(title, message, null, cancelButton, otherButtons);
 			alertView.Clicked += (sender, e) =>
@@ -84,7 +103,7 @@ namespace location2
 			alertView.Show();
 		}
 
-		protected void ShowMessageBox1(string title, string message, string cancelButton, string[] otherButtons, Action successHandler)
+		public void ShowMessageBox1(string title, string message, string cancelButton, string[] otherButtons, Action successHandler)
 		{
 			InvokeOnMainThread(() =>
 			{
@@ -94,7 +113,26 @@ namespace location2
 					successHandler();
 				};
 				alertView.Show();
+			});
+		}
 
+        public void ShowMessageBox(string title, string message, string cancelButton, string[] otherButtons, Action<NSDictionary> successHandler, NSDictionary data)
+		{
+			InvokeOnMainThread(() =>
+			{
+				var alertView = new UIAlertView(title, message, null, cancelButton, otherButtons);
+				alertView.Clicked += (sender, e) =>
+				{
+					if (e.ButtonIndex == 0)
+					{
+						return;
+					}
+					if (successHandler != null)
+					{
+						successHandler(data);
+					}
+				};
+				alertView.Show();
 			});
 		}
 
@@ -108,24 +146,10 @@ namespace location2
 					TrackErrorIntoServer(trackMsg, filePath, lineNumber, caller);
 				};
 				alertView.Show();
-				//ShowMessageBox(title, message, "Ok", null, null); 
 			});
 		}
 
-		protected void ShowMessageBox(string title, string message, bool isFinish = false)
-		{
-			InvokeOnMainThread(() =>
-			{
-				var alertView = new UIAlertView(title, message, null, "Ok", null);
-				alertView.Clicked += (sender, e) =>
-				{
-					if (isFinish)
-						CloseApplication();
-				};
-				alertView.Show();
-				//ShowMessageBox(title, message, "Ok", null, null); 
-			});
-		}
+		
 
 		protected bool TextFieldShouldReturn(UITextField textField)
 		{
@@ -169,20 +193,21 @@ namespace location2
 
 		void CloseApplication()
 		{
-			System.Threading.Thread.CurrentThread.Abort();
+			Thread.CurrentThread.Abort();
 		}
 		#endregion
 
 		#region integrate with web reference
 
 		#region USER_MANAGEMENT
-		public string RegisterUser(string fName, string lName, string deviceId, string userName, string psw, string email, int age, bool ageSpecified = true, bool acceptedTerms = true, bool acceptedTermsSpecified = true)
+		public string RegisterUser(string fName, string lName, string userName, string psw, string email, int age, bool ageSpecified = true, bool acceptedTerms = true, bool acceptedTermsSpecified = true)
 		{
 			string result = "";
 
 			try
 			{
-				result = mTrackSvc.insertNewDevice(fName, lName, deviceId, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
+                string deviceUDID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+				result = mTrackSvc.insertNewDevice(fName, lName, deviceUDID, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
 			}
 			catch (Exception ex)
 			{
@@ -195,23 +220,46 @@ namespace location2
 		{
 			var loginUser = new LoginUser();
 
-			try
+            try
+            {
+                var objUser = mTrackSvc.mobLogin(email, password, Constants.SPEC_GROUP_TYPE);
+                var jsonUser = FormatJsonType(objUser.ToString());
+                loginUser = JsonConvert.DeserializeObject<LoginUser>(jsonUser);
+
+                if (loginUser.userId != null)
+                {
+                    AppSettings.CurrentUser = loginUser;
+
+                    RegisterFCMUser(loginUser);
+
+                    return loginUser;
+                }
+            }
+			catch(Exception ex)
 			{
-				var objUser = mTrackSvc.mobLogin(email, password, Constants.SPEC_GROUP_TYPE);
-				var jsonUser = FormatJsonType(objUser.ToString());
-				loginUser = JsonConvert.DeserializeObject<LoginUser>(jsonUser);
-				return loginUser;
+                ShowTrackMessageBox(ex.Message);
 			}
-			catch
-			{
-				return null;
-			}
+
+			return null;
 		}
 
-		public void SignOutUser()
+        void RegisterFCMUser(LoginUser user)
+        {
+            ThreadPool.QueueUserWorkItem(async delegate
+            {
+				user.fcmToken = InstanceId.SharedInstance.Token;
+				user.osType = Constants.OS_TYPE.iOS;
+
+				var isFcmOn = await FirebaseService.RegisterFCMUser(user);
+				user.isFcmOn = isFcmOn;
+				AppSettings.CurrentUser = user;
+			});
+        }
+
+		public async Task SignOutUser()
 		{
+			await FirebaseService.RemoveFCMUser(AppSettings.CurrentUser);
 			AppSettings.CurrentUser = null;
-			AppSettings.DeviceUDID = string.Empty;
 		}
 
 		public List<Athlete> GetAllUsers()
@@ -220,7 +268,7 @@ namespace location2
 
 			try
 			{
-				var objAthletes = mTrackSvc.athGeneralListMob(string.Empty, Constants.SPEC_GROUP_TYPE);
+                var objAthletes = mTrackSvc.athGeneralListMobWithTypeAndId(string.Empty, Constants.SPEC_GROUP_TYPE);
 				var athletes = JsonConvert.DeserializeObject<Athletes>(objAthletes.ToString());
 				result = athletes.athlete;
 			}
@@ -232,13 +280,32 @@ namespace location2
 			return SortUsers(result);
 		}
 
+		public List<string> GetCoachIDs()
+		{
+			var result = new List<string>();
+
+			try
+			{
+				var jsonCoachIDs = mTrackSvc.getCoachesMob(Constants.SPEC_GROUP_TYPE);
+				var arrCoachIDs = jsonCoachIDs.Split(new char[] { ',' });
+
+				result = new List<string>(arrCoachIDs);
+			}
+			catch (Exception ex)
+			{
+				ShowTrackMessageBox(ex.Message);
+			}
+
+			return result;
+		}
+
 		public SubGroups GetSubGroups(string groupId)
 		{
 			var result = new SubGroups();
 
 			try
 			{
-				var objAthletes = mTrackSvc.fieldAthletsAndEvenetsMob(string.Empty, groupId, Constants.SPEC_GROUP_TYPE);
+				var objAthletes = mTrackSvc.fieldAthletsAndEvenetsMobWithIdAndType(string.Empty, groupId, Constants.SPEC_GROUP_TYPE);
 				result = JsonConvert.DeserializeObject<SubGroups>(objAthletes.ToString());
 			}
 			catch (Exception ex)
@@ -554,6 +621,23 @@ namespace location2
 			return eventTotal;
 		}
 
+		public ReportData GetEventReport(string eventID)
+		{
+			var result = new ReportData();
+
+			try
+			{
+				var reportObject = mTrackSvc.getEventReport(eventID, Constants.SPEC_GROUP_TYPE);
+				result = JsonConvert.DeserializeObject<ReportData>(reportObject.ToString());
+			}
+			catch (Exception ex)
+			{
+				//ShowTrackMessageBox(ex.Message);
+				return null;
+			}
+			return result;
+		}
+
 		public EventPoints GetAllMarkers(string eventID)
 		{
 			var eventMarkers = new EventPoints();
@@ -645,29 +729,37 @@ namespace location2
 			return PATH_COLORS[index % 3];
 		}
 
-		public Comment GetComments(string eventID, string type = "1")
+		public Comments GetComments(string eventID, string type = "1")
 		{
-			var comment = new Comment();
+			var comments = new Comments();
 			try
 			{
 				var commentObject = mTrackSvc.getComments(eventID, "1", Constants.SPEC_GROUP_TYPE);
-				comment = JsonConvert.DeserializeObject<Comment>(commentObject.ToString());
+				comments = JsonConvert.DeserializeObject<Comments>(commentObject.ToString());
+                comments.comments.Reverse();
 			}
 			catch (Exception ex)
 			{
 				//ShowTrackMessageBox(ex.Message);
 				return null;
 			}
-			return comment;
+			return comments;
 		}
 
-		public object SetComment(string author, string authorId, string commentText, string eventId)
+        public Comment AddComment(string commentText, GoHejaEvent selectedEvent)
 		{
-			object result = new object();
+			Comment result = new Comment();
 
 			try
 			{
-				result = mTrackSvc.setComments(author, authorId, commentText, eventId, Constants.SPEC_GROUP_TYPE);
+				var author = string.Empty;
+				var authorId = AppSettings.CurrentUser.userId;
+
+				var commentResponseObject = mTrackSvc.setCommentsMob(author, authorId, commentText, selectedEvent._id, Constants.SPEC_GROUP_TYPE);
+				result = JsonConvert.DeserializeObject<Comment>(commentResponseObject.ToString());
+
+				if (result != null)
+					SendNotification(result, selectedEvent);
 			}
 			catch (Exception ex)
 			{
@@ -675,6 +767,34 @@ namespace location2
 			}
 
 			return result;
+		}
+
+		async void SendNotification(Comment comment, GoHejaEvent selectedEvent)
+		{
+			var notificationContent = new FCMDataNotification();
+			notificationContent.senderId = comment.authorId;
+			notificationContent.senderName = comment.author;
+			notificationContent.practiceId = comment.eventId;
+			notificationContent.commentId = comment.commentId;
+			notificationContent.description = comment.commentText;
+			notificationContent.practiceType = GetTypeStrFromID(selectedEvent.type);
+			notificationContent.practiceName = selectedEvent.title;
+			notificationContent.practiceDate = String.Format("{0:f}", selectedEvent.StartDateTime());
+			notificationContent.osType = Constants.OS_TYPE.Android;
+
+			var recipientIDs = new List<string>();
+			if (AppSettings.isFakeUser)
+			{
+				recipientIDs.Add(AppSettings.CurrentUser.athleteId);
+			}
+			else
+			{
+				recipientIDs = GetCoachIDs();
+			}
+
+			recipientIDs.RemoveAll(pID => pID == AppSettings.CurrentUser.userId);
+
+			await FirebaseService.SendNotification(notificationContent, recipientIDs);
 		}
 
 		public void UpdateMemberNotes(string notes, string userID, string eventId, string username, string attended, string duration, string distance, string trainScore, string type)
@@ -689,35 +809,31 @@ namespace location2
 			}
 		}
 
-		public void UpdateMomgoData(string name,
-					string loc,
-					DateTime time,
-					bool timeSpecified,
-					string deviceID,
-					float speed,
-					bool speedSpecified,
-					string athId,
-					string country,
-					float dist,
-					bool distSpecified,
-					float alt,
-					bool altSpecified,
-					float bearing,
-					bool bearingSpecified,
-					int recordType,
-					bool recordTypeSpecified,
-					string eventType,
-					string specGroup)
-		{
-			try
-			{
-				mTrackSvc.updateMomgoData(name, loc, time, true, AppSettings.DeviceUDID, speed, true, athId, country, dist, true, alt, true, bearing, true, 1, true, eventType, specGroup);
-			}
-			catch (Exception ex)
-			{
-				ShowTrackMessageBox(ex.Message);
-			}
-		}
+		List<TRecord> _offlineRecords = new List<TRecord>();
+
+        public void RecordPracticeTrack(TRecord record)
+        {
+            _offlineRecords.Add(record);
+
+            if (IsNetEnable())
+            {
+                foreach (TRecord r in _offlineRecords)
+                {
+                    ThreadPool.QueueUserWorkItem(delegate
+                    {
+                        try
+                        {
+                            mTrackSvc.updateMomgoData(r.fullName, r.loc, r.date, true, r.deviceId, r.speed, true, r.athid, r.country, r.distance, true, r.gainedAlt, true, r.bearinng, true, (int)r.recordType, true, ((int)r.sportType).ToString(), Constants.SPEC_GROUP_TYPE);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    });
+                }
+                _offlineRecords.Clear();
+            }
+        }
+
 		#endregion
 
 		public string GetTypeStrFromID(string typeID)
@@ -769,7 +885,7 @@ namespace location2
 			return result;
 		}
 
-		public void CompareEventResult(float planned, float total, UILabel lblPlanned, UILabel lblTotal)
+        public void CompareEventResult(float planned, float total, UILabel lblPlanned, UITextField lblTotal)
 		{
 			try
 			{
@@ -1046,7 +1162,20 @@ namespace location2
 		}
 
 
-
+		public float DifAlt(float prev, float curr)
+		{
+			try
+			{
+				if ((curr - prev) > 0)
+					return curr - prev;
+				else
+					return 0;
+			}
+			catch
+			{
+				return 0;
+			}
+		}
 
 
 		public UIImage MaxResizeImage(UIImage sourceImage, float maxWidth, float maxHeight)

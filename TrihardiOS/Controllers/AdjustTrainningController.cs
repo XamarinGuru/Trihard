@@ -1,15 +1,18 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
-using CoreGraphics;
 using PortableLibrary;
+using PortableLibrary.Model;
+using System.Threading;
 
 namespace location2
 {
     public partial class AdjustTrainningController : BaseViewController
     {
 		public GoHejaEvent selectedEvent;
-		public EventTotal eventTotal;
+        public ReportData selectedEventReport;
+
+        Constants.EVENT_TYPE _pType;
 
         public AdjustTrainningController() : base()
 		{
@@ -31,23 +34,18 @@ namespace location2
 			var g = new UITapGestureRecognizer(() => View.EndEditing(true));
 			View.AddGestureRecognizer(g);
 
-			NSNotificationCenter.DefaultCenter.AddObserver(UIKeyboard.DidShowNotification, KeyBoardUpNotification);
-			NSNotificationCenter.DefaultCenter.AddObserver(UIKeyboard.WillHideNotification, KeyBoardDownNotification);
+            InitUISettings();
 
-			InitUISettings();
+            if (!IsNetEnable()) return;
 
-			if (!IsNetEnable()) return;
-
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
-			{
+            ThreadPool.QueueUserWorkItem(delegate
+            {
 				ShowLoadingView(Constants.MSG_LOADING_EVENT_DETAIL);
 
 				MemberModel.rootMember = GetUserObject();
 
 				HideLoadingView();
 			});
-
-			//InitBindingEventTotal();
 		}
 
 		void InitUISettings()
@@ -70,27 +68,30 @@ namespace location2
 
 			strType.Text = GetTypeStrFromID(selectedEvent.type);
 
-			switch (selectedEvent.type)
+			_pType = (Constants.EVENT_TYPE)Enum.ToObject(typeof(Constants.EVENT_TYPE), int.Parse(selectedEvent.type));
+
+			switch (_pType)
 			{
-				case "0":
-					imgType.Image = UIImage.FromFile("icon_triathlon.png");
+				case Constants.EVENT_TYPE.OTHER:
+					imgType.Image = UIImage.FromFile("icon_other.png");
 					break;
-				case "1":
+				case Constants.EVENT_TYPE.BIKE:
 					imgType.Image = UIImage.FromFile("icon_bike.png");
 					break;
-				case "2":
+				case Constants.EVENT_TYPE.RUN:
 					imgType.Image = UIImage.FromFile("icon_run.png");
 					break;
-				case "3":
+				case Constants.EVENT_TYPE.SWIM:
 					imgType.Image = UIImage.FromFile("icon_swim.png");
 					break;
-				case "4":
+				case Constants.EVENT_TYPE.TRIATHLON:
 					imgType.Image = UIImage.FromFile("icon_triathlon.png");
 					break;
-				case "5":
+				case Constants.EVENT_TYPE.ANOTHER:
 					imgType.Image = UIImage.FromFile("icon_other.png");
 					break;
 			}
+
             InitBindingEventTotal();
 		}
 
@@ -98,28 +99,26 @@ namespace location2
 		{
 			attended.On = selectedEvent.attended == "1" ? true : false;
 
-			seekDistance.MaxValue = selectedEvent.type == "3" ? 10 : 250;
+			seekDistance.MaxValue = _pType == Constants.EVENT_TYPE.SWIM ? 10 : 250;
 
 			txtTime.ShouldChangeCharacters = ActionChangeSliderValue;
 			txtDistance.ShouldChangeCharacters = ActionChangeSliderValue;
 			txtTss.ShouldChangeCharacters = ActionChangeSliderValue;
 
-			if (eventTotal == null || eventTotal.totals == null) return;
+			if (selectedEventReport == null || selectedEventReport.data == null) return;
 
-			var strEt = GetFormatedDurationAsMin(eventTotal.GetValue(Constants.TOTALS_ES_TIME));
-			var strTd = eventTotal.GetValue(Constants.TOTALS_DISTANCE);
-			var strTss = eventTotal.GetValue(Constants.TOTALS_LOAD);
+			var strEt = GetFormatedDurationAsMin(selectedEventReport.GetTotalValue(Constants.TOTALS_ES_TIME));
+			var strTd = selectedEventReport.GetTotalValue(Constants.TOTALS_DISTANCE);
+			var strTss = selectedEventReport.GetTotalValue(Constants.TOTALS_LOAD);
 
 			txtTime.Text = strEt.ToString();
-			//txtDistance.Text = float.Parse(strTd).ToString("F1");
 			txtTss.Text = float.Parse(strTss).ToString("F1");
 
 			seekTime.Value = strEt;
-			//seekDistance.Value = float.Parse(strTd);
 			seekTSS.Value = float.Parse(strTss);
 
 			var valDistance = float.Parse(strTd);
-			if (selectedEvent.type == "3")
+			if (_pType == Constants.EVENT_TYPE.SWIM)
 			{
 				if (valDistance > 10)
 				{
@@ -158,7 +157,7 @@ namespace location2
 					seekBar = seekTime;
 					break;
 				case 1:
-					maxValue = selectedEvent.type == "3" ? 10 : 250;
+					maxValue = _pType == Constants.EVENT_TYPE.SWIM ? 10 : 250;
 					seekBar = seekDistance;
 					break;
 				case 2:
@@ -201,7 +200,7 @@ namespace location2
 		{
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_ADJUST_TRAINING);
 
@@ -209,58 +208,12 @@ namespace location2
 				{
 					var authorID = AppSettings.CurrentUser.userId;
 
-					UpdateMemberNotes(txtComment.Text, authorID, selectedEvent._id, MemberModel.username, attended.On ? "1" : "0", txtTime.Text, txtDistance.Text, txtTss.Text, selectedEvent.type);
+					UpdateMemberNotes(string.Empty, authorID, selectedEvent._id, MemberModel.username, attended.On ? "1" : "0", txtTime.Text, txtDistance.Text, txtTss.Text, selectedEvent.type);
 
 					HideLoadingView();
 					NavigationController.PopViewController(true);
 				});
 			});
 		}
-
-		#region keyboard process
-		private void KeyBoardUpNotification(NSNotification notification)
-		{
-			if (!txtComment.IsFirstResponder)
-				return;
-
-			CGRect r = UIKeyboard.BoundsFromNotification(notification);
-
-			scroll_amount = (float)r.Height / 1.5f;
-
-			if (scroll_amount > 0)
-			{
-				moveViewUp = true;
-				ScrollTheView(moveViewUp);
-			}
-			else {
-				moveViewUp = false;
-			}
-		}
-
-
-		private void KeyBoardDownNotification(NSNotification notification)
-		{
-			if (moveViewUp) { ScrollTheView(false); }
-		}
-		private void ScrollTheView(bool move)
-		{
-			// scroll the view up or down
-			UIView.BeginAnimations(string.Empty, System.IntPtr.Zero);
-			UIView.SetAnimationDuration(0.3);
-
-			CGRect frame = this.View.Frame;
-
-			if (move)
-			{
-				frame.Y = -(scroll_amount);
-			}
-			else {
-				frame.Y = 0;
-			}
-
-			this.View.Frame = frame;
-			UIView.CommitAnimations();
-		}
-		#endregion
     }
 }

@@ -1,7 +1,5 @@
-using Foundation;
-using System;
+﻿using System;
 using UIKit;
-using CoreGraphics;
 
 namespace location2
 {

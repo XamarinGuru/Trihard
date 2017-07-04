@@ -3,6 +3,21 @@ using System.Collections.Generic;
 
 namespace PortableLibrary
 {
+    public class TRecord
+    {
+		public string fullName = "";
+		public string loc = "0,0";
+		public DateTime date = DateTime.Now;
+		public string deviceId = "";
+		public string athid = "";
+		public string country = "";
+		public float distance = 0f;
+		public float speed = 0f;
+		public float gainedAlt = 0f;
+		public float bearinng = 0f;
+        public Constants.RECORDING_STATE recordType = Constants.RECORDING_STATE.RECORDING;
+        public Constants.EVENT_TYPE sportType = Constants.EVENT_TYPE.BIKE;
+    }
 	public class TPoint
 	{
 		public string Altitude { get; set; }

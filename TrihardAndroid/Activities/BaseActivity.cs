@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -14,9 +16,11 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using AndroidHUD;
+using Firebase.Iid;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PortableLibrary;
+using PortableLibrary.Model;
 
 namespace goheja
 {
@@ -144,8 +148,6 @@ namespace goheja
 			});
 		}
 
-
-
 		#region error handling
 		public bool IsNetEnable()
 		{
@@ -198,13 +200,14 @@ namespace goheja
 		#region integrate with web reference
 
 		#region USER_MANAGEMENT
-		public string RegisterUser(string fName, string lName, string deviceId, string userName, string psw, string email, int age, bool ageSpecified = true, bool acceptedTerms = true, bool acceptedTermsSpecified = true)
+		public string RegisterUser(string fName, string lName, string userName, string psw, string email, int age, bool ageSpecified = true, bool acceptedTerms = true, bool acceptedTermsSpecified = true)
 		{
 			string result = "";
 
 			try
 			{
-				result = mTrackSvc.insertNewDevice(fName, lName, deviceId, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
+				string deviceUDID = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
+				result = mTrackSvc.insertNewDevice(fName, lName, deviceUDID, userName, psw, acceptedTerms, acceptedTermsSpecified, email, age, ageSpecified, Constants.SPEC_GROUP_TYPE);
 			}
 			catch(Exception ex)
 			{
@@ -222,18 +225,41 @@ namespace goheja
 				var objUser = mTrackSvc.mobLogin(email, password, Constants.SPEC_GROUP_TYPE);
 				var jsonUser = FormatJsonType(objUser.ToString());
 				loginUser = JsonConvert.DeserializeObject<LoginUser>(jsonUser);
-				return loginUser;
+
+                if (loginUser.userId != null)
+                {
+                    AppSettings.CurrentUser = loginUser;
+
+                    RegisterFCMUser(loginUser);
+
+                    return loginUser;
+                }
 			}
-			catch
+			catch(Exception ex)
 			{
-				return null;
+                ShowTrackMessageBox(ex.Message);
 			}
+
+            return null;
 		}
 
-		public void SignOutUser()
+		void RegisterFCMUser(LoginUser user)
 		{
+            ThreadPool.QueueUserWorkItem(async delegate
+            {
+				user.fcmToken = FirebaseInstanceId.Instance.Token;
+				user.osType = Constants.OS_TYPE.Android;
+
+                var isFcmOn = await FirebaseService.RegisterFCMUser(user);
+                user.isFcmOn = isFcmOn;
+                AppSettings.CurrentUser = user;
+            });
+		}
+
+        public async Task SignOutUser()
+		{
+            await FirebaseService.RemoveFCMUser(AppSettings.CurrentUser);
 			AppSettings.CurrentUser = null;
-			AppSettings.DeviceUDID = string.Empty;
 		}
 
 		public List<Athlete> GetAllUsers()
@@ -242,7 +268,7 @@ namespace goheja
 
 			try
 			{
-				var objAthletes = mTrackSvc.athGeneralListMob(string.Empty, Constants.SPEC_GROUP_TYPE);
+				var objAthletes = mTrackSvc.athGeneralListMobWithTypeAndId(string.Empty, Constants.SPEC_GROUP_TYPE);
 				var athletes = JsonConvert.DeserializeObject<Athletes>(objAthletes.ToString());
 				result = athletes.athlete;
 			}
@@ -254,13 +280,32 @@ namespace goheja
 			return SortUsers(result);
 		}
 
+        public List<string> GetCoachIDs()
+        {
+            var result = new List<string>();
+
+            try
+            {
+                var jsonCoachIDs = mTrackSvc.getCoachesMob(Constants.SPEC_GROUP_TYPE);
+                var arrCoachIDs = jsonCoachIDs.Split(new char[] { ',' });
+
+                result = new List<string>(arrCoachIDs);
+            }
+            catch (Exception ex)
+            {
+                ShowTrackMessageBox(ex.Message);
+            }
+
+            return result;
+        }
+
 		public SubGroups GetSubGroups(string groupId)
 		{
 			var result = new SubGroups();
 
 			try
 			{
-				var objAthletes = mTrackSvc.fieldAthletsAndEvenetsMob(string.Empty, groupId, Constants.SPEC_GROUP_TYPE);
+				var objAthletes = mTrackSvc.fieldAthletsAndEvenetsMobWithIdAndType(string.Empty, groupId, Constants.SPEC_GROUP_TYPE);
 				result = JsonConvert.DeserializeObject<SubGroups>(objAthletes.ToString());
 			}
 			catch (Exception ex)
@@ -357,15 +402,15 @@ namespace goheja
 			return null;
 		}
 
-		public RootMember GetUserObject()
+        public RootMember GetUserObject(string userId = null)
 		{
 			RootMember result = new RootMember();
 
-			string userID = GetUserID();
+            userId = userId == null ? GetUserID() : userId;
 
 			try
 			{
-				var objUser = mTrackSvc.getUsrObject(userID, Constants.SPEC_GROUP_TYPE);
+				var objUser = mTrackSvc.getUsrObject(userId, Constants.SPEC_GROUP_TYPE);
 				var jsonUser = FormatJsonType(objUser.ToString());
 				result = JsonConvert.DeserializeObject<RootMember>(jsonUser);
 			}
@@ -576,6 +621,23 @@ namespace goheja
 			return eventTotal;
 		}
 
+        public ReportData GetEventReport(string eventID)
+		{
+            var result = new ReportData();
+
+            try
+            {
+                var reportObject = mTrackSvc.getEventReport(eventID, Constants.SPEC_GROUP_TYPE);
+                result = JsonConvert.DeserializeObject<ReportData>(reportObject.ToString());
+            }
+            catch (Exception ex)
+            {
+                //ShowTrackMessageBox(ex.Message);
+                return null;
+            }
+			return result;
+		}
+
 		public EventPoints GetAllMarkers(string eventID)
 		{
 			var eventMarkers = new EventPoints();
@@ -666,29 +728,38 @@ namespace goheja
 			return PATH_COLORS[index % 3];
 		}
 
-		public Comment GetComments(string eventID, string type = "1")
+		public Comments GetComments(string eventID, string type = "1")
 		{
-			var comment = new Comment();
+			var comments = new Comments();
 			try
 			{
 				var commentObject = mTrackSvc.getComments(eventID, "1", Constants.SPEC_GROUP_TYPE);
-				comment = JsonConvert.DeserializeObject<Comment>(commentObject.ToString());
+				comments = JsonConvert.DeserializeObject<Comments>(commentObject.ToString());
+                comments.comments.Reverse();
 			}
 			catch (Exception ex)
 			{
 				//ShowTrackMessageBox(ex.Message);
 				return null;
 			}
-			return comment;
+			return comments;
 		}
 
-		public object SetComment(string author, string authorId, string commentText, string eventId)
+		public Comment AddComment(string commentText)
 		{
-			object result = new object();
+			Comment result = new Comment();
 
 			try
 			{
-				result = mTrackSvc.setComments(author, authorId, commentText, eventId, Constants.SPEC_GROUP_TYPE);
+				var author = string.Empty;
+				var authorId = AppSettings.CurrentUser.userId;
+
+                var commentResponseObject = mTrackSvc.setCommentsMob(author, authorId, commentText, AppSettings.selectedEvent._id, Constants.SPEC_GROUP_TYPE);
+                result = JsonConvert.DeserializeObject<Comment>(commentResponseObject.ToString());
+
+                if (result != null)
+					SendNotification(result);
+
 			}
 			catch (Exception ex)
 			{
@@ -698,47 +769,71 @@ namespace goheja
 			return result;
 		}
 
-		public void UpdateMemberNotes(string notes, string userID, string eventId, string username, string attended, string duration, string distance, string trainScore, string type)
-		{
-			try
-			{
-				var response = mTrackSvc.updateMeberNotes(notes, userID, eventId, username, attended, duration, distance, trainScore, type, Constants.SPEC_GROUP_TYPE);
-			}
-			catch (Exception ex)
-			{
-				ShowTrackMessageBox(ex.Message);
-			}
-		}
+        async void SendNotification(Comment comment)
+        {
+			var notificationContent = new FCMDataNotification();
+            notificationContent.senderId = comment.authorId;
+            notificationContent.senderName = comment.author;
+            notificationContent.practiceId = comment.eventId;
+            notificationContent.commentId = comment.commentId;
+			notificationContent.description = comment.commentText;
+            notificationContent.practiceType = GetTypeStrFromID(AppSettings.selectedEvent.type);
+            notificationContent.practiceName = AppSettings.selectedEvent.title;
+            notificationContent.practiceDate = String.Format("{0:f}", AppSettings.selectedEvent.StartDateTime());
+			notificationContent.osType = Constants.OS_TYPE.Android;
 
-		public void UpdateMomgoData(string name,
-					string loc,
-					DateTime time,
-					bool timeSpecified,
-					string deviceID,
-					float speed,
-					bool speedSpecified,
-					string id,
-					string country,
-					float dist,
-					bool distSpecified,
-					float alt,
-					bool altSpecified,
-					float bearing,
-					bool bearingSpecified,
-					int recordType,
-					bool recordTypeSpecified,
-					string eventType,
-					string specGroup)
-		{
-			try
+            var recipientIDs = new List<string>();
+			if (AppSettings.isFakeUser)
 			{
-				mTrackSvc.updateMomgoDataAsync(name, loc, time, timeSpecified, deviceID, speed, speedSpecified, id, country, dist, distSpecified, alt, altSpecified, bearing, bearingSpecified, recordType, recordTypeSpecified, eventType, specGroup, null);
+                recipientIDs.Add(AppSettings.CurrentUser.athleteId);
 			}
-			catch (Exception ex)
-			{
-				ShowTrackMessageBox(ex.Message);
-			}
-		}
+            else
+            {
+                recipientIDs = GetCoachIDs();
+            }
+
+			recipientIDs.RemoveAll(pID => pID == AppSettings.CurrentUser.userId);
+
+			await FirebaseService.SendNotification(notificationContent, recipientIDs);
+        }
+
+        public void UpdateMemberNotes(string notes, string userID, string eventId, string username, string attended, string duration, string distance, string trainScore, string type)
+        {
+            try
+            {
+                var response = mTrackSvc.updateMeberNotes(notes, userID, eventId, username, attended, duration, distance, trainScore, type, Constants.SPEC_GROUP_TYPE);
+            }
+            catch (Exception ex)
+            {
+                ShowTrackMessageBox(ex.Message);
+            }
+        }
+
+        List<TRecord> _offlineRecords = new List<TRecord>();
+
+        public void RecordPracticeTrack(TRecord record)
+        {
+            _offlineRecords.Add(record);
+
+            if (IsNetEnable())
+            {
+                foreach (TRecord r in _offlineRecords)
+                {
+                    RunOnUiThread(() =>
+                    {
+                        try
+                        {
+                            mTrackSvc.updateMomgoData(r.fullName, r.loc, r.date, true, r.deviceId, r.speed, true, r.athid, r.country, r.distance, true, r.gainedAlt, true, r.bearinng, true, (int)r.recordType, true, ((int)r.sportType).ToString(), Constants.SPEC_GROUP_TYPE);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    });
+                }
+                _offlineRecords.Clear();
+            }
+        }
+
 		#endregion
 
 		public string GetTypeStrFromID(string typeID)
@@ -796,43 +891,43 @@ namespace goheja
 			return result;
 		}
 
-		public void CompareEventResult(float planned, float total, TextView lblPlanned, TextView lblTotal)
+		public void CompareEventResult(float planned, float performed, TextView lblPlanned, TextView lblPerformed)
 		{
 			try
 			{
-				if (planned == total || planned == 0 || total == 0)
+				if (planned == performed || planned == 0 || performed == 0)
 				{
 					lblPlanned.SetTextColor(COLOR_ORANGE);
-					lblTotal.SetTextColor(COLOR_ORANGE);
+					lblPerformed.SetTextColor(COLOR_ORANGE);
 					return;
 				}
 
-				if (planned > total)
+				if (planned > performed)
 				{
-					var delta = (planned - total) / total;
+					var delta = (planned - performed) / performed;
 					if (delta < 0.15)
 					{
 						lblPlanned.SetTextColor(COLOR_ORANGE);
-						lblTotal.SetTextColor(COLOR_ORANGE);
+						lblPerformed.SetTextColor(COLOR_ORANGE);
 					}
 					else
 					{
 						lblPlanned.SetTextColor(COLOR_BLUE);
-						lblTotal.SetTextColor(COLOR_BLUE);
+						lblPerformed.SetTextColor(COLOR_BLUE);
 					}
 				}
-				else if (planned < total)
+				else if (planned < performed)
 				{
-					var delta = (total - planned) / planned;
+					var delta = (performed - planned) / planned;
 					if (delta < 0.15)
 					{
 						lblPlanned.SetTextColor(COLOR_ORANGE);
-						lblTotal.SetTextColor(COLOR_ORANGE);
+						lblPerformed.SetTextColor(COLOR_ORANGE);
 					}
 					else
 					{
 						lblPlanned.SetTextColor(COLOR_RED);
-						lblTotal.SetTextColor(COLOR_RED);
+						lblPerformed.SetTextColor(COLOR_RED);
 					}
 				}
 			}
@@ -1096,7 +1191,7 @@ namespace goheja
 
 		#endregion
 
-		public float difAlt(float prev, float curr)
+		public float DifAlt(float prev, float curr)
 		{
 			try
 			{

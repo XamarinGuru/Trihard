@@ -1,9 +1,10 @@
-using Foundation;
+﻿using Foundation;
 using System;
 using UIKit;
 using System.Collections.Generic;
 using PortableLibrary;
 using System.Linq;
+using System.Threading;
 
 namespace location2
 {
@@ -21,13 +22,16 @@ namespace location2
 
 			InitUISettings();
 
+			AppDelegate myDelegate = UIApplication.SharedApplication.Delegate as AppDelegate;
+			myDelegate.baseVC = this;
+
 			if (!IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
-			{
-				ShowLoadingView(Constants.MSG_LOADING_DATA);
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                ShowLoadingView(Constants.MSG_LOADING_DATA);
 
-				_users = GetAllUsers();
+                _users = GetAllUsers();
 
 				var tblDataSource = new UsersTableViewSource(_users, this);
 
@@ -44,6 +48,17 @@ namespace location2
 		{
 			base.ViewWillAppear(animated);
 			NavigationController.NavigationBar.Hidden = true;
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+
+			AppDelegate myDelegate = UIApplication.SharedApplication.Delegate as AppDelegate;
+			if (myDelegate._notiInfo != null)
+			{
+				myDelegate.GotoEventInstruction();
+			}
 		}
 
 		void InitUISettings()
@@ -93,7 +108,7 @@ namespace location2
 			public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 			{
 				UserCell cell = tableView.DequeueReusableCell("UserCell") as UserCell;
-				cell.SetCell(_searchAthletes[indexPath.Row]);
+				cell.SetCell(_searchAthletes[indexPath.Row], mSuperVC);
 
 				return cell;
 			}
@@ -125,8 +140,6 @@ namespace location2
 
 				AppSettings.CurrentUser = currentUser;
 
-				//var nextIntent = new Intent(mSuperActivity, typeof(SwipeTabActivity));
-				//mSuperActivity.StartActivityForResult(nextIntent, 0);
 				var sb = UIStoryboard.FromName("Main", null);
 				MainPageViewController nextVC = sb.InstantiateViewController("MainPageViewController") as MainPageViewController;
 				mSuperVC.NavigationController.PushViewController(nextVC, true);

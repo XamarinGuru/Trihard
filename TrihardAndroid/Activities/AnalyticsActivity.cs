@@ -5,7 +5,6 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Android.Locations;
-using Android.Preferences;
 using Android.Content.PM;
 using System.Timers;
 using PortableLibrary;
@@ -15,34 +14,24 @@ using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.Graphics;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace goheja
 {
 	[Activity(Label = "Go-Heja", Icon = "@drawable/icon", ScreenOrientation = ScreenOrientation.Portrait)]
 	public class AnalyticsActivity : BaseActivity, ILocationListener, IOnMapReadyCallback, ActivityCompat.IOnRequestPermissionsResultCallback, GoogleMap.IOnMarkerClickListener
 	{
-		readonly string[] PermissionsLocation =
-		{
-		  Manifest.Permission.AccessCoarseLocation,
-		  Manifest.Permission.AccessFineLocation
-		};
 		const int RequestLocationId = 0;
+        readonly string[] PermissionsLocation =
+        {
+          Manifest.Permission.AccessCoarseLocation,
+          Manifest.Permission.AccessFineLocation
+        };
 
-		enum RIDE_TYPE
-		{
-			bike = 0,
-			run = 1,
-			mountain = 2
-		};
+        RootMemberModel MemberModel { get; set; }
 
-		enum PRACTICE_STATE
-		{
-			ready,
-			playing,
-			pause
-		}
-		public int pType;
-		PRACTICE_STATE pState = PRACTICE_STATE.ready;
+        Constants.EVENT_TYPE pType;
+        Constants.PLAYING_STATE pState = Constants.PLAYING_STATE.READY;
 
 		LocationManager _locationManager;
 
@@ -53,86 +42,49 @@ namespace goheja
 		EventPoints mEventMarker = new EventPoints();
 		IList<string> pointIDs;
 
-
-		trackSvc.Service1 svc = new trackSvc.Service1();
-
-		ISharedPreferences contextPref;
-		ISharedPreferences filePref;
-
-		ISharedPreferencesEditor contextPrefEdit;
-		ISharedPreferencesEditor filePrefEdit;
-
-		Location _currentLocation;
-		Location _lastLocation;
+		Location _currentLocation, _lastLocation;
 
 		TextView _speedText, _altitudeText, _distance, _timerText, _title;
-		float lastAlt, dist, gainAlt;
 
-		int fFlag = 1;
-
-		Button btnStartPause;
-		Button btnStop;
-		Button btnLapDist;
-
-		Timer _timer = new Timer();
-		int duration = 0;
-		int lapDuration = 0;
-
-		DateTime tempTime = DateTime.Now;
-
-		private RootMemberModel MemberModel { get; set; }
+		Button btnStartPause, btnStop, btnBack;
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
 			SetContentView(Resource.Layout.AnalyticsActivity);
 
-			this.Window.SetFlags(WindowManagerFlags.KeepScreenOn, WindowManagerFlags.KeepScreenOn);
+			Window.SetFlags(WindowManagerFlags.KeepScreenOn, WindowManagerFlags.KeepScreenOn);
 
 			if (!IsNetEnable()) return;
+
+            pType = (Constants.EVENT_TYPE)Enum.ToObject(typeof(Constants.EVENT_TYPE), Intent.GetIntExtra("pType", 0));
 
 			MemberModel = new RootMemberModel();
 			MemberModel.rootMember = GetUserObject();
 
 			_locationManager = GetSystemService(Context.LocationService) as LocationManager;
 
-			contextPref = PreferenceManager.GetDefaultSharedPreferences(ApplicationContext);
-			filePref = Application.Context.GetSharedPreferences("goheja", FileCreationMode.Private);
-
-			contextPrefEdit = contextPref.Edit();
-			filePrefEdit = filePref.Edit();
-
-			contextPrefEdit.PutFloat("gainAlt", 0f).Commit();
-			contextPrefEdit.PutFloat("lastAlt", 0f).Commit();
-			contextPrefEdit.PutFloat("dist", 0f).Commit();
-
-			filePrefEdit.PutFloat("lastAlt", 0f);
-			filePrefEdit.PutFloat("gainAlt", 0f);
-			filePrefEdit.PutFloat("distance", 0f);
-			filePrefEdit.PutString("prevLoc", "");
-			filePrefEdit.Commit();
-
 			InitUISettings();
+
+            SetControlButtons();
 		}
 
 		void InitUISettings()
 		{
-			pType = Intent.GetIntExtra("pType", 0);
-
 			TextView speedLbl = FindViewById<TextView>(Resource.Id.speedTv);
 			Button dummyBtn = FindViewById<Button>(Resource.Id.dummyType);
 
 			switch (pType)
 			{
-				case (int)RIDE_TYPE.bike:
+                case Constants.EVENT_TYPE.BIKE:
 					speedLbl.Text = "km/h";
 					dummyBtn.SetBackgroundResource(Resource.Drawable.bikeRound_new);
 					break;
-				case (int)RIDE_TYPE.run:
+                case Constants.EVENT_TYPE.RUN:
 					speedLbl.Text = "min/km";
 					dummyBtn.SetBackgroundResource(Resource.Drawable.runRound_new);
 					break;
-				case (int)RIDE_TYPE.mountain:
+                case Constants.EVENT_TYPE.OTHER:
 					speedLbl.Text = "km/h";
 					dummyBtn.SetBackgroundResource(Resource.Drawable.icon_06);
 					break;
@@ -147,13 +99,13 @@ namespace goheja
 			mMapViewFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
 			mMapViewFragment.GetMapAsync(this);
 
-			FindViewById<Button>(Resource.Id.btnStartPause).Click += ActionStartPause;
-			FindViewById<Button>(Resource.Id.btnStop).Click += ActionStop;
-			FindViewById<Button>(Resource.Id.btnBack).Click += ActionBack;
+            btnStartPause = FindViewById<Button>(Resource.Id.btnStartPause);
+            btnStop = FindViewById<Button>(Resource.Id.btnStop);
+            btnBack = FindViewById<Button>(Resource.Id.btnBack);
 
-			btnStartPause = FindViewById<Button>(Resource.Id.btnStartPause);
-			btnStop = FindViewById<Button>(Resource.Id.btnStop);
-			btnLapDist = FindViewById<Button>(Resource.Id.btnLD);
+			btnStartPause.Click += ActionStartPause;
+			btnStop.Click += ActionStop;
+			btnBack.Click += ActionBack;
 		}
 
 		#region google map
@@ -203,7 +155,7 @@ namespace goheja
 
 		void SetNearestEventMarkers(Location currentLocation)
 		{
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
 				ShowLoadingView(Constants.MSG_LOADING_ALL_MARKERS);
 
@@ -293,140 +245,93 @@ namespace goheja
 			return true;
 		}
 
-		#endregion
+        #endregion
 
 
 
-		private void ActionStartPause(object sender, EventArgs e)
-		{
-			if (!_locationManager.IsProviderEnabled(LocationManager.GpsProvider))
-			{
-				ShowMessageBox(null, Constants.MSG_GPS_DISABLED);
-				return;
-			}
+        private void ActionStartPause(object sender, EventArgs e)
+        {
+            if (!_locationManager.IsProviderEnabled(LocationManager.GpsProvider))
+            {
+                ShowMessageBox(null, Constants.MSG_GPS_DISABLED);
+                return;
+            }
 
-			if (pState == PRACTICE_STATE.ready)
-			{
-				StartTimer();
+            switch (pState)
+            {
+                case Constants.PLAYING_STATE.READY:
+                    pState = Constants.PLAYING_STATE.PLAYING;
+                    StartTimer();
+                    _locationManager.RequestLocationUpdates(LocationManager.GpsProvider, 2000, 1, this);
+                    RecordPractice(Constants.RECORDING_STATE.START);
+                    break;
+                case Constants.PLAYING_STATE.PLAYING:
+                    pState = Constants.PLAYING_STATE.PAUSE;
+                    _locationManager.RemoveUpdates(this);
+                    break;
+                case Constants.PLAYING_STATE.PAUSE:
+                    pState = Constants.PLAYING_STATE.PLAYING;
+                    _locationManager.RequestLocationUpdates(LocationManager.GpsProvider, 2000, 1, this);
+                    break;
+            }
 
-				btnStartPause.SetBackgroundResource(Resource.Drawable.resume_inactive);
-				btnStop.Visibility = ViewStates.Visible;
+            SetControlButtons();
+        }
 
-
-				_locationManager.RequestLocationUpdates(LocationManager.GpsProvider, 2000, 1, this);
-
-				pState = PRACTICE_STATE.playing;
-
-				try
-				{
-					var name = MemberModel.firstname + " " + MemberModel.lastname;
-					var loc = String.Format("{0},{1}", _currentLocation.Latitude, _currentLocation.Longitude);
-					DateTime dt = DateTime.Now;
-					dist = contextPref.GetFloat("dist", 0f);
-					var country = MemberModel.country;
-
-					var userId = GetUserID();
-
-					svc.updateMomgoData(name, loc, dt, true, AppSettings.DeviceUDID, 0f, true, userId, country, dist, true, gainAlt, true, _currentLocation.Bearing, true, 1, true, pType.ToString(), Constants.SPEC_GROUP_TYPE);
-				}
-				catch (Exception err)
-				{
-					//Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
-				}
-			}
-			else if (pState == PRACTICE_STATE.playing)
-			{
-				btnStartPause.SetBackgroundResource(Resource.Drawable.resume_active);
-				btnStop.Visibility = ViewStates.Visible;
-
-				_locationManager.RemoveUpdates(this);
-
-				pState = PRACTICE_STATE.pause;
-			}
-			else if (pState == PRACTICE_STATE.pause)
-			{
-				btnStartPause.SetBackgroundResource(Resource.Drawable.resume_inactive);
-				btnStop.Visibility = ViewStates.Visible;
-
-				_locationManager.RequestLocationUpdates(LocationManager.GpsProvider, 2000, 1, this);
-
-				pState = PRACTICE_STATE.playing;
-			}
-		}
-
-		void StartTimer()
-		{
-			_timer.Interval = 1000;
-			_timer.Elapsed += OnTimedEvent;
-			_timer.Enabled = true;
-		}
-		private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
-		{
-			if (pState == PRACTICE_STATE.playing)
-			{
-				duration++;
-				lapDuration++;
-			}
-			var timespan = TimeSpan.FromSeconds(duration);
-
-			RunOnUiThread(() =>
-			{
-				_timerText.Text = timespan.ToString(@"hh\:mm\:ss");
-			});
-		}
+        void SetControlButtons()
+        {
+            switch (pState)
+            {
+                case Constants.PLAYING_STATE.READY:
+                    btnBack.Visibility = ViewStates.Visible;
+                    btnStop.Visibility = ViewStates.Gone;
+                    btnStartPause.SetBackgroundResource(Resource.Drawable.icon_play);
+                    break;
+                case Constants.PLAYING_STATE.PLAYING:
+					btnBack.Visibility = ViewStates.Gone;
+                    btnStop.Visibility = ViewStates.Visible;
+                    btnStartPause.SetBackgroundResource(Resource.Drawable.icon_pause);
+                    break;
+                case Constants.PLAYING_STATE.PAUSE:
+					btnBack.Visibility = ViewStates.Gone;
+					btnStop.Visibility = ViewStates.Visible;
+                    btnStartPause.SetBackgroundResource(Resource.Drawable.icon_play);
+                    break;
+            }
+        }
+		
 
 		private void ActionBack(object sender, EventArgs e)
 		{
-			if (pState == PRACTICE_STATE.ready)
-			{
-				var activity = new Intent();
-				SetResult(Result.Canceled, activity);
-				Finish();
-			}
-			else
-			{
-				ShowMessageBox(null, Constants.MSG_COMFIRM_STOP_SPORT_COMP, "OK", "Cancel", StopPractice);
-			}
+            ActionBackCancel();
 		}
+
 		private void ActionStop(object sender, EventArgs e)
 		{
-			StopPractice();
+            ShowMessageBox(null, Constants.MSG_COMFIRM_STOP_SPORT_COMP, "OK", "Cancel", StopPractice);
 		}
+
 		private void StopPractice()
 		{
 			_title.Text = "Go-Heja Live is ready...";
 
-			try
-			{
-				var name = MemberModel.firstname + " " + MemberModel.lastname;
-				var loc = String.Format("{0},{1}", _currentLocation.Latitude, _currentLocation.Longitude);
-				DateTime dt = DateTime.Now;
-				dist = contextPref.GetFloat("dist", 0f);
-				var country = MemberModel.country;
-				var userId = GetUserID();
+            RecordPractice(Constants.RECORDING_STATE.END);
 
-				svc.updateMomgoData(name, loc, dt, true, AppSettings.DeviceUDID, 0f, true, userId, country, dist, true, gainAlt, true, _currentLocation.Bearing, true, 2, true, pType.ToString(), Constants.SPEC_GROUP_TYPE);
-			}
-			catch (Exception err)
-			{
-				//Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
-			}
+            _locationManager.RemoveUpdates(this);
 
-			filePrefEdit.PutFloat("lastAlt", 0f).Commit();
-			filePrefEdit.PutFloat("gainAlt", 0f).Commit();
-			filePrefEdit.PutFloat("distance", 0f).Commit();
-			filePrefEdit.PutString("prevLoc", "").Commit();
-			filePrefEdit.PutFloat("lastAlt", 0f).Commit();
-			filePrefEdit.PutFloat("gainAlt", 0f).Commit();
-			filePrefEdit.PutFloat("distance", 0f).Commit();
-			filePrefEdit.PutString("prevLoc", "").Commit();
-			filePrefEdit.PutFloat("dist", 0f).Commit();
+			pState = Constants.PLAYING_STATE.READY;
+			SetControlButtons();
 
-			contextPrefEdit.PutFloat("dist", 0f).Commit();
+            _speedText.Text = "0.0";
+            _altitudeText.Text = "0.0";
+            _distance.Text = "0.0";
+            _timerText.Text = "00:00:00";
 
-			_locationManager.RemoveUpdates(this);
+            lastAlt = 0;
+            dist = 0;
+            gainedAlt = 0;
 
-			ActionBackCancel();
+			duration = 0;
 		}
 
 
@@ -485,6 +390,8 @@ namespace goheja
 		///<summary>
 		/// Updates UI with location data
 		/// </summary>
+        /// 
+        DateTime tempTime = DateTime.Now;
 		TimeSpan ts = new TimeSpan(0, 0, 20);
 
 		public void vibrate(long time)
@@ -519,103 +426,102 @@ namespace goheja
 		public void OnProviderEnabled(string provider) { _title.Text = "GPS enabled"; }
 		public void OnStatusChanged(string provider, Availability status, Bundle extras) { _title.Text = "GPS low signal"; }
 
-		public void OnLocationChanged(Location location)
-		{
-			string status = "online";
 
-			_currentLocation = location;
+        float lastAlt, dist, gainedAlt;
 
-			try
-			{
-				RunOnUiThread(() =>
-				{
-					if (_currentLocation == null)
-					{
-						_title.Text = "Unable to determine your location.";
-					}
-					else
-					{
-						_title.Text = "On the go";
+        public void OnLocationChanged(Location location)
+        {
+            _currentLocation = location;
 
-						//if (!isPaused)
-						{
-							if (_lastLocation != null)
-							{
-								dist = contextPref.GetFloat("dist", 0f) + _currentLocation.DistanceTo(_lastLocation) / 1000;
-							}
-							lastAlt = contextPref.GetFloat("lastAlt", 0f);
-							float dAlt = difAlt(lastAlt, float.Parse(_currentLocation.Altitude.ToString()));
-							if (dAlt < 4) gainAlt = gainAlt + dAlt;
+            if (_currentLocation == null)
+            {
+                _title.Text = "Unable to determine your location.";
+                return;
+            }
 
-							contextPrefEdit.PutFloat("gainAlt", gainAlt).Commit();
-						}
+            _title.Text = "On the go";
 
-						if (pType == (int)RIDE_TYPE.bike)
-						{
-							_speedText.Text = (_currentLocation.Speed * 3.6f).ToString("0.00");
-							btnLapDist.Text = "Lap distance : " + (dist % 5).ToString("0.00");
-							if (dist % 5 < 0.01)
-							{
-								if (DateTime.Now - tempTime > ts)
-								{
-									tempTime = DateTime.Now;
-									vibrate(1000);
-								}
-							}
-						}
-						if (pType == (int)RIDE_TYPE.run)
-						{
-							_speedText.Text = (16.6666 / (_currentLocation.Speed)).ToString("0.00");
-							btnLapDist.Text = "Lap distance : " + (dist % 1).ToString("0.00");
-							if (dist % 1 < 0.01)
-							{
-								if (DateTime.Now - tempTime > ts)
-								{
-									tempTime = DateTime.Now;
-									vibrate(1000);
-								}
-							}
-						}
-						if (_currentLocation.Speed < 0.1)
-						{
-							_speedText.Text = "0.00";
-						}
+            SetMapPosition(new LatLng(_currentLocation.Latitude, _currentLocation.Longitude), _currentLocation.Bearing);
 
-						_altitudeText.Text = gainAlt.ToString("0.00");
-						_distance.Text = (dist).ToString("0.00");
+            if (pState != Constants.PLAYING_STATE.PLAYING) return;
 
-						//if (!isPaused)
-						{
-							var name = MemberModel.firstname + " " + MemberModel.lastname;
-							DateTime dt = DateTime.Now;
-							float speed = float.Parse(_currentLocation.Speed.ToString()) * 3.6f;
-							var country = MemberModel.country;
-							var userId = GetUserID();
+            try
+            {
+                if (_lastLocation != null)
+                    dist += _currentLocation.DistanceTo(_lastLocation) / 1000;
 
-							record merecord = new record(name, _currentLocation.Latitude, _currentLocation.Longitude, dt, AppSettings.DeviceUDID, userId, country, dist, speed, gainAlt, _currentLocation.Bearing, 0, pType.ToString());
-							handleRecord updateRecord = new handleRecord();
-							status = updateRecord.updaterecord(merecord, IsNetEnable());//the record and is there internet connection
+                if (pType == Constants.EVENT_TYPE.BIKE)
+                {
+                    _speedText.Text = (_currentLocation.Speed * 3.6f).ToString("0.00");
+                    if (dist % 5 < 0.01)
+                    {
+                        if (DateTime.Now - tempTime > ts)
+                        {
+                            tempTime = DateTime.Now;
+                            vibrate(1000);
+                        }
+                    }
+                }
+                if (pType == Constants.EVENT_TYPE.RUN)
+                {
+                    _speedText.Text = (16.6666 / (_currentLocation.Speed)).ToString("0.00");
+                    if (dist % 1 < 0.01)
+                    {
+                        if (DateTime.Now - tempTime > ts)
+                        {
+                            tempTime = DateTime.Now;
+                            vibrate(1000);
+                        }
+                    }
+                }
+                if (_currentLocation.Speed < 0.1)
+                {
+                    _speedText.Text = "0.00";
+                }
 
-							//mMapView.AnimateCamera(CameraUpdateFactory.NewCameraPosition(new CameraPosition(new LatLng(_currentLocation.Latitude, _currentLocation.Longitude), Constants.MAP_ZOOM_LEVEL, 45f, _currentLocation.Bearing)));
-							SetMapPosition(new LatLng(_currentLocation.Latitude, _currentLocation.Longitude), _currentLocation.Bearing);
-						}
+                float dAlt = DifAlt(lastAlt, (float)_currentLocation.Altitude);
+				if (dAlt < 4) gainedAlt = gainedAlt + dAlt;
 
-						_lastLocation = _currentLocation;
-						contextPrefEdit.PutFloat("lastAlt", float.Parse(_currentLocation.Altitude.ToString())).Commit();
-						contextPrefEdit.PutFloat("dist", dist).Commit();
-						if (fFlag == 1 || status == "backFromOffline")
-						{
-							status = "online";
-						}
-						fFlag = 0;
-					}
-				});
-			}
-			catch (Exception err)
-			{
-				//Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
-			}
-		}
+                _altitudeText.Text = gainedAlt.ToString("0.00");
+                _distance.Text = dist.ToString("0.00");
+
+				_lastLocation = _currentLocation;
+				lastAlt = (float)_currentLocation.Altitude;
+
+                RecordPractice(Constants.RECORDING_STATE.RECORDING);
+            }
+            catch (Exception err)
+            {
+                //Toast.MakeText(this, err.ToString(), ToastLength.Long).Show();
+            }
+        }
+
+        void RecordPractice(Constants.RECORDING_STATE recordType)
+        {
+            var tRecord = new TRecord();
+
+            try
+            {
+                tRecord.fullName = MemberModel.firstname + " " + MemberModel.lastname; ;
+                tRecord.loc = String.Format("{0},{1}", _currentLocation.Latitude, _currentLocation.Longitude); ;
+                tRecord.date = DateTime.Now;
+                tRecord.deviceId = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
+                tRecord.athid = GetUserID();
+                tRecord.country = MemberModel.country;
+                tRecord.distance = dist;
+                tRecord.speed = float.Parse(_currentLocation.Speed.ToString()) * 3.6f;
+                tRecord.gainedAlt = gainedAlt;
+                tRecord.bearinng = _currentLocation.Bearing;
+                tRecord.recordType = recordType;
+                tRecord.sportType = pType;
+
+                RecordPracticeTrack(tRecord);
+            }
+            catch
+            {
+            }
+        }
+
 		#endregion
 
 		void SetMapPosition(LatLng location, float bearing = -1)
@@ -646,6 +552,26 @@ namespace goheja
 				_title.Text = "Unable to determine your location.";
 			}
 			return currentLocation;
+		}
+
+		System.Timers.Timer _timer = new System.Timers.Timer();
+		int duration = 0;
+
+		void StartTimer()
+		{
+			_timer.Interval = 1000;
+            _timer.Elapsed -= OnTimedEvent;
+			_timer.Elapsed += OnTimedEvent;
+			_timer.Enabled = true;
+		}
+		private void OnTimedEvent(object sender, ElapsedEventArgs e)
+		{
+			if (pState == Constants.PLAYING_STATE.PLAYING)  duration++;
+
+			RunOnUiThread(() =>
+			{
+				_timerText.Text = TimeSpan.FromSeconds(duration).ToString(@"hh\:mm\:ss");
+			});
 		}
 
 		public override bool OnKeyDown(Keycode keyCode, KeyEvent e)

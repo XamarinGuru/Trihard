@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "900328622874",
+    "firebase_url": "https://trihard-c9203.firebaseio.com",
+    "project_id": "trihard-c9203",
+    "storage_bucket": "trihard-c9203.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900328622874:android:c92a7f2525151ad8",
+        "android_client_info": {
+          "package_name": "goheja.gohejatrihard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900328622874-6sljblmt87ud8p836tp96696ka3e0ahm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-YJ7ANvCXUghlUCfx8wFgbdvqdmDqviM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

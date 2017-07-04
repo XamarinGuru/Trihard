@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -90,7 +91,7 @@ namespace goheja
 
 			if (Validate())
 			{
-				System.Threading.ThreadPool.QueueUserWorkItem(delegate
+				ThreadPool.QueueUserWorkItem(delegate
 				{
 					ShowLoadingView(Constants.MSG_LOGIN);
 
@@ -98,17 +99,14 @@ namespace goheja
 
 					HideLoadingView();
 
-					if (loginUser.userId == null)
+					if (loginUser == null)
 					{
                         ShowMessageBox(null, Constants.MSG_LOGIN_FAIL);
 					}
 					else
 					{
-						AppSettings.CurrentUser = loginUser;
-						AppSettings.DeviceUDID = Android.Provider.Settings.Secure.GetString(this.ContentResolver, Android.Provider.Settings.Secure.AndroidId);
-
 						Intent nextIntent;
-						if (loginUser.userType == (int)Constants.USER_TYPE.ATHLETE)
+						if (loginUser.userType == Constants.USER_TYPE.ATHLETE)
 						{
 							nextIntent = new Intent(this, typeof(SwipeTabActivity));
 						}

@@ -1,4 +1,4 @@
-﻿using Foundation;
+﻿﻿using Foundation;
 using UIKit;
 using System;
 using System.Threading;
@@ -8,17 +8,26 @@ using PortableLibrary;
 using System.Collections.Generic;
 using Google.Maps;
 
+using Firebase.InstanceID;
+using Firebase.Analytics;
+using Firebase.CloudMessaging;
+
+using UserNotifications;
+
 namespace location2
 {
 	[Register ("AppDelegate")]
-	public class AppDelegate : UIApplicationDelegate
+	public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate, IMessagingDelegate
 	{
-		public static LocationHelper MyLocationHelper = new LocationHelper();
+        public NSDictionary _notiInfo;
 
-		private nint bgThread = -1;
+        public static LocationHelper MyLocationHelper = new LocationHelper();
 
-		public BaseViewController baseVC;
+        public BaseViewController baseVC;
+        public UINavigationController navVC;
 
+		UIStoryboard _storyboard;
+        nint bgThread = -1;
 		EKCalendar goHejaCalendar = null;
 
 		public override UIWindow Window
@@ -35,34 +44,164 @@ namespace location2
 
 			MapServices.ProvideAPIKey(PortableLibrary.Constants.GOOGLE_MAP_API_KEY);
 
+			_storyboard = UIStoryboard.FromName("Main", null);
+
+			// Monitor token generation
+			InstanceId.Notifications.ObserveTokenRefresh(TokenRefreshNotification);
+
+            RegisterNotificationSettings();
+
+            App.Configure();
+
+            ConnectToFCM();
+
 			return true;
 		}
 
-		public override void OnResignActivation (UIApplication application)
+		public void RegisterNotificationSettings()
 		{
-			// Invoked when the application is about to move from active to inactive state.
-			// This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) 
-			// or when the user quits the application and it begins the transition to the background state.
-			// Games should use this method to pause the game.
-		}
-
-		public override void DidEnterBackground(UIApplication application)
-		{
-			if (AppSettings.CurrentUser == null || baseVC == null)
-				return;
-
-			App.Current.EventStore.RequestAccess(EKEntityType.Event,
-				(bool granted, NSError e) =>
+			// Register your app for remote notifications.
+			if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+			{
+				// iOS 10 or later
+				var authOptions = UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound;
+				UNUserNotificationCenter.Current.RequestAuthorization(authOptions, (granted, error) =>
 				{
-					InvokeOnMainThread(() =>
-					{
-						if (granted)
-							UpdateCalendarTimer();
-					});
+					Console.WriteLine(granted);
 				});
+
+				// For iOS 10 display notification (sent via APNS)
+				UNUserNotificationCenter.Current.Delegate = this;
+
+				// For iOS 10 data message (sent via FCM)
+				Messaging.SharedInstance.RemoteMessageDelegate = this;
+			}
+			else
+			{
+				// iOS 9 or before
+				var allNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
+				var settings = UIUserNotificationSettings.GetSettingsForTypes(allNotificationTypes, null);
+				UIApplication.SharedApplication.RegisterUserNotificationSettings(settings);
+			}
+
+			UIApplication.SharedApplication.RegisterForRemoteNotifications();
 		}
 
-		private void UpdateCalendarTimer()
+		// To receive notifications in foregroung on iOS 9 and below.
+		// To receive notifications in background in any iOS version
+		public override void DidReceiveRemoteNotification(UIApplication application, NSDictionary notiInfo, Action<UIBackgroundFetchResult> completionHandler)
+		{
+			Console.WriteLine("WillPresentNotification===" + notiInfo);
+		}
+
+        // Workaround for handling notifications in foreground for iOS 10
+        [Export("userNotificationCenter:willPresentNotification:withCompletionHandler:")]
+		public void WillPresentNotification(UNUserNotificationCenter center, UNNotification notification, Action<UNNotificationPresentationOptions> completionHandler)
+		{
+			Console.WriteLine("WillPresentNotification===" + notification.Request.Content.UserInfo);
+            var notiInfo = notification.Request.Content.UserInfo;
+            var nTitle = ((notiInfo["aps"] as NSDictionary)["alert"] as NSDictionary)["title"].ToString();
+
+            baseVC.ShowMessageBox(null, nTitle, "Cancel", new[] { "Go to detail" }, NotificationInfoProcess, notiInfo);
+		}
+		
+        // Workaround for handling notifications in background for iOS 10
+		[Export("userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:")]
+		public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
+		{
+			Console.WriteLine("DidReceiveNotificationResponse===" + response.Notification.Request.Content.UserInfo);
+			NotificationInfoProcess(response.Notification.Request.Content.UserInfo);
+		}
+
+		// Workaround for data message for iOS 10
+		public void ApplicationReceivedRemoteMessage(RemoteMessage remoteMessage)
+		{
+			Console.WriteLine("ApplicationReceivedRemoteMessage===" + remoteMessage.AppData);
+		}
+
+		async void TokenRefreshNotification(object sender, NSNotificationEventArgs e)
+		{
+		  var refreshedToken = InstanceId.SharedInstance.Token;
+		  Console.WriteLine("Refreshed token: " + refreshedToken);
+
+		  await SendRegistrationToServer(refreshedToken);
+		}
+
+		void ConnectToFCM()
+		{
+			Messaging.SharedInstance.Connect(error =>
+            {
+                if (error != null)
+                {
+                    Console.WriteLine($"Token: {InstanceId.SharedInstance.Token}");
+                }
+                else
+                {
+                    Console.WriteLine($"Token: {InstanceId.SharedInstance.Token}");
+                }
+            });
+		}
+
+		async Task SendRegistrationToServer(string token)
+		{
+			if (AppSettings.CurrentUser == null) return;
+
+			var currentUser = AppSettings.CurrentUser;
+			currentUser.fcmToken = token;
+			AppSettings.CurrentUser = currentUser;
+
+			await FirebaseService.RegisterFCMUser(currentUser);
+		}
+
+		void NotificationInfoProcess(NSDictionary notiInfo)
+		{
+			var currentUser = AppSettings.CurrentUser;
+
+			if (currentUser.userType == (int)PortableLibrary.Constants.USER_TYPE.COACH)
+			{
+                currentUser.athleteId = notiInfo["senderId"].ToString();
+				AppSettings.isFakeUser = true;
+                AppSettings.fakeUserName = notiInfo["senderName"].ToString();
+
+				AppSettings.CurrentUser = currentUser;
+			}
+
+			_notiInfo = notiInfo;
+
+            if (navVC != null)
+            {
+                GotoEventInstruction();
+            }
+		}
+
+        public void GotoEventInstruction()
+        {
+			EventInstructionController eventInstructionVC = _storyboard.InstantiateViewController("EventInstructionController") as EventInstructionController;
+			eventInstructionVC.eventID = _notiInfo["practiceId"].ToString();
+			eventInstructionVC.isNotification = true;
+			eventInstructionVC.commentID = _notiInfo["commentId"].ToString();
+			navVC.PushViewController(eventInstructionVC, true);
+
+            _notiInfo = null;
+        }
+
+        public override void DidEnterBackground(UIApplication application)
+        {
+            if (AppSettings.CurrentUser == null || baseVC == null)
+                return;
+
+            DeviceCalendar.Current.EventStore.RequestAccess(EKEntityType.Event,
+                (bool granted, NSError e) =>
+                {
+                    InvokeOnMainThread(() =>
+                    {
+                        if (granted)
+                            UpdateCalendarTimer();
+                    });
+                });
+        }
+
+		void UpdateCalendarTimer()
 		{
 			if (bgThread == -1)
 			{
@@ -70,19 +209,19 @@ namespace location2
 				new Task(() => { new Timer(UpdateCalendar, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(60 * 30)); }).Start();
 			}
 		}
-		private void UpdateCalendar(object state)
+		void UpdateCalendar(object state)
 		{
 			InvokeOnMainThread(() => { AddGoHejaCalendarToDevice(); });
 		}
 
-		private void AddGoHejaCalendarToDevice()
+		void AddGoHejaCalendarToDevice()
 		{
 			try
 			{
 				NSError error;
 
 				////remove existing descending events from now in "goHeja Events" calendar of device.
-				var calendars = App.Current.EventStore.GetCalendars(EKEntityType.Event);
+				var calendars = DeviceCalendar.Current.EventStore.GetCalendars(EKEntityType.Event);
 				foreach (var calendar in calendars)
 				{
 					if (calendar.Title == PortableLibrary.Constants.DEVICE_CALENDAR_TITLE)
@@ -91,8 +230,8 @@ namespace location2
 
 						EKCalendar[] calendarArray = new EKCalendar[1];
 						calendarArray[0] = calendar;
-						NSPredicate pEvents = App.Current.EventStore.PredicateForEvents(NSDate.Now.AddSeconds(-(3600 * 10000)), NSDate.Now.AddSeconds(3600 * 10000), calendarArray);
-						EKEvent[] allEvents = App.Current.EventStore.EventsMatching(pEvents);
+						NSPredicate pEvents = DeviceCalendar.Current.EventStore.PredicateForEvents(NSDate.Now.AddSeconds(-(3600 * 10000)), NSDate.Now.AddSeconds(3600 * 10000), calendarArray);
+						EKEvent[] allEvents = DeviceCalendar.Current.EventStore.EventsMatching(pEvents);
 						if (allEvents == null)
 							continue;
 						foreach (var pEvent in allEvents)
@@ -102,17 +241,17 @@ namespace location2
 							DateTime startNow = new DateTime(now.Year, now.Month, now.Day);
 							var startString = baseVC.ConvertDateTimeToNSDate(startNow);
 							if (pEvent.StartDate.Compare(startString) == NSComparisonResult.Descending)
-								App.Current.EventStore.RemoveEvent(pEvent, EKSpan.ThisEvent, true, out pE);
+								DeviceCalendar.Current.EventStore.RemoveEvent(pEvent, EKSpan.ThisEvent, true, out pE);
 						}
 					}
 				}
 
 				if (goHejaCalendar == null)
 				{
-					goHejaCalendar = EKCalendar.Create(EKEntityType.Event, App.Current.EventStore);
+					goHejaCalendar = EKCalendar.Create(EKEntityType.Event, DeviceCalendar.Current.EventStore);
 					EKSource goHejaSource = null;
 
-					foreach (EKSource source in App.Current.EventStore.Sources)
+					foreach (EKSource source in DeviceCalendar.Current.EventStore.Sources)
 					{
 						if (source.SourceType == EKSourceType.CalDav && source.Title == "iCloud")
 						{
@@ -122,7 +261,7 @@ namespace location2
 					}
 					if (goHejaSource == null)
 					{
-						foreach (EKSource source in App.Current.EventStore.Sources)
+						foreach (EKSource source in DeviceCalendar.Current.EventStore.Sources)
 						{
 							if (source.SourceType == EKSourceType.Local)
 							{
@@ -139,18 +278,18 @@ namespace location2
 					goHejaCalendar.Source = goHejaSource;
 				}
 
-				App.Current.EventStore.SaveCalendar(goHejaCalendar, true, out error);
+				DeviceCalendar.Current.EventStore.SaveCalendar(goHejaCalendar, true, out error);
 
 				if (error == null)
 					AddEvents();
 			}
 			catch (Exception e)
 			{
-				new UIAlertView("add events process", e.Message, null, "ok", null).Show();
+				baseVC.ShowMessageBox("add events process", e.Message);
 			}
 		}
 
-		private void AddEvents()
+		void AddEvents()
 		{
 			var pastEvents = baseVC.GetPastEvents();
 			var todayEvents = baseVC.GetTodayEvents();
@@ -161,14 +300,14 @@ namespace location2
 			AddEventsToGoHejaCalendar(futureEvents);
 		}
 
-		private void AddEventsToGoHejaCalendar(List<GoHejaEvent> eventsData)
+		void AddEventsToGoHejaCalendar(List<GoHejaEvent> eventsData)
 		{
 			if (goHejaCalendar == null || eventsData == null)
 				return;
 
 			foreach (var goHejaEvent in eventsData)
 			{
-				EKEvent newEvent = EKEvent.FromStore(App.Current.EventStore);
+				EKEvent newEvent = EKEvent.FromStore(DeviceCalendar.Current.EventStore);
 
 				var startDate = goHejaEvent.StartDateTime();
 				var endDate = goHejaEvent.EndDateTime();
@@ -190,7 +329,7 @@ namespace location2
 
 				for (var i = 0; i < arryEventDes.Length; i++)
 				{
-					newEvent.Notes += arryEventDes[i].ToString() + Environment.NewLine;
+					newEvent.Notes += arryEventDes[i] + Environment.NewLine;
 				}
 
 				var strDistance = goHejaEvent.distance;
@@ -212,15 +351,6 @@ namespace location2
 								"Planned distance : " + formattedDistance + "KM" + Environment.NewLine +
 								"Duration : " + strDuration + Environment.NewLine;
 
-				//var encodedTitle = System.Web.HttpUtility.UrlEncode(goHejaEvent.title);
-
-				//var urlDate = newEvent.StartDate;
-				//var strDate = String.Format("{0:dd-MM-yyyy hh:mm:ss}", startDate);
-				//var encodedDate = System.Web.HttpUtility.UrlEncode(strDate);
-				//var encodedEventURL = String.Format(PortableLibrary.Constants.URL_EVENT_MAP, encodedTitle, encodedDate, AppSettings.Username);
-
-				//newEvent.Url = new NSUrl(System.Web.HttpUtility.UrlEncode(encodedEventURL)); ;
-
 				//add alarm to event
 				EKAlarm[] alarmsArray = new EKAlarm[2];
 				alarmsArray[0] = EKAlarm.FromDate(newEvent.StartDate.AddSeconds(-(60 * 45)));
@@ -230,22 +360,8 @@ namespace location2
 				newEvent.Calendar = goHejaCalendar;
 
 				NSError e;
-				App.Current.EventStore.SaveEvent(newEvent, EKSpan.ThisEvent, out e);
+				DeviceCalendar.Current.EventStore.SaveEvent(newEvent, EKSpan.ThisEvent, out e);
 			}
-		}
-
-
-
-		public override void WillEnterForeground(UIApplication application)
-		{
-			// Called as part of the transiton from background to active state.
-			// Here you can undo many of the changes made on entering the background.
-		}
-
-		public override void OnActivated(UIApplication application)
-		{
-			// Restart any tasks that were paused (or not yet started) while the application was inactive. 
-			// If the application was previously in the background, optionally refresh the user interface.
 		}
 
 		public override void WillTerminate(UIApplication application)
@@ -256,7 +372,6 @@ namespace location2
 			}
 		}
 	}
-
 }
 
 

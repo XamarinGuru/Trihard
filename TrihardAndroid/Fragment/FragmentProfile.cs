@@ -1,11 +1,12 @@
 ﻿
 using System;
+using System.IO;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-using System.IO;
 using Android.Graphics;
 using Android.Provider;
 using PortableLibrary;
@@ -17,18 +18,19 @@ namespace goheja
     {
         ImageView imgProfile;
 		TextView lblUsername, lblEmail, lblPhone;
+        CheckBox checkBoxNotification;
 
         byte[] bitmapByteData = { 0 };
 
 		RootMemberModel MemberModel { get; set; }
-		SwipeTabActivity rootActivity;
+        BaseActivity rootActivity;
 
 		View mView;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
 			MemberModel = new RootMemberModel();
-			rootActivity = this.Activity as SwipeTabActivity;
+			rootActivity = this.Activity as BaseActivity;
 
 			return inflater.Inflate(Resource.Layout.fProfile, container, false);
         }
@@ -41,13 +43,9 @@ namespace goheja
 
 			if (!rootActivity.IsNetEnable()) return;
 
-			System.Threading.ThreadPool.QueueUserWorkItem(delegate
+			ThreadPool.QueueUserWorkItem(delegate
 			{
-				//rootActivity.ShowLoadingView(Constants.MSG_LOADING_USER_DATA);
-
 				MemberModel.rootMember = rootActivity.GetUserObject();
-
-				//rootActivity.HideLoadingView();
 
 				rootActivity.RunOnUiThread(() =>
 				{
@@ -69,9 +67,26 @@ namespace goheja
 			mView.FindViewById<LinearLayout>(Resource.Id.ActionSyncDevice).Click += ActionSyncDevice;
 			mView.FindViewById<LinearLayout>(Resource.Id.ActionChangePassword).Click += ActionChangePassword;
 			mView.FindViewById<LinearLayout>(Resource.Id.ActionSignOut).Click += ActionSignOut;
+
+            checkBoxNotification = mView.FindViewById<CheckBox>(Resource.Id.checkBoxNotification);
+            checkBoxNotification.Checked = AppSettings.CurrentUser.isFcmOn;
+            checkBoxNotification.CheckedChange += UpdateUserNotificationSetting;
 		}
 
-		private void SetInputBinding()
+        async void UpdateUserNotificationSetting(object sender, CompoundButton.CheckedChangeEventArgs e)
+        {
+            var currentUser = AppSettings.CurrentUser;
+            currentUser.isFcmOn = checkBoxNotification.Checked;
+            AppSettings.CurrentUser = currentUser;
+
+            rootActivity.ShowLoadingView("");
+
+            await FirebaseService.RegisterFCMUser(currentUser, true);
+
+            rootActivity.HideLoadingView();
+        }
+
+        private void SetInputBinding()
 		{
 			if (MemberModel.rootMember == null) return;
 
@@ -126,9 +141,13 @@ namespace goheja
 			StartActivityForResult(intent, 1);
 		}
 
-		private void ActionSignOut(object sender, EventArgs e)
+		async void ActionSignOut(object sender, EventArgs e)
 		{
-			rootActivity.SignOutUser();
+			rootActivity.ShowLoadingView("");
+
+			await rootActivity.SignOutUser();
+
+            rootActivity.HideLoadingView();
 
 			var activity = new Intent(this.Activity, typeof(LoginActivity));
 			activity.PutExtra("requestCode", "profile");
